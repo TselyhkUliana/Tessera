@@ -5,6 +5,8 @@ VisualStudioVersion = 17.13.35931.197
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tessera.App", "Tessera.App\Tessera.App.csproj", "{CD1B7304-CE1D-478C-9A3D-E61711451CD1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApp1", "ConsoleApp1\ConsoleApp1.csproj", "{24DE629B-2654-4B5C-B936-D8877F147F89}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{CD1B7304-CE1D-478C-9A3D-E61711451CD1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CD1B7304-CE1D-478C-9A3D-E61711451CD1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CD1B7304-CE1D-478C-9A3D-E61711451CD1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{24DE629B-2654-4B5C-B936-D8877F147F89}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{24DE629B-2654-4B5C-B936-D8877F147F89}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{24DE629B-2654-4B5C-B936-D8877F147F89}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{24DE629B-2654-4B5C-B936-D8877F147F89}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
