@@ -12,8 +12,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Tessera.App.ViewModel;
 
-namespace Tessera.App
+namespace Tessera.App.View
 {
   /// <summary>
   /// Логика взаимодействия для MainWindow.xaml
@@ -23,6 +24,8 @@ namespace Tessera.App
     public MainWindow()
     {
       InitializeComponent();
+      var viewModel = new MainWindowViewModel();
+      this.DataContext = viewModel;
     }
   }
 }
