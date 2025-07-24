@@ -13,8 +13,8 @@ class Program
 {
   static void Main()
   {
-    var tokenizer = Tokenizer.FromFile(@"D:\Development\Полином\Tessera\Tessera.App\Harold\bge-m3-onnx\tokenizer.json");
-    using var session = new InferenceSession(@"D:\Development\Полином\Tessera\Tessera.App\Harold\bge-m3-onnx\model.onnx");
+    var tokenizer = Tokenizer.FromFile(@"D:\Development\Полином\Tessera\Harold\Model\bge-m3-onnx\tokenizer.json");
+    using var session = new InferenceSession(@"D:\Development\Полином\Tessera\Harold\Model\bge-m3-onnx\model.onnx");
 
     var materials = new[]
     {

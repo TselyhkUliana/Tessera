@@ -5,7 +5,7 @@ VisualStudioVersion = 17.13.35931.197
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tessera.App", "Tessera.App\Tessera.App.csproj", "{CD1B7304-CE1D-478C-9A3D-E61711451CD1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApp1", "ConsoleApp1\ConsoleApp1.csproj", "{24DE629B-2654-4B5C-B936-D8877F147F89}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Harold", "Harold\Harold.csproj", "{24DE629B-2654-4B5C-B936-D8877F147F89}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
