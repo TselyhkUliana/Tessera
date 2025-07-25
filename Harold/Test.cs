@@ -2,16 +2,19 @@
 using Microsoft.ML.OnnxRuntime.Tensors;
 using Tokenizers.HuggingFace.Tokenizer;
 
-class Item
+public class Item
 {
   public string Id { get; set; }
   public string Text { get; set; }
   public float[] Embedding { get; set; }
 }
 
-class Program
+public class Test
 {
-  static void Main()
+  public const string MODEL_PATH = @"D:\Development\Полином\Tessera\Harold\Model\bge-m3-onnx\model.onnx";
+  public const string TOKENIZER_PATH = @"D:\Development\Полином\Tessera\Harold\Model\bge-m3-onnx\tokenizer.json";
+
+  public void Test2()
   {
     var tokenizer = Tokenizer.FromFile(@"D:\Development\Полином\Tessera\Harold\Model\bge-m3-onnx\tokenizer.json");
     using var session = new InferenceSession(@"D:\Development\Полином\Tessera\Harold\Model\bge-m3-onnx\model.onnx");
@@ -56,7 +59,54 @@ class Program
     Console.ReadKey();
   }
 
-  private static void GetTextEmbedding(Tokenizer tokenizer, InferenceSession session, string text, out IDisposableReadOnlyCollection<DisposableNamedOnnxValue> results, out float[] embedding)
+
+  public IEnumerable<(int id, float[] embedding)> GetTextEmbeddings(IEnumerable<(int Id, string Name)> values)
+  {
+    var test = values.ToList();
+    var tokenizer = Tokenizer.FromFile(TOKENIZER_PATH);
+    using var session = new InferenceSession(MODEL_PATH);
+    var count = test.Count;
+    for (int i = 0; i < count; i++)
+    {
+      Console.Write($"\rСоздано векторов {i + 1} из {count}");
+      GetTextEmbedding(tokenizer, session, test[i].Name, out var results, out var embedding);
+      yield return (test[i].Id, embedding);
+    }
+    Console.WriteLine();
+  }
+
+  public void GetTextEmbedding(string text, out float[] embedding)
+  {
+    var tokenizer = Tokenizer.FromFile(@"D:\Development\Полином\Tessera\Harold\Model\bge-m3-onnx\tokenizer.json");
+    using var session = new InferenceSession(@"D:\Development\Полином\Tessera\Harold\Model\bge-m3-onnx\model.onnx");
+    var encoding = tokenizer.Encode(text, true);
+    var inputIds = encoding.Encodings.First().Ids.Select(id => (long)id).ToArray();
+    var attentionMaskRaw = encoding.Encodings.First().AttentionMask;
+    var attentionMask = (attentionMaskRaw.Count > 0)
+        ? attentionMaskRaw.Select(i => (long)i).ToArray()
+        : inputIds.Select(id => id == 0 ? 0L : 1L).ToArray();
+
+    var inputIdsTensor = new DenseTensor<long>(new[] { 1, inputIds.Length });
+    var attentionMaskTensor = new DenseTensor<long>(new[] { 1, attentionMask.Length });
+
+    for (int j = 0; j < inputIds.Length; j++)
+    {
+      inputIdsTensor[0, j] = inputIds[j];
+      attentionMaskTensor[0, j] = attentionMask[j];
+    }
+
+    var inputs = new List<NamedOnnxValue>
+    {
+        NamedOnnxValue.CreateFromTensor("input_ids", inputIdsTensor),
+        NamedOnnxValue.CreateFromTensor("attention_mask", attentionMaskTensor)
+    };
+    IDisposableReadOnlyCollection<DisposableNamedOnnxValue> results = session.Run(inputs);
+    var outputTensor = results.First().AsTensor<float>();
+
+    embedding = outputTensor.ToArray();
+  }
+
+  private void GetTextEmbedding(Tokenizer tokenizer, InferenceSession session, string text, out IDisposableReadOnlyCollection<DisposableNamedOnnxValue> results, out float[] embedding)
   {
     var encoding = tokenizer.Encode(text, true);
     var inputIds = encoding.Encodings.First().Ids.Select(id => (long)id).ToArray();
@@ -85,7 +135,20 @@ class Program
     embedding = outputTensor.ToArray();
   }
 
-  public static float CosineSimilarity(float[] vectorA, float[] vectorB)
+  public List<(Item item, float similarity)> Search(List<Item> database, float[] queryEmbedding, int topN = 1)
+  {
+    var results = new List<(Item, float)>();
+
+    foreach (var item in database)
+    {
+      var sim = CosineSimilarity(item.Embedding, queryEmbedding);
+      results.Add((item, sim));
+    }
+
+    return results.OrderByDescending(x => x.Item2).Take(topN).ToList();
+  }
+
+  private float CosineSimilarity(float[] vectorA, float[] vectorB)
   {
     if (vectorA.Length != vectorB.Length)
       throw new ArgumentException("Векторы должны быть одинаковой длины");
@@ -105,19 +168,5 @@ class Program
       return 0;
 
     return dot / (float)(Math.Sqrt(normA) * Math.Sqrt(normB));
-  }
-
-
-  public static List<(Item item, float similarity)> Search(List<Item> database, float[] queryEmbedding, int topN = 1)
-  {
-    var results = new List<(Item, float)>();
-
-    foreach (var item in database)
-    {
-      var sim = CosineSimilarity(item.Embedding, queryEmbedding);
-      results.Add((item, sim));
-    }
-
-    return results.OrderByDescending(x => x.Item2).Take(topN).ToList();
   }
 }

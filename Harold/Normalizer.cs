@@ -1,10 +1,8 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace ConsoleApp1
+public static class Normalizer
 {
-  public static class Normalizer
-  {
-    private static readonly Dictionary<string, string> substitutions = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+  private static readonly Dictionary<string, string> substitutions = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
     {
         { "зл", "золото" },
         { "ц0", "цинк" },
@@ -16,22 +14,20 @@ namespace ConsoleApp1
         { "говнх", "графит" } // даже если это опечатка :)
     };
 
-    public static string Normalize(string input)
+  public static string Normalize(string input)
+  {
+    string result = input.ToLowerInvariant();
+
+    // Заменяем сокращения
+    foreach (var kvp in substitutions)
     {
-      string result = input.ToLowerInvariant();
-
-      // Заменяем сокращения
-      foreach (var kvp in substitutions)
-      {
-        result = Regex.Replace(result, $@"\b{Regex.Escape(kvp.Key)}\b", kvp.Value, RegexOptions.IgnoreCase);
-      }
-
-      // Удаляем лишние знаки препинания и лишние пробелы
-      result = Regex.Replace(result, @"[^\w\d\s]", " ");
-      result = Regex.Replace(result, @"\s+", " ").Trim();
-
-      return result;
+      result = Regex.Replace(result, $@"\b{Regex.Escape(kvp.Key)}\b", kvp.Value, RegexOptions.IgnoreCase);
     }
-  }
 
+    // Удаляем лишние знаки препинания и лишние пробелы
+    result = Regex.Replace(result, @"[^\w\d\s]", " ");
+    result = Regex.Replace(result, @"\s+", " ").Trim();
+
+    return result;
+  }
 }

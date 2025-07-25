@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Npgsql" Version="9.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Harold\Harold.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Ascon.Polynom.Api">
+      <HintPath>C:\Program Files (x86)\ASCON\Polynom\Bin\Client\Ascon.Polynom.Api.dll</HintPath>
+    </Reference>
+    <Reference Include="Ascon.Polynom.Common">
+      <HintPath>C:\Program Files (x86)\ASCON\Polynom\Bin\Client\Ascon.Polynom.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Ascon.Polynom.Login">
+      <HintPath>C:\Program Files (x86)\ASCON\Polynom\Bin\Client\Ascon.Polynom.Login.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+</Project>
