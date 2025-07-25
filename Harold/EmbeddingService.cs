@@ -9,7 +9,7 @@ public class Item
   public float[] Embedding { get; set; }
 }
 
-public class Test
+public class EmbeddingService
 {
   public const string MODEL_PATH = @"D:\Development\Полином\Tessera\Harold\Model\bge-m3-onnx\model.onnx";
   public const string TOKENIZER_PATH = @"D:\Development\Полином\Tessera\Harold\Model\bge-m3-onnx\tokenizer.json";
@@ -60,17 +60,16 @@ public class Test
   }
 
 
-  public IEnumerable<(int id, float[] embedding)> GetTextEmbeddings(IEnumerable<(int Id, string Name)> values)
+  public IEnumerable<(int id, float[] embedding)> GetTextEmbeddings(List<(int Id, string Name)> values)
   {
-    var test = values.ToList();
     var tokenizer = Tokenizer.FromFile(TOKENIZER_PATH);
     using var session = new InferenceSession(MODEL_PATH);
-    var count = test.Count;
+    var count = values.Count;
     for (int i = 0; i < count; i++)
     {
       Console.Write($"\rСоздано векторов {i + 1} из {count}");
-      GetTextEmbedding(tokenizer, session, test[i].Name, out var results, out var embedding);
-      yield return (test[i].Id, embedding);
+      GetTextEmbedding(tokenizer, session, values[i].Name, out var results, out var embedding);
+      yield return (values[i].Id, embedding);
     }
     Console.WriteLine();
   }
