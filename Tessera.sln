@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Harold", "Harold\Harold.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tessera.SemanticIndexBuilder", "Tessera.SemanticIndexBuilder\Tessera.SemanticIndexBuilder.csproj", "{84D82C80-7022-6DB9-0783-616776A5E26D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tessera.DataAccess", "Tessera.DataAccess\Tessera.DataAccess.csproj", "{57C4FCFB-6EEB-4ECE-AF08-C3A1EDE1A1D2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{84D82C80-7022-6DB9-0783-616776A5E26D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{84D82C80-7022-6DB9-0783-616776A5E26D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{84D82C80-7022-6DB9-0783-616776A5E26D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{57C4FCFB-6EEB-4ECE-AF08-C3A1EDE1A1D2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{57C4FCFB-6EEB-4ECE-AF08-C3A1EDE1A1D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{57C4FCFB-6EEB-4ECE-AF08-C3A1EDE1A1D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{57C4FCFB-6EEB-4ECE-AF08-C3A1EDE1A1D2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

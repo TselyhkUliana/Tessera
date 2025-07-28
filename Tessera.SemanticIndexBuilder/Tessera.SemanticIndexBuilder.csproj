@@ -14,6 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Harold\Harold.csproj" />
+    <ProjectReference Include="..\Tessera.DataAccess\Tessera.DataAccess.csproj" />
   </ItemGroup>
 
   <ItemGroup>
