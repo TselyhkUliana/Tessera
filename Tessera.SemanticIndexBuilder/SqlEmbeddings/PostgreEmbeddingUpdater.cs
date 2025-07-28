@@ -12,7 +12,7 @@ namespace Tessera.SemanticIndexBuilder.SqlEmbeddings
   {
     public void UpdateEmbeddings(string DatabaseName)
     {
-      var connectionString = $"Host=localhost;Port=5432;Username=postgres;Password=111;Database={DatabaseName}";
+      var connectionString = $"Host=localhost;Port=5432;Username=postgres;Password=111;Database={DatabaseName}"; //TODO: найти пароль
       using var connection = new NpgsqlConnection(connectionString);
       connection.Open();
       try
@@ -32,41 +32,46 @@ namespace Tessera.SemanticIndexBuilder.SqlEmbeddings
         return;
       }
 
-      var selectCmd = new NpgsqlCommand("SELECT \"OID\", \"NAME\" FROM \"POLYNOM\".\"ELEMENTDATA\";", connection);
+      var selectCmd = new NpgsqlCommand("SELECT \"OID\", \"NAME\" FROM \"POLYNOM\".\"ELEMENTDATA\" WHERE \"VECTOR\" IS NULL;", connection);
       var idsAndNames = new List<(int Id, string Name)>();
       using (var reader = selectCmd.ExecuteReader())
       {
         while (reader.Read())
         {
-          int id = reader.GetInt32(0);
+          var id = reader.GetInt32(0);
           string name = reader.GetString(1);
           idsAndNames.Add((id, name));
         }
       }
 
-      var embeddingService  = new EmbeddingService();
-      Console.ForegroundColor = ConsoleColor.Blue;
-      Console.WriteLine("Создание вектрных предствлений. Процесс может занять длительное время");
-      Console.ForegroundColor = ConsoleColor.Green;
-      var textEmbeddings = embeddingService.GetTextEmbeddings(idsAndNames).ToArray();
-      Console.ForegroundColor = ConsoleColor.Blue;
-      Console.WriteLine("Обновление векторов...");
-      Console.ForegroundColor = ConsoleColor.Green;
+      if(idsAndNames.Count == 0)
+      {
+        Console.ForegroundColor = ConsoleColor.Yellow;
+        Console.WriteLine("Нет элементов для обновления векторов.");
+        Console.ResetColor();
+        return;
+      }
 
-      var count = textEmbeddings.Length;
+      Console.ForegroundColor = ConsoleColor.Blue;
+      Console.WriteLine("Создание и обновление вектрных предствлений. Процесс может занять длительное время");
+      Console.ForegroundColor = ConsoleColor.Green;
+      var embeddingService  = EmbeddingService.Instance;
+      var count = idsAndNames.Count;
       for (int i = 0; i < count; i++)
       {
         using var updateCmd = new NpgsqlCommand("UPDATE \"POLYNOM\".\"ELEMENTDATA\" SET \"VECTOR\" = @vec WHERE \"OID\" = @id", connection);
 
-        updateCmd.Parameters.AddWithValue("vec", textEmbeddings[i].embedding);
-        updateCmd.Parameters.AddWithValue("id", textEmbeddings[i].id);
+        embeddingService.GetTextEmbedding(idsAndNames[i].Name, out var embedding);
+        updateCmd.Parameters.AddWithValue("vec", embedding);
+        updateCmd.Parameters.AddWithValue("id", idsAndNames[i].Id);
 
         updateCmd.ExecuteNonQuery();
 
         Console.ForegroundColor = ConsoleColor.Green;
         Console.Write($"\rОбновлено: {i + 1} из {count}");
       }
-
+      embeddingService.Dispose();
+      
       Console.ForegroundColor = ConsoleColor.Blue;
       Console.WriteLine("\nОбновление векторов завершено.");
       Console.WriteLine("Нажмите любую клавишу");
