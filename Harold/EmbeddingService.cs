@@ -24,6 +24,9 @@ public class EmbeddingService : IDisposable
     Dispose(false);
   }
 
+  /// <summary>
+  /// Преобразует входной текст в вектор эмбеддинга (embedding vector), используя токенизатор и модель ONNX.
+  /// </summary>
   public void GetTextEmbedding(string text, out float[] embedding)
   {
     var encoding = _tokenizer.Encode(text, true);
@@ -53,11 +56,14 @@ public class EmbeddingService : IDisposable
     embedding = outputTensor.ToArray();
   }
 
-  public List<(string name, float similarity)> Search(List<(float[] Id, string Name)> database, float[] queryEmbedding, int topN = 1)
+  /// <summary>
+  /// Возвращает topN объектов, наиболее похожих на запрос по косинусному сходству эмбеддингов.
+  /// </summary>
+  public List<(string name, float similarity)> Search(List<(float[] Id, string Name)> data, float[] queryEmbedding, int topN = 1)
   {
     var results = new List<(string, float)>();
 
-    foreach (var (Id, Name) in database)
+    foreach (var (Id, Name) in data)
     {
       var sim = CosineSimilarity(Id, queryEmbedding);
       results.Add((Name, sim));
@@ -72,6 +78,9 @@ public class EmbeddingService : IDisposable
     GC.SuppressFinalize(this);
   }
 
+  /// <summary>
+  /// Вычисляет косинусное сходство между двумя векторами.
+  /// </summary>
   private float CosineSimilarity(float[] vectorA, float[] vectorB)
   {
     if (vectorA.Length != vectorB.Length)

@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.13.35931.197
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tessera.App", "Tessera.App\Tessera.App.csproj", "{CD1B7304-CE1D-478C-9A3D-E61711451CD1}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Harold", "Harold\Harold.csproj", "{016FE8AE-4718-4F17-A33E-94FB3C237677}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tessera.SemanticIndexBuilder", "Tessera.SemanticIndexBuilder\Tessera.SemanticIndexBuilder.csproj", "{84D82C80-7022-6DB9-0783-616776A5E26D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tessera.DataAccess", "Tessera.DataAccess\Tessera.DataAccess.csproj", "{57C4FCFB-6EEB-4ECE-AF08-C3A1EDE1A1D2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tessera.App", "Tessera.App\Tessera.App.csproj", "{E1A4BF76-06F2-4078-BA07-1B18C6FA53F5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +17,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{CD1B7304-CE1D-478C-9A3D-E61711451CD1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CD1B7304-CE1D-478C-9A3D-E61711451CD1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CD1B7304-CE1D-478C-9A3D-E61711451CD1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CD1B7304-CE1D-478C-9A3D-E61711451CD1}.Release|Any CPU.Build.0 = Release|Any CPU
 		{016FE8AE-4718-4F17-A33E-94FB3C237677}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{016FE8AE-4718-4F17-A33E-94FB3C237677}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{016FE8AE-4718-4F17-A33E-94FB3C237677}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -33,6 +29,10 @@ Global
 		{57C4FCFB-6EEB-4ECE-AF08-C3A1EDE1A1D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{57C4FCFB-6EEB-4ECE-AF08-C3A1EDE1A1D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{57C4FCFB-6EEB-4ECE-AF08-C3A1EDE1A1D2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E1A4BF76-06F2-4078-BA07-1B18C6FA53F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E1A4BF76-06F2-4078-BA07-1B18C6FA53F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E1A4BF76-06F2-4078-BA07-1B18C6FA53F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E1A4BF76-06F2-4078-BA07-1B18C6FA53F5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
