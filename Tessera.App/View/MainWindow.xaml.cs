@@ -8,6 +8,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Tessera.App.ViewModel;
 
 namespace Tessera.App.View
 {
@@ -19,6 +20,7 @@ namespace Tessera.App.View
     public MainWindow()
     {
       InitializeComponent();
+      DataContext = new MainWindowViewModel();
     }
   }
 }

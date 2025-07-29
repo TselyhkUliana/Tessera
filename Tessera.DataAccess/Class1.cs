@@ -1,4 +1,5 @@
 ﻿using Npgsql;
+using System.Data;
 
 namespace Tessera.DataAccess
 {
@@ -26,15 +27,30 @@ namespace Tessera.DataAccess
     /// Возвращает все элементы из таблицы ELEMENTDATA, у которых уже заполнена колонка VECTOR.
     /// <br/> Каждая запись содержит массив векторов и имя.
     /// </summary>
-    public IEnumerable<(float[] Vectors, string Name)> GetElementsWithVectorsAndNames()
+    public async IAsyncEnumerable<(float[] Vectors, string Name, string UniqueId)> GetElementsWithVectorsAndNamesAsync()
     {
-      var selectCmd = new NpgsqlCommand("SELECT \"NAME\", \"VECTOR\" FROM \"POLYNOM\".\"ELEMENTDATA\" WHERE \"VECTOR\" IS NOT NULL;", _connection);
+      var selectCmd = new NpgsqlCommand("SELECT \"NAME\", \"VECTOR\", \"UNIQUEID\" FROM \"POLYNOM\".\"ELEMENTDATA\" WHERE \"VECTOR\" IS NOT NULL AND (\"UNIQUEID\" LIKE 'Material%' OR \"UNIQUEID\" LIKE 'Sortament%' OR \"UNIQUEID\" LIKE 'SortamentEx%');", _connection);
+
+      using var reader = await selectCmd.ExecuteReaderAsync(CommandBehavior.SequentialAccess);
+      while (await reader.ReadAsync())
+      {
+        var name = reader.GetString(0);
+        var vectors = (await reader.GetFieldValueAsync<double[]>(1)).Select(x => (float)x).ToArray();
+        var uniqueId = reader.GetString(2);
+        yield return (vectors, name, uniqueId);
+      }
+    }
+
+    public IEnumerable<(float[] Vectors, string Name, string UniqueId)> GetElementsWithVectorsAndNames()
+    {
+      var selectCmd = new NpgsqlCommand("SELECT \"NAME\", \"VECTOR\", \"UNIQUEID\" FROM \"POLYNOM\".\"ELEMENTDATA\" WHERE \"VECTOR\" IS NOT NULL;", _connection);
       using var reader = selectCmd.ExecuteReader();
       while (reader.Read())
       {
         var name = reader.GetString(0);
         var vectors = reader.GetFieldValue<double[]>(1);
-        yield return (vectors.Select(x => (float)x).ToArray(), name);
+        var uniqueId = reader.GetString(2);
+        yield return (vectors.Select(x => (float)x).ToArray(), name, uniqueId);
       }
     }
 
@@ -83,7 +99,7 @@ namespace Tessera.DataAccess
     public void UpdateElementVector(float[] embedding, int id)
     {
       using var updateCmd = new NpgsqlCommand("UPDATE \"POLYNOM\".\"ELEMENTDATA\" SET \"VECTOR\" = @vec WHERE \"OID\" = @id", _connection);
-      
+
       updateCmd.Parameters.AddWithValue("vec", embedding);
       updateCmd.Parameters.AddWithValue("id", id);
 
@@ -96,7 +112,7 @@ namespace Tessera.DataAccess
       GC.SuppressFinalize(this);
     }
 
-    protected void Dispose(bool disposing)
+    protected virtual void Dispose(bool disposing)
     {
       if (!_disposed)
       {

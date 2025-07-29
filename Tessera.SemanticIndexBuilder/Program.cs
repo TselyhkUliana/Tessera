@@ -1,6 +1,5 @@
 ﻿using Ascon.Polynom.Api;
 using Ascon.Polynom.Login;
-using System.Diagnostics;
 using Tessera.SemanticIndexBuilder;
 using Tessera.SemanticIndexBuilder.SqlEmbeddings;
 
@@ -20,7 +19,7 @@ internal class Program
         //UpdateElementEmbeddings(storage.Database, new MSServerEmbeddingUpdater());
         break;
       case DbType.PostgreSql:
-        UpdateElementEmbeddings(storage.Database, new PostgreEmbeddingUpdater());       
+        UpdateElementEmbeddings(storage.Database, new PostgreEmbeddingUpdater());
         break;
       default:
         break;

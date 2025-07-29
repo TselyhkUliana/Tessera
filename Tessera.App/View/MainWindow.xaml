@@ -4,9 +4,32 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Tessera.App"
+        xmlns:vm ="clr-namespace:Tessera.App.ViewModel"
+        d:DataContext="{d:DesignData Type=vm:MainWindowViewModel}"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    <Grid>
 
-    </Grid>
+  <DockPanel>
+    <!--<ComboBox DockPanel.Dock="Top" IsEditable="True" ItemsSource="{Binding MaterialTest}"/>-->
+    <DataGrid ItemsSource="{Binding SectionDefinitions}" SelectedItem="{Binding SelectedSectionDefinition}" AutoGenerateColumns="False" >
+      <DataGrid.Columns>
+        <DataGridTemplateColumn Header="Материал">
+          <DataGridTemplateColumn.CellTemplate>
+            <DataTemplate>
+              <TextBlock Text="{Binding Material}"/>
+            </DataTemplate>
+          </DataGridTemplateColumn.CellTemplate>
+          <!--<DataGridTemplateColumn.CellEditingTemplate>
+            <DataTemplate>
+              <ComboBox IsEditable="True" ItemsSource="{Binding DataContext.MaterialTest, RelativeSource={RelativeSource AncestorType=Window}}" Text="{Binding Material, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            </DataTemplate>
+          </DataGridTemplateColumn.CellEditingTemplate>-->
+        </DataGridTemplateColumn>
+        <!--<DataGridTextColumn Header="Материал" Binding="{Binding Material}"/>-->
+        <DataGridTextColumn Header="Сортамент" Binding="{Binding SectionProfile}"/>
+        <DataGridTextColumn Header="Типоразмер" Binding="{Binding TypeSize}"/>
+        <DataGridTextColumn Header="Экземпляр сортамента" Binding="{Binding SectionInstance}" Width="*"/>
+      </DataGrid.Columns>
+    </DataGrid>
+  </DockPanel>
 </Window>
