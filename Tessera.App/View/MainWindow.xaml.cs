@@ -22,5 +22,11 @@ namespace Tessera.App.View
       InitializeComponent();
       DataContext = new MainWindowViewModel();
     }
+
+    private void ComboBoxMaterial_Loaded(object sender, RoutedEventArgs e)
+    {
+      var comboBox = sender as ComboBox;
+      comboBox.IsDropDownOpen = true;
+    }
   }
 }

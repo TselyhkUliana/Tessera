@@ -59,7 +59,7 @@ public class EmbeddingService : IDisposable
   /// <summary>
   /// Возвращает topN объектов, наиболее похожих на запрос по косинусному сходству эмбеддингов.
   /// </summary>
-  public List<(string name, float similarity)> Search(List<(float[] Id, string Name)> data, float[] queryEmbedding, int topN = 1)
+  public List<(string Name, float Similarity)> Search(List<(float[] Id, string Name)> data, float[] queryEmbedding, int topN = 1)
   {
     var results = new List<(string, float)>();
 

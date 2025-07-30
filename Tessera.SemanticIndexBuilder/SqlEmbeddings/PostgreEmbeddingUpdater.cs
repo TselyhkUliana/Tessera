@@ -4,9 +4,9 @@ namespace Tessera.SemanticIndexBuilder.SqlEmbeddings
 {
   internal class PostgreEmbeddingUpdater : IElementEmbeddingUpdater
   {
-    public void UpdateEmbeddings(string DatabaseName)
+    public async void UpdateEmbeddings(string DatabaseName)
     {
-      var @class = Class1.Instance;
+      var @class = await Class1.CreateAsync();
       var (isException, message) = @class.EnsureVectorColumnExists();
       if (isException && !string.IsNullOrEmpty(message))
       {
@@ -42,7 +42,7 @@ namespace Tessera.SemanticIndexBuilder.SqlEmbeddings
         Console.Write($"\rОбновлено: {i + 1} из {count}");
       }
       embeddingService.Dispose();
-      @class.Dispose();
+      await @class.DisposeAsync();
 
       Console.ForegroundColor = ConsoleColor.Blue;
       Console.WriteLine("\nОбновление векторов завершено.");

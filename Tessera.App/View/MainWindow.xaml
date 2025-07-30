@@ -10,25 +10,56 @@
         Title="MainWindow" Height="450" Width="800">
 
   <DockPanel>
-    <!--<ComboBox DockPanel.Dock="Top" IsEditable="True" ItemsSource="{Binding MaterialTest}"/>-->
-    <DataGrid ItemsSource="{Binding SectionDefinitions}" SelectedItem="{Binding SelectedSectionDefinition}" AutoGenerateColumns="False" >
+    <DataGrid x:Name="datagrid" ItemsSource="{Binding SectionDefinitions}" SelectedItem="{Binding CurrentSection}" AutoGenerateColumns="False" >
       <DataGrid.Columns>
-        <DataGridTemplateColumn Header="Материал">
+        <DataGridTemplateColumn Header="Материалы">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate>
               <TextBlock Text="{Binding Material}"/>
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
-          <!--<DataGridTemplateColumn.CellEditingTemplate>
+          <DataGridTemplateColumn.CellEditingTemplate>
             <DataTemplate>
-              <ComboBox IsEditable="True" ItemsSource="{Binding DataContext.MaterialTest, RelativeSource={RelativeSource AncestorType=Window}}" Text="{Binding Material, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+              <ComboBox ItemsSource="{Binding DataContext.SuggestedMaterials, RelativeSource={RelativeSource AncestorType=Window}}" Text="{Binding DataContext.MaterialInput, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, RelativeSource={RelativeSource AncestorType=Window}}" Loaded="ComboBoxMaterial_Loaded" IsEditable="True"  StaysOpenOnEdit="True" IsTextSearchEnabled="False"/>
             </DataTemplate>
-          </DataGridTemplateColumn.CellEditingTemplate>-->
+          </DataGridTemplateColumn.CellEditingTemplate>
         </DataGridTemplateColumn>
-        <!--<DataGridTextColumn Header="Материал" Binding="{Binding Material}"/>-->
-        <DataGridTextColumn Header="Сортамент" Binding="{Binding SectionProfile}"/>
-        <DataGridTextColumn Header="Типоразмер" Binding="{Binding TypeSize}"/>
-        <DataGridTextColumn Header="Экземпляр сортамента" Binding="{Binding SectionInstance}" Width="*"/>
+        <DataGridTemplateColumn Header="Сортаменты">
+          <DataGridTemplateColumn.CellTemplate>
+            <DataTemplate>
+              <TextBlock Text="{Binding SectionProfile}"/>
+            </DataTemplate>
+          </DataGridTemplateColumn.CellTemplate>
+          <DataGridTemplateColumn.CellEditingTemplate>
+            <DataTemplate>
+              <ComboBox ItemsSource="{Binding DataContext.SuggestedProfiles, RelativeSource={RelativeSource AncestorType=Window}}" Text="{Binding DataContext.ProfileInput, UpdateSourceTrigger=PropertyChanged, RelativeSource={RelativeSource AncestorType=Window}}" IsEditable="True"  StaysOpenOnEdit="True" IsTextSearchEnabled="False"/>
+            </DataTemplate>
+          </DataGridTemplateColumn.CellEditingTemplate>
+        </DataGridTemplateColumn>
+        <!--<DataGridTemplateColumn Header="Типоразмеры">
+          <DataGridTemplateColumn.CellTemplate>
+            <DataTemplate>
+              <TextBlock Text="{Binding TypeSize}" />
+            </DataTemplate>
+          </DataGridTemplateColumn.CellTemplate>
+          <DataGridTemplateColumn.CellEditingTemplate>
+            <DataTemplate>
+              <ComboBox/>
+            </DataTemplate>
+          </DataGridTemplateColumn.CellEditingTemplate>
+        </DataGridTemplateColumn>-->
+        <DataGridTemplateColumn Header="Экземпляры сортаментов" Width="*">
+          <DataGridTemplateColumn.CellTemplate>
+            <DataTemplate>
+              <TextBlock Text="{Binding SectionInstance}" />
+            </DataTemplate>
+          </DataGridTemplateColumn.CellTemplate>
+          <DataGridTemplateColumn.CellEditingTemplate>
+            <DataTemplate>
+              <ComboBox ItemsSource="{Binding DataContext.SuggestedInstances, RelativeSource={RelativeSource AncestorType=Window}}" Text="{Binding DataContext.InstanceInput, UpdateSourceTrigger=PropertyChanged, RelativeSource={RelativeSource AncestorType=Window}}" IsEditable="True"  StaysOpenOnEdit="True" IsTextSearchEnabled="False"/>
+            </DataTemplate>
+          </DataGridTemplateColumn.CellEditingTemplate>
+        </DataGridTemplateColumn>
       </DataGrid.Columns>
     </DataGrid>
   </DockPanel>

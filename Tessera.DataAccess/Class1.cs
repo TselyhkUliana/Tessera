@@ -1,27 +1,22 @@
 ﻿using Npgsql;
 using System.Data;
+using System.Diagnostics;
 
 namespace Tessera.DataAccess
 {
-  public class Class1 : IDisposable
+  public class Class1 : IAsyncDisposable
   {
-    private static readonly Lazy<Class1> _instance = new Lazy<Class1>(() => new Class1());
     private NpgsqlConnection _connection;
     private bool _disposed;
 
-    private Class1()
+    public static async Task<Class1> CreateAsync()
     {
-      var connectionString = $"Host=localhost;Port=5432;Username=postgres;Password=111;Database=HaroldBase"; //TODO: придумать что делать с паролем и названием бд
-      _connection = new NpgsqlConnection(connectionString);
-      _connection.Open();
+      var instance = new Class1();
+      var connectionString = "Host=localhost;Port=5432;Username=postgres;Password=111;Database=HaroldBase";
+      instance._connection = new NpgsqlConnection(connectionString);
+      await instance._connection.OpenAsync();
+      return instance;
     }
-
-    ~Class1()
-    {
-      Dispose(false);
-    }
-
-    public static Class1 Instance => _instance.Value;
 
     /// <summary>
     /// Возвращает все элементы из таблицы ELEMENTDATA, у которых уже заполнена колонка VECTOR.
@@ -30,12 +25,18 @@ namespace Tessera.DataAccess
     public async IAsyncEnumerable<(float[] Vectors, string Name, string UniqueId)> GetElementsWithVectorsAndNamesAsync()
     {
       var selectCmd = new NpgsqlCommand("SELECT \"NAME\", \"VECTOR\", \"UNIQUEID\" FROM \"POLYNOM\".\"ELEMENTDATA\" WHERE \"VECTOR\" IS NOT NULL AND (\"UNIQUEID\" LIKE 'Material%' OR \"UNIQUEID\" LIKE 'Sortament%' OR \"UNIQUEID\" LIKE 'SortamentEx%');", _connection);
-
-      using var reader = await selectCmd.ExecuteReaderAsync(CommandBehavior.SequentialAccess);
+      
+      using var reader = await selectCmd.ExecuteReaderAsync();
       while (await reader.ReadAsync())
       {
         var name = reader.GetString(0);
-        var vectors = (await reader.GetFieldValueAsync<double[]>(1)).Select(x => (float)x).ToArray();
+
+        var vectorsDb = await reader.GetFieldValueAsync<double[]>(1);
+        if (vectorsDb == null)
+          continue;
+        var vectors = new float[vectorsDb.Length];
+        for (int i = 0; i < vectorsDb.Length; i++)
+          vectors[i] = (float)vectorsDb[i];
         var uniqueId = reader.GetString(2);
         yield return (vectors, name, uniqueId);
       }
@@ -106,20 +107,18 @@ namespace Tessera.DataAccess
       updateCmd.ExecuteNonQuery();
     }
 
-    public void Dispose()
-    {
-      Dispose(true);
-      GC.SuppressFinalize(this);
-    }
-
-    protected virtual void Dispose(bool disposing)
+    /// <summary>
+    /// Освобождает ресурсы, используемые соединением с базой данных.
+    /// </summary>
+    public async ValueTask DisposeAsync()
     {
       if (!_disposed)
       {
-        if (disposing)
-          _connection?.Dispose();
+        if (_connection != null)
+          await _connection.DisposeAsync();
 
         _disposed = true;
+        GC.SuppressFinalize(this);
       }
     }
   }
