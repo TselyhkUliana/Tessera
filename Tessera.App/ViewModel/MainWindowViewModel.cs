@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -14,71 +15,32 @@ using Tessera.DataAccess;
 
 namespace Tessera.App.ViewModel
 {
-  class MainWindowViewModel : ViewModelBase
+  class MainWindowViewModel : ViewModelBase, ISuggestionProvider
   {
-    private SectionDefinition _сurrentSection;
+    private SectionDefinitionViewModel _сurrentSection;
     private EmbeddingService _embeddingService;
-    private string _materialInput;
-    private string _profileInput;
-    private string _instanceInput;
 
     public MainWindowViewModel()
     {
-      SectionDefinitions = new();
+      SectionDefinitions = new ObservableCollection<SectionDefinitionViewModel> { new SectionDefinitionViewModel(new SectionDefinition(), this) };
       _ = InitiInitializeAsync();
       _embeddingService = EmbeddingService.Instance;
     }
 
-    public ObservableCollection<SectionDefinition> SectionDefinitions { get; set; }
-    public SectionDefinition CurrentSection
+    public ObservableCollection<SectionDefinitionViewModel> SectionDefinitions { get; set; }
+    public SectionDefinitionViewModel CurrentSection
     {
       get => _сurrentSection;
       set => Set(ref _сurrentSection, value);
     }
-    public ObservableCollection<string> SuggestedMaterials { get; set; }
-    public ObservableCollection<string> SuggestedProfiles { get; set; }
-    public ObservableCollection<string> SuggestedInstances { get; set; }
-    public string MaterialInput
-    {
-      get => _materialInput;
-      set
-      {
-        if (!Set(ref _materialInput, value))
-          return;
-
-        _ = UpdateSuggestions(value, SuggestedMaterials, MaterialEmbeddings);
-        CurrentSection.Material = value;
-      }
-    }
-    public string ProfileInput
-    {
-      get => _profileInput;
-      set
-      {
-        if (!Set(ref _profileInput, value))
-          return;
-
-        _ = UpdateSuggestions(value, SuggestedProfiles, ProfileEmbeddings);
-        CurrentSection.SectionProfile = value;
-      }
-    }
-    public string InstanceInput
-    {
-      get => _instanceInput;
-      set
-      {
-        if (!Set(ref _instanceInput, value))
-          return;
-
-        _ = UpdateSuggestions(value, SuggestedInstances, InstanceEmbeddings);
-        CurrentSection.SectionInstance = value;
-      }
-    }
+    public ObservableCollection<string> SuggestedMaterials { get; private set; }
+    public ObservableCollection<string> SuggestedProfiles { get; private set; }
+    public ObservableCollection<string> SuggestedInstances { get; private set; }
     public List<(float[] Id, string Name)> MaterialEmbeddings { get; private set; }
     public List<(float[] Id, string Name)> ProfileEmbeddings { get; private set; }
     public List<(float[] Id, string Name)> InstanceEmbeddings { get; private set; }
 
-    private async Task UpdateSuggestions(string userInput, ObservableCollection<string> suggestionsTarget, List<(float[] Id, string Name)> embeddingDatabase)
+    public async Task UpdateSuggestions(string userInput, ObservableCollection<string> suggestionsTarget, List<(float[] Id, string Name)> embeddingDatabase)
     {
       Stopwatch stopwatch = Stopwatch.StartNew();
       float[] embedding = null;
@@ -94,7 +56,7 @@ namespace Tessera.App.ViewModel
       Debug.WriteLine($"Search took {stopwatch.ElapsedMilliseconds} - {stopwatch.Elapsed.Seconds} ms");
     }
 
-    public async Task InitiInitializeAsync()
+    private async Task InitiInitializeAsync()
     {
       Stopwatch stopwatch = Stopwatch.StartNew();
       var class1 = await Class1.CreateAsync();

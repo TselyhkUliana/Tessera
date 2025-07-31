@@ -9,8 +9,35 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
 
+  <Window.Resources>
+    <Style TargetType="DataGrid">
+      <Setter Property="AutoGenerateColumns" Value="False"/>
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="GridLinesVisibility" Value="None"/>
+      <Setter Property="HeadersVisibility" Value="Column"/>
+    </Style>
+    <Style TargetType="DataGridRow">
+      <Style.Triggers>
+        <Trigger Property="IsMouseOver" Value="True">
+          <Setter Property="Background" Value="#dae6f2"/>
+        </Trigger>
+      </Style.Triggers>
+    </Style>
+    <Style TargetType="DataGridCell">
+      <Setter Property="BorderBrush" Value="#e0e0e0"/>
+      <Setter Property="BorderThickness" Value="0 0 1 1"/>
+      <Style.Triggers>
+        <Trigger Property="IsSelected" Value="True">
+          <Setter Property="Background" Value="#ccdbeb"/>
+          <Setter Property="Foreground" Value="#376cf0"/>
+          <Setter Property="BorderBrush" Value="#ccdbeb"/>
+        </Trigger>
+      </Style.Triggers>
+    </Style>
+  </Window.Resources>
+  
   <DockPanel>
-    <DataGrid x:Name="datagrid" ItemsSource="{Binding SectionDefinitions}" SelectedItem="{Binding CurrentSection}" AutoGenerateColumns="False" >
+    <DataGrid x:Name="datagrid" ItemsSource="{Binding SectionDefinitions}" SelectedItem="{Binding CurrentSection}">
       <DataGrid.Columns>
         <DataGridTemplateColumn Header="Материалы">
           <DataGridTemplateColumn.CellTemplate>
@@ -20,7 +47,7 @@
           </DataGridTemplateColumn.CellTemplate>
           <DataGridTemplateColumn.CellEditingTemplate>
             <DataTemplate>
-              <ComboBox ItemsSource="{Binding DataContext.SuggestedMaterials, RelativeSource={RelativeSource AncestorType=Window}}" Text="{Binding DataContext.MaterialInput, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, RelativeSource={RelativeSource AncestorType=Window}}" Loaded="ComboBoxMaterial_Loaded" IsEditable="True"  StaysOpenOnEdit="True" IsTextSearchEnabled="False"/>
+              <ComboBox ItemsSource="{Binding DataContext.SuggestedMaterials, RelativeSource={RelativeSource AncestorType=Window}}" Text="{Binding Material, UpdateSourceTrigger=PropertyChanged}" Loaded="ComboBoxMaterial_Loaded" IsEditable="True" StaysOpenOnEdit="True" IsTextSearchEnabled="False"/>
             </DataTemplate>
           </DataGridTemplateColumn.CellEditingTemplate>
         </DataGridTemplateColumn>
@@ -32,7 +59,7 @@
           </DataGridTemplateColumn.CellTemplate>
           <DataGridTemplateColumn.CellEditingTemplate>
             <DataTemplate>
-              <ComboBox ItemsSource="{Binding DataContext.SuggestedProfiles, RelativeSource={RelativeSource AncestorType=Window}}" Text="{Binding DataContext.ProfileInput, UpdateSourceTrigger=PropertyChanged, RelativeSource={RelativeSource AncestorType=Window}}" IsEditable="True"  StaysOpenOnEdit="True" IsTextSearchEnabled="False"/>
+              <ComboBox ItemsSource="{Binding DataContext.SuggestedProfiles, RelativeSource={RelativeSource AncestorType=Window}}" Text="{Binding SectionProfile, UpdateSourceTrigger=PropertyChanged}" Loaded="ComboBoxProfiles_Loaded" IsEditable="True"  StaysOpenOnEdit="True" IsTextSearchEnabled="False"/>
             </DataTemplate>
           </DataGridTemplateColumn.CellEditingTemplate>
         </DataGridTemplateColumn>
@@ -56,7 +83,7 @@
           </DataGridTemplateColumn.CellTemplate>
           <DataGridTemplateColumn.CellEditingTemplate>
             <DataTemplate>
-              <ComboBox ItemsSource="{Binding DataContext.SuggestedInstances, RelativeSource={RelativeSource AncestorType=Window}}" Text="{Binding DataContext.InstanceInput, UpdateSourceTrigger=PropertyChanged, RelativeSource={RelativeSource AncestorType=Window}}" IsEditable="True"  StaysOpenOnEdit="True" IsTextSearchEnabled="False"/>
+              <ComboBox ItemsSource="{Binding DataContext.SuggestedInstances, RelativeSource={RelativeSource AncestorType=Window}}" Text="{Binding SectionInstance, UpdateSourceTrigger=PropertyChanged}" Loaded="ComboBoxInstance_Loaded" IsEditable="True"  StaysOpenOnEdit="True" IsTextSearchEnabled="False"/>
             </DataTemplate>
           </DataGridTemplateColumn.CellEditingTemplate>
         </DataGridTemplateColumn>

@@ -28,5 +28,17 @@ namespace Tessera.App.View
       var comboBox = sender as ComboBox;
       comboBox.IsDropDownOpen = true;
     }
+
+    private void ComboBoxProfiles_Loaded(object sender, RoutedEventArgs e)
+    {
+      var comboBox = sender as ComboBox;
+      comboBox.IsDropDownOpen = true;
+    }
+
+    private void ComboBoxInstance_Loaded(object sender, RoutedEventArgs e)
+    {
+      var comboBox = sender as ComboBox;
+      comboBox.IsDropDownOpen = true;
+    }
   }
 }
