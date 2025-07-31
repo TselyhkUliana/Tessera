@@ -1,4 +1,5 @@
 ﻿using MappingManager.ViewModel.Base;
+using Microsoft.Practices.Prism.Commands;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -8,8 +9,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media.Media3D;
 using System.Windows.Threading;
+using Tessera.App.Command;
 using Tessera.App.Model;
 using Tessera.DataAccess;
 
@@ -21,11 +24,11 @@ namespace Tessera.App.ViewModel
     private EmbeddingService _embeddingService;
 
     public MainWindowViewModel()
-    {
-      SectionDefinitions = new ObservableCollection<SectionDefinitionViewModel> { new SectionDefinitionViewModel(new SectionDefinition(), this) };
+    {      
       _ = InitiInitializeAsync();
-      _embeddingService = EmbeddingService.Instance;
     }
+
+    public List<ICommand> Commands => new Initializer().GetCommand(SectionDefinitions, this).ToList();
 
     public ObservableCollection<SectionDefinitionViewModel> SectionDefinitions { get; set; }
     public SectionDefinitionViewModel CurrentSection
@@ -59,6 +62,9 @@ namespace Tessera.App.ViewModel
     private async Task InitiInitializeAsync()
     {
       Stopwatch stopwatch = Stopwatch.StartNew();
+
+      var embeddingService = Task.Run(() => _embeddingService = EmbeddingService.Instance);
+      SectionDefinitions = new ObservableCollection<SectionDefinitionViewModel> { new SectionDefinitionViewModel(new SectionDefinition(), this) };
       var class1 = await Class1.CreateAsync();
       MaterialEmbeddings = new List<(float[] Vectors, string Name)>();
       ProfileEmbeddings = new List<(float[] Vectors, string Name)>();
@@ -76,6 +82,8 @@ namespace Tessera.App.ViewModel
       SuggestedMaterials = new(MaterialEmbeddings.Select(x => x.Name).Take(10).ToArray());
       SuggestedProfiles = new(ProfileEmbeddings.Select(x => x.Name).Take(10).ToArray());
       SuggestedInstances = new(InstanceEmbeddings.Select(x => x.Name).Take(10).ToArray());
+      await embeddingService;
+
       stopwatch.Stop();
       Debug.WriteLine($"MaterialsBD {new string('*', 110)}");
       Debug.WriteLine($"InitiInitializeAsync took {stopwatch.ElapsedMilliseconds} - {stopwatch.Elapsed.Seconds} ms.");

@@ -23,27 +23,27 @@ using System.Windows.Media;
 
 namespace Microsoft.Practices.Prism.Commands
 {
-    /// <summary>
-    /// An <see cref="ICommand"/> whose delegates can be attached for <see cref="Execute"/> and <see cref="CanExecute"/>.
-    /// It also implements the <see cref="IActiveAware"/> interface, which is
-    /// useful when registering this command in a <see cref="CompositeCommand"/>
-    /// that monitors command's activity.
-    /// </summary>
-    public abstract class DelegateCommandBase : INotifyPropertyChanged, IRaiseCanExecuteChangedCommand, IActiveAware
-    {
-        private readonly Action<object> _executeMethod;
-        private readonly Func<object, bool> _canExecuteMethod;
-        private bool _isActive;
+  /// <summary>
+  /// An <see cref="ICommand"/> whose delegates can be attached for <see cref="Execute"/> and <see cref="CanExecute"/>.
+  /// It also implements the <see cref="IActiveAware"/> interface, which is
+  /// useful when registering this command in a <see cref="CompositeCommand"/>
+  /// that monitors command's activity.
+  /// </summary>
+  public abstract class DelegateCommandBase : INotifyPropertyChanged, IRaiseCanExecuteChangedCommand, IActiveAware
+  {
+    private readonly Action<object> _executeMethod;
+    private readonly Func<object, bool> _canExecuteMethod;
+    private bool _isActive;
 
 #if !SILVERLIGHT
-        private List<WeakReference> _canExecuteChangedHandlers;
-        private string _caption;
-        private string _hint;
-        private string _inputGestureText;
-        private string _iconFont;
-        private ImageSource _icon;
+    private List<WeakReference> _canExecuteChangedHandlers;
+    private string _caption;
+    private string _hint;
+    private string _inputGestureText;
+    private string _iconFont;
+    private ImageSource _icon;
 #pragma warning disable CS0169 // Поле "DelegateCommandBase._isBeta" никогда не используется.
-        private bool _isBeta;
+    private bool _isBeta;
 #pragma warning restore CS0169 // Поле "DelegateCommandBase._isBeta" никогда не используется.
 #endif
 
@@ -53,81 +53,86 @@ namespace Microsoft.Practices.Prism.Commands
     /// <param name="executeMethod">The <see cref="Action"/> to execute when <see cref="ICommand.Execute"/> is invoked.</param>
     /// <param name="canExecuteMethod">The <see cref="Func{Object,Bool}"/> to invoked when <see cref="ICommand.CanExecute"/> is invoked.</param>
     protected DelegateCommandBase(Action<object> executeMethod, Func<object, bool> canExecuteMethod)
-        {
-            if (executeMethod == null || canExecuteMethod == null)
-                throw new ArgumentNullException("executeMethod");
+    {
+      if (executeMethod == null || canExecuteMethod == null)
+        throw new ArgumentNullException("executeMethod");
 
-            this._executeMethod = executeMethod;
-            this._canExecuteMethod = canExecuteMethod;
-        }
+      this._executeMethod = executeMethod;
+      this._canExecuteMethod = canExecuteMethod;
+    }
 
-        /// <summary>
-        /// Gets or sets a value indicating whether the object is active.
-        /// </summary>
-        /// <value><see langword="true" /> if the object is active; otherwise <see langword="false" />.</value>
-        public bool IsActive
-        {
-            get { return _isActive; }
-            set
-            {
-                if (_isActive != value)
-                {
-                    _isActive = value;
-                    OnIsActiveChanged();
-                }
-            }
-        }
+    protected DelegateCommandBase()
+    {
+      
+    }
 
-        public string Caption
+    /// <summary>
+    /// Gets or sets a value indicating whether the object is active.
+    /// </summary>
+    /// <value><see langword="true" /> if the object is active; otherwise <see langword="false" />.</value>
+    public bool IsActive
+    {
+      get { return _isActive; }
+      set
+      {
+        if (_isActive != value)
         {
-            get { return _caption; }
-            set
-            {
-                _caption = value;
-                OnPropertyChanged("Caption");
-            }
+          _isActive = value;
+          OnIsActiveChanged();
         }
+      }
+    }
 
-        public string Hint
-        {
-            get { return _hint; }
-            set
-            {
-                _hint = value;
-                OnPropertyChanged("Hint");
-            }
-        }
+    public string Caption
+    {
+      get { return _caption; }
+      set
+      {
+        _caption = value;
+        OnPropertyChanged("Caption");
+      }
+    }
 
-        public string InputGestureText
-        {
-            get { return _inputGestureText; }
-            set
-            {
-                _inputGestureText = value;
-                OnPropertyChanged("InputGestureText");
-            }
-        }
+    public string Hint
+    {
+      get { return _hint; }
+      set
+      {
+        _hint = value;
+        OnPropertyChanged("Hint");
+      }
+    }
 
-        public string IconFont
-        {
-            get { return _iconFont; }
-            set
-            {
-                _iconFont = value;
-                OnPropertyChanged("IconFont");
-            }
-        }
+    public string InputGestureText
+    {
+      get { return _inputGestureText; }
+      set
+      {
+        _inputGestureText = value;
+        OnPropertyChanged("InputGestureText");
+      }
+    }
 
-        public ImageSource Icon
-        {
-            get { return _icon; }
-            set
-            {
-                _icon = value;
-                OnPropertyChanged("Icon");
-            }
-        }
-       
+    public string IconFont
+    {
+      get { return _iconFont; }
+      set
+      {
+        _iconFont = value;
+        OnPropertyChanged("IconFont");
+      }
+    }
+
+    public ImageSource Icon
+    {
+      get { return _icon; }
+      set
+      {
+        _icon = value;
+        OnPropertyChanged("Icon");
+      }
+    }
+
 
 #if SILVERLIGHT
     /// <summary>
@@ -151,64 +156,64 @@ namespace Microsoft.Practices.Prism.Commands
     /// <see cref="CompositeCommand"/> can execute.
     /// </summary>
     protected virtual void OnCanExecuteChanged()
-        {
-            WeakEventHandlerManager.CallWeakReferenceHandlers(this, _canExecuteChangedHandlers);
-        }
+    {
+      WeakEventHandlerManager.CallWeakReferenceHandlers(this, _canExecuteChangedHandlers);
+    }
 #endif
 
-        /// <summary>
-        /// Raises <see cref="DelegateCommandBase.CanExecuteChanged"/> on the UI thread so every command invoker
-        /// can requery to check if the command can execute.
-        /// <remarks>Note that this will trigger the execution of <see cref="DelegateCommandBase.CanExecute"/> once for each invoker.</remarks>
-        /// </summary>
-        [SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate")]
-        public void RaiseCanExecuteChanged()
-        {
-            OnCanExecuteChanged();
-        }
+    /// <summary>
+    /// Raises <see cref="DelegateCommandBase.CanExecuteChanged"/> on the UI thread so every command invoker
+    /// can requery to check if the command can execute.
+    /// <remarks>Note that this will trigger the execution of <see cref="DelegateCommandBase.CanExecute"/> once for each invoker.</remarks>
+    /// </summary>
+    [SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate")]
+    public void RaiseCanExecuteChanged()
+    {
+      OnCanExecuteChanged();
+    }
 
-        /// <summary>
-        /// Fired if the <see cref="IsActive"/> property changes.
-        /// </summary>
-        public virtual event EventHandler IsActiveChanged;
+    /// <summary>
+    /// Fired if the <see cref="IsActive"/> property changes.
+    /// </summary>
+    public virtual event EventHandler IsActiveChanged;
 
-        /// <summary>
-        /// This raises the <see cref="DelegateCommandBase.IsActiveChanged"/> event.
-        /// </summary>
-        protected virtual void OnIsActiveChanged()
-        {
-            EventHandler isActiveChangedHandler = IsActiveChanged;
-            if (isActiveChangedHandler != null) isActiveChangedHandler(this, EventArgs.Empty);
-        }
+    /// <summary>
+    /// This raises the <see cref="DelegateCommandBase.IsActiveChanged"/> event.
+    /// </summary>
+    protected virtual void OnIsActiveChanged()
+    {
+      EventHandler isActiveChangedHandler = IsActiveChanged;
+      if (isActiveChangedHandler != null) isActiveChangedHandler(this, EventArgs.Empty);
+    }
 
-        void ICommand.Execute(object parameter)
-        {
-            Execute(parameter);
-        }
+    void ICommand.Execute(object parameter)
+    {
+      Execute(parameter);
+    }
 
-        bool ICommand.CanExecute(object parameter)
-        {
-            return CanExecute(parameter);
-        }
+    bool ICommand.CanExecute(object parameter)
+    {
+      return CanExecute(parameter);
+    }
 
-        /// <summary>
-        /// Executes the command with the provided parameter by invoking the <see cref="Action{Object}"/> supplied during construction.
-        /// </summary>
-        /// <param name="parameter"></param>
-        protected void Execute(object parameter)
-        {
-            _executeMethod(parameter);  
-        }
+    /// <summary>
+    /// Executes the command with the provided parameter by invoking the <see cref="Action{Object}"/> supplied during construction.
+    /// </summary>
+    /// <param name="parameter"></param>
+    protected virtual void Execute(object parameter)
+    {
+      _executeMethod?.Invoke(parameter);
+    }
 
-        /// <summary>
-        /// Determines if the command can execute with the provided parameter by invoing the <see cref="Func{Object,Bool}"/> supplied during construction.
-        /// </summary>
-        /// <param name="parameter">The parameter to use when determining if this command can execute.</param>
-        /// <returns>Returns <see langword="true"/> if the command can execute.  <see langword="False"/> otherwise.</returns>
-        protected bool CanExecute(object parameter)
-        {
-            return _canExecuteMethod == null || _canExecuteMethod(parameter);
-        }
+    /// <summary>
+    /// Determines if the command can execute with the provided parameter by invoing the <see cref="Func{Object,Bool}"/> supplied during construction.
+    /// </summary>
+    /// <param name="parameter">The parameter to use when determining if this command can execute.</param>
+    /// <returns>Returns <see langword="true"/> if the command can execute.  <see langword="False"/> otherwise.</returns>
+    protected virtual bool CanExecute(object parameter)
+    {
+      return _canExecuteMethod == null || _canExecuteMethod(parameter);
+    }
 
 #if SILVERLIGHT
     /// <summary>
@@ -216,45 +221,45 @@ namespace Microsoft.Practices.Prism.Commands
     /// </summary>
         public event EventHandler CanExecuteChanged;
 #else
-        /// <summary>
-        /// Occurs when changes occur that affect whether or not the command should execute. You must keep a hard
-        /// reference to the handler to avoid garbage collection and unexpected results. See remarks for more information.
-        /// </summary>
-        /// <remarks>
-        /// When subscribing to the <see cref="ICommand.CanExecuteChanged"/> event using 
-        /// code (not when binding using XAML) will need to keep a hard reference to the event handler. This is to prevent 
-        /// garbage collection of the event handler because the command implements the Weak Event pattern so it does not have
-        /// a hard reference to this handler. An example implementation can be seen in the CompositeCommand and CommandBehaviorBase
-        /// classes. In most scenarios, there is no reason to sign up to the CanExecuteChanged event directly, but if you do, you
-        /// are responsible for maintaining the reference.
-        /// </remarks>
-        /// <example>
-        /// The following code holds a reference to the event handler. The myEventHandlerReference value should be stored
-        /// in an instance member to avoid it from being garbage collected.
-        /// <code>
-        /// EventHandler myEventHandlerReference = new EventHandler(this.OnCanExecuteChanged);
-        /// command.CanExecuteChanged += myEventHandlerReference;
-        /// </code>
-        /// </example>
-        public event EventHandler CanExecuteChanged
-        {
-            add
-            {
-                WeakEventHandlerManager.AddWeakReferenceHandler(ref _canExecuteChangedHandlers, value, 2);
-            }
-            remove
-            {
-                WeakEventHandlerManager.RemoveWeakReferenceHandler(_canExecuteChangedHandlers, value);
-            }
-        }
-#endif
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        protected virtual void OnPropertyChanged(string propertyName)
-        {
-            var handler = PropertyChanged;
-            if (handler != null) 
-                handler(this, new PropertyChangedEventArgs(propertyName));
-        }
+    /// <summary>
+    /// Occurs when changes occur that affect whether or not the command should execute. You must keep a hard
+    /// reference to the handler to avoid garbage collection and unexpected results. See remarks for more information.
+    /// </summary>
+    /// <remarks>
+    /// When subscribing to the <see cref="ICommand.CanExecuteChanged"/> event using 
+    /// code (not when binding using XAML) will need to keep a hard reference to the event handler. This is to prevent 
+    /// garbage collection of the event handler because the command implements the Weak Event pattern so it does not have
+    /// a hard reference to this handler. An example implementation can be seen in the CompositeCommand and CommandBehaviorBase
+    /// classes. In most scenarios, there is no reason to sign up to the CanExecuteChanged event directly, but if you do, you
+    /// are responsible for maintaining the reference.
+    /// </remarks>
+    /// <example>
+    /// The following code holds a reference to the event handler. The myEventHandlerReference value should be stored
+    /// in an instance member to avoid it from being garbage collected.
+    /// <code>
+    /// EventHandler myEventHandlerReference = new EventHandler(this.OnCanExecuteChanged);
+    /// command.CanExecuteChanged += myEventHandlerReference;
+    /// </code>
+    /// </example>
+    public event EventHandler CanExecuteChanged
+    {
+      add
+      {
+        WeakEventHandlerManager.AddWeakReferenceHandler(ref _canExecuteChangedHandlers, value, 2);
+      }
+      remove
+      {
+        WeakEventHandlerManager.RemoveWeakReferenceHandler(_canExecuteChangedHandlers, value);
+      }
     }
+#endif
+    public event PropertyChangedEventHandler PropertyChanged;
+
+    protected virtual void OnPropertyChanged(string propertyName)
+    {
+      var handler = PropertyChanged;
+      if (handler != null)
+        handler(this, new PropertyChangedEventArgs(propertyName));
+    }
+  }
 }

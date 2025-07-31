@@ -34,35 +34,47 @@
         </Trigger>
       </Style.Triggers>
     </Style>
+
+    <Style TargetType="ComboBox">
+      <Setter Property="IsEditable" Value="True"/>
+      <Setter Property="StaysOpenOnEdit" Value="True"/>
+      <Setter Property="IsTextSearchEnabled" Value="False"/>
+    </Style>
+
+    <DataTemplate x:Key="MaterialCell">
+      <TextBlock Text="{Binding Material}"/>
+    </DataTemplate>
+    <DataTemplate x:Key="MaterialCellEditing">
+      <ComboBox ItemsSource="{Binding DataContext.SuggestedMaterials, RelativeSource={RelativeSource AncestorType=Window}}" Text="{Binding Material, UpdateSourceTrigger=PropertyChanged}" Loaded="ComboBoxMaterial_Loaded"/>
+    </DataTemplate>
+    <DataTemplate x:Key="SectionProfileCell">
+      <TextBlock Text="{Binding SectionProfile}"/>
+    </DataTemplate>
+    <DataTemplate x:Key="SectionProfileCellEditing">
+      <ComboBox ItemsSource="{Binding DataContext.SuggestedProfiles, RelativeSource={RelativeSource AncestorType=Window}}" Text="{Binding SectionProfile, UpdateSourceTrigger=PropertyChanged}" Loaded="ComboBoxProfiles_Loaded"/>
+    </DataTemplate>
+    <DataTemplate x:Key="SectionInstanceCell">
+      <TextBlock Text="{Binding SectionInstance}" />
+    </DataTemplate>
+    <DataTemplate x:Key="SectionInstanceCellEditing">
+      <ComboBox ItemsSource="{Binding DataContext.SuggestedInstances, RelativeSource={RelativeSource AncestorType=Window}}" Text="{Binding SectionInstance, UpdateSourceTrigger=PropertyChanged}" Loaded="ComboBoxInstance_Loaded"/>
+    </DataTemplate>
   </Window.Resources>
-  
+
   <DockPanel>
     <DataGrid x:Name="datagrid" ItemsSource="{Binding SectionDefinitions}" SelectedItem="{Binding CurrentSection}">
+      <DataGrid.ContextMenu>
+        <ContextMenu ItemsSource="{Binding Commands}">
+          <ContextMenu.ItemTemplate>
+            <DataTemplate>
+              <MenuItem Header="{Binding Caption}" ToolTip="{Binding Hint}" Command="{Binding}"/>
+            </DataTemplate>
+          </ContextMenu.ItemTemplate>
+        </ContextMenu>
+      </DataGrid.ContextMenu>
       <DataGrid.Columns>
-        <DataGridTemplateColumn Header="Материалы">
-          <DataGridTemplateColumn.CellTemplate>
-            <DataTemplate>
-              <TextBlock Text="{Binding Material}"/>
-            </DataTemplate>
-          </DataGridTemplateColumn.CellTemplate>
-          <DataGridTemplateColumn.CellEditingTemplate>
-            <DataTemplate>
-              <ComboBox ItemsSource="{Binding DataContext.SuggestedMaterials, RelativeSource={RelativeSource AncestorType=Window}}" Text="{Binding Material, UpdateSourceTrigger=PropertyChanged}" Loaded="ComboBoxMaterial_Loaded" IsEditable="True" StaysOpenOnEdit="True" IsTextSearchEnabled="False"/>
-            </DataTemplate>
-          </DataGridTemplateColumn.CellEditingTemplate>
-        </DataGridTemplateColumn>
-        <DataGridTemplateColumn Header="Сортаменты">
-          <DataGridTemplateColumn.CellTemplate>
-            <DataTemplate>
-              <TextBlock Text="{Binding SectionProfile}"/>
-            </DataTemplate>
-          </DataGridTemplateColumn.CellTemplate>
-          <DataGridTemplateColumn.CellEditingTemplate>
-            <DataTemplate>
-              <ComboBox ItemsSource="{Binding DataContext.SuggestedProfiles, RelativeSource={RelativeSource AncestorType=Window}}" Text="{Binding SectionProfile, UpdateSourceTrigger=PropertyChanged}" Loaded="ComboBoxProfiles_Loaded" IsEditable="True"  StaysOpenOnEdit="True" IsTextSearchEnabled="False"/>
-            </DataTemplate>
-          </DataGridTemplateColumn.CellEditingTemplate>
-        </DataGridTemplateColumn>
+        <DataGridTemplateColumn Header="Материалы" CellTemplate="{StaticResource MaterialCell}" CellEditingTemplate="{StaticResource MaterialCellEditing}"/>
+        <DataGridTemplateColumn Header="Сортаменты" CellTemplate="{StaticResource SectionProfileCell}" CellEditingTemplate="{StaticResource SectionProfileCellEditing}"/>
         <!--<DataGridTemplateColumn Header="Типоразмеры">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate>
@@ -75,18 +87,7 @@
             </DataTemplate>
           </DataGridTemplateColumn.CellEditingTemplate>
         </DataGridTemplateColumn>-->
-        <DataGridTemplateColumn Header="Экземпляры сортаментов" Width="*">
-          <DataGridTemplateColumn.CellTemplate>
-            <DataTemplate>
-              <TextBlock Text="{Binding SectionInstance}" />
-            </DataTemplate>
-          </DataGridTemplateColumn.CellTemplate>
-          <DataGridTemplateColumn.CellEditingTemplate>
-            <DataTemplate>
-              <ComboBox ItemsSource="{Binding DataContext.SuggestedInstances, RelativeSource={RelativeSource AncestorType=Window}}" Text="{Binding SectionInstance, UpdateSourceTrigger=PropertyChanged}" Loaded="ComboBoxInstance_Loaded" IsEditable="True"  StaysOpenOnEdit="True" IsTextSearchEnabled="False"/>
-            </DataTemplate>
-          </DataGridTemplateColumn.CellEditingTemplate>
-        </DataGridTemplateColumn>
+        <DataGridTemplateColumn Header="Экземпляры сортаментов" CellTemplate="{StaticResource SectionInstanceCell}" CellEditingTemplate="{StaticResource SectionInstanceCellEditing}" Width="*"/>
       </DataGrid.Columns>
     </DataGrid>
   </DockPanel>
