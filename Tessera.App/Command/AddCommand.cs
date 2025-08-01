@@ -17,7 +17,7 @@ namespace Tessera.App.Command
 
     public AddCommand(ObservableCollection<SectionDefinitionViewModel> sectionDefinitions, ISuggestionProvider suggestionProvider) : base()
     {
-      Caption = "Добавить";
+      Caption = "_Добавить";
       Hint = "Добавить новую секцию (колонку)";
       _sectionDefinitions = sectionDefinitions;
       _suggestionProvider = suggestionProvider;

@@ -11,9 +11,12 @@ using Tessera.App.ViewModel;
 
 namespace Tessera.App
 {
-  internal class Initializer
+  internal class Initializer : ICommandProvider
   {
-    public IEnumerable<ICommand> GetCommand(ObservableCollection<SectionDefinitionViewModel> sectionDefinitions, ISuggestionProvider suggestionProvider)
+    private static Initializer _instance;
+    public static Initializer Instance => _instance ??= new Initializer();
+
+    public IEnumerable<ICommand> GetCommands(ObservableCollection<SectionDefinitionViewModel> sectionDefinitions, ISuggestionProvider suggestionProvider)
     {
       yield return new AddCommand(sectionDefinitions, suggestionProvider);
       yield return new RemoveCommand();

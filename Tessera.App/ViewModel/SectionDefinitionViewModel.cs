@@ -24,9 +24,17 @@ namespace Tessera.App.ViewModel
       get => _sectionDefinition.Material;
       set
       {
-        if (!Set((v) => _sectionDefinition.Material = v, _sectionDefinition.Material, value))
+        if (string.IsNullOrEmpty(value) || value == _sectionDefinition.Material)
           return;
-        _suggestionProvider.UpdateSuggestions(value, _suggestionProvider.SuggestedMaterials, _suggestionProvider.MaterialEmbeddings);
+
+        if (_suggestionProvider.SuggestedMaterials.Contains(value))
+        {
+          Set(v => _sectionDefinition.Material = v, _sectionDefinition.Material, value);
+          return;
+        }
+
+        if (Set((v) => _sectionDefinition.Material = v, _sectionDefinition.Material, value))
+          _ = _suggestionProvider.UpdateSuggestionsAsync(value, _suggestionProvider.SuggestedMaterials, _suggestionProvider.MaterialEmbeddings);
       }
     }
 
@@ -35,9 +43,17 @@ namespace Tessera.App.ViewModel
       get => _sectionDefinition.SectionProfile;
       set
       {
-        if (!Set((v) => _sectionDefinition.SectionProfile = v, _sectionDefinition.SectionProfile, value))
+        if (string.IsNullOrEmpty(value) || value == _sectionDefinition.SectionProfile)
           return;
-        _suggestionProvider.UpdateSuggestions(value, _suggestionProvider.SuggestedProfiles, _suggestionProvider.ProfileEmbeddings);
+
+        if (_suggestionProvider.SuggestedProfiles.Contains(value))
+        {
+          Set((v) => _sectionDefinition.SectionProfile = v, _sectionDefinition.SectionProfile, value);
+          return;
+        }
+
+        if (Set((v) => _sectionDefinition.SectionProfile = v, _sectionDefinition.SectionProfile, value))
+          _ = _suggestionProvider.UpdateSuggestionsAsync(value, _suggestionProvider.SuggestedProfiles, _suggestionProvider.ProfileEmbeddings);
       }
     }
 
@@ -46,9 +62,17 @@ namespace Tessera.App.ViewModel
       get => _sectionDefinition.SectionInstance;
       set
       {
-        if (!Set((v) => _sectionDefinition.SectionInstance = v, _sectionDefinition.SectionInstance, value))
+        if (string.IsNullOrEmpty(value) || value == _sectionDefinition.SectionInstance)
           return;
-        _suggestionProvider.UpdateSuggestions(value, _suggestionProvider.SuggestedInstances, _suggestionProvider.InstanceEmbeddings);
+
+        if (_suggestionProvider.SuggestedInstances.Contains(value))
+        {
+          Set((v) => _sectionDefinition.SectionInstance = v, _sectionDefinition.SectionInstance, value);
+          return;
+        }
+
+        if (Set((v) => _sectionDefinition.SectionInstance = v, _sectionDefinition.SectionInstance, value))
+          _ = _suggestionProvider.UpdateSuggestionsAsync(value, _suggestionProvider.SuggestedInstances, _suggestionProvider.InstanceEmbeddings);
       }
     }
 

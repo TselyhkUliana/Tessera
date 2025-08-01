@@ -11,13 +11,18 @@ namespace Tessera.App.Command
   {
     public RemoveCommand()
     {
-      Caption = "Удалить";
+      Caption = "_Удалить";
       Hint = "Удалить текущую секцию (колонку)";
     }
 
     protected override void Execute(object parameter)
     {
       
+    }
+
+    protected override bool CanExecute(object parameter)
+    {
+      return base.CanExecute(parameter);
     }
   }
 }

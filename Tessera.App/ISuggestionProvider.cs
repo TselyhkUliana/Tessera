@@ -11,6 +11,6 @@ namespace Tessera.App
     ObservableCollection<string> SuggestedProfiles { get; }
     ObservableCollection<string> SuggestedInstances { get; }
 
-    Task UpdateSuggestions(string userInput, ObservableCollection<string> suggestionsTarget, List<(float[] Id, string Name)> embeddingDatabase);
+    Task UpdateSuggestionsAsync(string userInput, ObservableCollection<string> suggestionsTarget, List<(float[] Id, string Name)> embeddingDatabase);
   }
 }

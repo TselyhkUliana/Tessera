@@ -20,15 +20,21 @@ namespace Tessera.App.ViewModel
 {
   class MainWindowViewModel : ViewModelBase, ISuggestionProvider
   {
+    private const string MATERIAL_TAG = "Material";
+    private const string SORTAMENT_TAG = "Sortament";
+    private const string SORTAMENT_EX_TAG = "SortamentEx";
     private SectionDefinitionViewModel _сurrentSection;
     private EmbeddingService _embeddingService;
+    private string _selectedMaterial;
+    private string _selectedProfile;
+    private string _selectedInstance;
 
     public MainWindowViewModel()
-    {      
+    {
       _ = InitiInitializeAsync();
     }
 
-    public List<ICommand> Commands => new Initializer().GetCommand(SectionDefinitions, this).ToList();
+    public IEnumerable<ICommand> Commands => Initializer.Instance.GetCommands(SectionDefinitions, this);
 
     public ObservableCollection<SectionDefinitionViewModel> SectionDefinitions { get; set; }
     public SectionDefinitionViewModel CurrentSection
@@ -42,10 +48,38 @@ namespace Tessera.App.ViewModel
     public List<(float[] Id, string Name)> MaterialEmbeddings { get; private set; }
     public List<(float[] Id, string Name)> ProfileEmbeddings { get; private set; }
     public List<(float[] Id, string Name)> InstanceEmbeddings { get; private set; }
+    //public string SelectedMaterial
+    //{
+    //  get => _selectedMaterial;
+    //  set
+    //  {
+    //    if (Set(ref _selectedMaterial, value))
+    //      CurrentSection.Material = value;
+    //  }
+    //}
+    //public string SelectedProfile
+    //{
+    //  get => _selectedProfile;
+    //  set
+    //  {
+    //    if (Set(ref _selectedProfile, value))
+    //      CurrentSection.SectionProfile = value;
+    //  }
+    //}
+    //public string SelectedInstance
+    //{
+    //  get => _selectedInstance;
+    //  set
+    //  {
+    //    if (Set(ref _selectedInstance, value))
+    //      CurrentSection.SectionInstance = value;
+    //  }
+    //}
 
-    public async Task UpdateSuggestions(string userInput, ObservableCollection<string> suggestionsTarget, List<(float[] Id, string Name)> embeddingDatabase)
+    public async Task UpdateSuggestionsAsync(string userInput, ObservableCollection<string> suggestionsTarget, List<(float[] Id, string Name)> embeddingDatabase)
     {
       Stopwatch stopwatch = Stopwatch.StartNew();
+
       float[] embedding = null;
       await Task.Run(() => _embeddingService.GetTextEmbedding(userInput, out embedding));
       var searchResults = await Task.Run(() => _embeddingService.Search(embeddingDatabase, embedding, 10));
@@ -55,6 +89,7 @@ namespace Tessera.App.ViewModel
         foreach (var (Name, Similarity) in searchResults)
           suggestionsTarget.Add(Name);
       });
+
       stopwatch.Stop();
       Debug.WriteLine($"Search took {stopwatch.ElapsedMilliseconds} - {stopwatch.Elapsed.Seconds} ms");
     }
@@ -71,11 +106,11 @@ namespace Tessera.App.ViewModel
       InstanceEmbeddings = new List<(float[] Vectors, string Name)>();
       await foreach (var (Vectors, Name, UniqueId) in class1.GetElementsWithVectorsAndNamesAsync())
       {
-        if (UniqueId.StartsWith("Material"))
+        if (UniqueId.StartsWith(MATERIAL_TAG))
           MaterialEmbeddings.Add((Vectors, Name));
-        else if (UniqueId.StartsWith("SortamentEx"))
+        else if (UniqueId.StartsWith(SORTAMENT_EX_TAG))
           InstanceEmbeddings.Add((Vectors, Name));
-        else if (UniqueId.StartsWith("Sortament"))
+        else if (UniqueId.StartsWith(SORTAMENT_TAG))
           ProfileEmbeddings.Add((Vectors, Name));
       }
       await class1.DisposeAsync();

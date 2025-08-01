@@ -20,6 +20,7 @@ namespace Tessera.App.View
     public MainWindow()
     {
       InitializeComponent();
+      //var test = ReferenceProvider.Instance;
       DataContext = new MainWindowViewModel();
     }
 
@@ -27,18 +28,21 @@ namespace Tessera.App.View
     {
       var comboBox = sender as ComboBox;
       comboBox.IsDropDownOpen = true;
+      comboBox.Focus();
     }
 
     private void ComboBoxProfiles_Loaded(object sender, RoutedEventArgs e)
     {
       var comboBox = sender as ComboBox;
       comboBox.IsDropDownOpen = true;
+      comboBox.Focus();
     }
 
     private void ComboBoxInstance_Loaded(object sender, RoutedEventArgs e)
     {
       var comboBox = sender as ComboBox;
       comboBox.IsDropDownOpen = true;
+      comboBox.Focus();
     }
   }
 }
