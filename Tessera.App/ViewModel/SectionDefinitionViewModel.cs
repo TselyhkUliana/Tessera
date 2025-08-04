@@ -22,6 +22,7 @@ namespace Tessera.App.ViewModel
       _suggestionProvider = suggestionProvider;
     }
 
+    /// <summary>Материал</summary>
     public string Material
     {
       get => _sectionDefinition.Material;
@@ -39,6 +40,7 @@ namespace Tessera.App.ViewModel
         _ = _suggestionProvider.UpdateSuggestionsAsync(value, SuggestedMaterials, _suggestionProvider.MaterialEmbeddings);
       }
     }
+    /// <summary>Сортамент</summary>
     public string SectionProfile
     {
       get => _sectionDefinition.SectionProfile;
@@ -56,6 +58,7 @@ namespace Tessera.App.ViewModel
         _ = _suggestionProvider.UpdateSuggestionsAsync(value, SuggestedProfiles, _suggestionProvider.ProfileEmbeddings);
       }
     }
+    /// <summary>Экземпляр сортамента</summary>
     public string SectionInstance
     {
       get => _sectionDefinition.SectionInstance;
@@ -73,10 +76,14 @@ namespace Tessera.App.ViewModel
         _ = _suggestionProvider.UpdateSuggestionsAsync(value, SuggestedInstances, _suggestionProvider.InstanceEmbeddings);
       }
     }
+    /// <summary>Типоразмер</summary>
     public string TypeSize { get => _sectionDefinition.TypeSize; set => Set((v) => _sectionDefinition.TypeSize = v, _sectionDefinition.TypeSize, value); }
 
+    /// <summary>Список похожих материалов</summary>
     public ObservableCollection<string> SuggestedMaterials { get; set; }
+    /// <summary>Список похожих сортаментов</summary>
     public ObservableCollection<string> SuggestedProfiles { get; set; }
+    /// <summary>Список похожих экземпляров сортаментов</summary>
     public ObservableCollection<string> SuggestedInstances { get; set; }
 
     public SectionDefinition Model => _sectionDefinition;

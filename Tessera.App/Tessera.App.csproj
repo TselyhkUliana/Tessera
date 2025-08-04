@@ -17,9 +17,6 @@
     <Reference Include="Ascon.Polynom.Api">
       <HintPath>C:\Program Files (x86)\ASCON\Polynom\Bin\Client\Ascon.Polynom.Api.dll</HintPath>
     </Reference>
-    <Reference Include="Ascon.Polynom.BOSimple.Provider">
-      <HintPath>C:\Program Files (x86)\ASCON\Polynom\Bin\Client\Ascon.Polynom.BOSimple.Provider.dll</HintPath>
-    </Reference>
     <Reference Include="Ascon.Polynom.Common">
       <HintPath>C:\Program Files (x86)\ASCON\Polynom\Bin\Client\Ascon.Polynom.Common.dll</HintPath>
     </Reference>

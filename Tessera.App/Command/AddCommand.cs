@@ -12,20 +12,30 @@ namespace Tessera.App.Command
 {
   internal class AddCommand : DelegateCommandBase
   {
-    private readonly ObservableCollection<SectionDefinitionViewModel> _sectionDefinitions;
+    //private readonly ObservableCollection<SectionDefinitionViewModel> _sectionDefinitions;
     private readonly ISuggestionProvider _suggestionProvider;
 
     public AddCommand(ObservableCollection<SectionDefinitionViewModel> sectionDefinitions, ISuggestionProvider suggestionProvider) : base()
     {
       Caption = "_Добавить";
       Hint = "Добавить новую секцию (колонку)";
-      _sectionDefinitions = sectionDefinitions;
+      //_sectionDefinitions = sectionDefinitions;
       _suggestionProvider = suggestionProvider;
     }
 
     protected override void Execute(object parameter)
     {
-      _sectionDefinitions.Add(new SectionDefinitionViewModel(new Model.SectionDefinition(), _suggestionProvider));
+      var test = ReferenceProvider.Instance;
+      var sectionDefinitions = parameter as ObservableCollection<SectionDefinitionViewModel>;
+      foreach (var item in sectionDefinitions)
+      {
+        test.Find(sectionDefinitions);
+      }
+    }
+
+    protected override bool CanExecute(object parameter)
+    {
+      return true;
     }
   }
 }

@@ -20,7 +20,6 @@ namespace Tessera.App.View
     public MainWindow()
     {
       InitializeComponent();
-      //var test = ReferenceProvider.Instance;
       DataContext = new MainWindowViewModel();
     }
 

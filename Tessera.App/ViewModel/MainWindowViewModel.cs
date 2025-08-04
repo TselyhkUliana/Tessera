@@ -32,7 +32,7 @@ namespace Tessera.App.ViewModel
       _ = InitiInitializeAsync();
     }
 
-    public IEnumerable<ICommand> Commands => Initializer.Instance.GetCommands(SectionDefinitions, this);
+    public ICommand Commands => Initializer.Instance.GetCommands(SectionDefinitions, this).First();
     public ObservableCollection<SectionDefinitionViewModel> SectionDefinitions { get; set; }
     public SectionDefinitionViewModel CurrentSection { get => _сurrentSection; set => Set(ref _сurrentSection, value); }
     public List<(float[] Id, string Name)> MaterialEmbeddings { get; private set; }
@@ -45,7 +45,7 @@ namespace Tessera.App.ViewModel
 
       float[] embedding = null;
       await Task.Run(() => _embeddingService.GetTextEmbedding(userInput, out embedding));
-      var searchResults = await Task.Run(() => _embeddingService.Search(embeddingDatabase, embedding, 10));
+      var searchResults = await Task.Run(() => _embeddingService.Search(embeddingDatabase, embedding, 8));
       Application.Current.Dispatcher.Invoke(() =>
       {
         suggestionsTarget.Clear();

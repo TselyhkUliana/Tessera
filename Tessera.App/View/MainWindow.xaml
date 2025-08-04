@@ -70,7 +70,7 @@
 
   <DockPanel>
     <StackPanel DockPanel.Dock="Bottom">
-      <Button Content="Создать"/>
+      <Button Content="Создать" Command="{Binding Commands}" CommandParameter="{Binding DataContext.SectionDefinitions, RelativeSource={RelativeSource AncestorType=Window}}"/>
     </StackPanel>
     <DataGrid x:Name="datagrid" ItemsSource="{Binding SectionDefinitions}" SelectedItem="{Binding CurrentSection}" Margin="5" BorderBrush="#e0e0e0">
       <DataGrid.Columns>
