@@ -15,6 +15,7 @@ namespace Tessera.App
     private static ReferenceProvider _instance;
     private ISession _sesion;
 
+
     private ReferenceProvider()
     {
       LoginManager.TryOpenSession(Guid.Parse(Constants.POLYNOM_CLIENT_ID), out _sesion);
@@ -24,105 +25,88 @@ namespace Tessera.App
 
     public void Find(IList<SectionDefinitionViewModel> sectionDefinitionViewModels)
     {
+      var transaction = _sesion.Objects.StartTransaction();
       var sectionDefinition = sectionDefinitionViewModels.First();
-      //Material(sectionDefinition);
-      Sortament(sectionDefinition);
+      var material = CreateOrReceiveMaterial(sectionDefinition);
+      var sortament = CreateOrReceiveSortament(sectionDefinition);
+      transaction.Commit();
     }
 
-    private void Sortament(SectionDefinitionViewModel sectionDefinition)
+    private IElement CreateOrReceiveSortament(SectionDefinitionViewModel sectionDefinition)
     {
-      var transaction = _sesion.Objects.StartTransaction();
-      var inputElementSortament = sectionDefinition.SectionProfile;
-      var simularElementSortament = sectionDefinition.SuggestedProfiles.First();
+      var inputSortament = sectionDefinition.SectionProfile;
+      var similarSortament = sectionDefinition.SuggestedProfiles.First();
       var reference = _sesion.Objects.AllReferences.FirstOrDefault(r => r.Name == Constants.REFENCE_NAME);
       var catalog = reference.Catalogs.FirstOrDefault(c => c.Name == Constants.CATALOG_SORTAMENT);
       var concept = _sesion.Objects.GetKnownConcept(KnownConceptKind.Element);
       var propDef = _sesion.Objects.GetKnownPropertyDefinition(KnownPropertyDefinitionKind.Name);
-      var condition = _sesion.Objects.CreateSimpleCondition(concept, propDef, (int)StringCompareOperation.Equal, ((IStringPropertyDefinition)propDef).CreateStringPropertyValueData(inputElementSortament));
+      var simpleCondition = _sesion.Objects.CreateSimpleCondition(concept, propDef, (int)StringCompareOperation.Equal, ((IStringPropertyDefinition)propDef).CreateStringPropertyValueData(similarSortament));
+      var searchElement = Search(similarSortament, Constants.CATALOG_SORTAMENT);
 
-      var resultScope = catalog.Intersect(condition);
-      var element = resultScope.GetEnumerable<IElement>().FirstOrDefault();
-      if (element is null)
-      {
-        var inputWords = inputElementSortament.Split(' ');
-        var simularWords = simularElementSortament.Split(' ');
+      if (similarSortament.Equals(inputSortament, StringComparison.OrdinalIgnoreCase))
+        return searchElement;
 
-        var condition2 = _sesion.Objects.CreateSimpleCondition(concept, propDef, (int)StringCompareOperation.Equal, ((IStringPropertyDefinition)propDef).CreateStringPropertyValueData(simularElementSortament));
-        var resultScope2 = catalog.Intersect(condition2);
-        var element2 = resultScope2.GetEnumerable<IElement>().FirstOrDefault();
+      var inputElementFormat = inputSortament.FirstCharToUpper();
+      var inputElementWords = inputElementFormat.Split(' ');
+      var simularElementWords = similarSortament.Split(' ');
+      var inputElementWordFirst = inputElementWords[0];
+      var group = inputElementWordFirst == simularElementWords[0]
+        ? searchElement.OwnerGroup
+        : catalog.Groups.First().CreateGroup(inputElementWordFirst.FirstCharToUpper());
 
-        var inputWordFirst = inputWords[0];
-        if (inputWordFirst == simularWords[0])
-        {
-          var parentGroup = element2.OwnerGroup;
-          var element3 = parentGroup.CreateElement(inputElementSortament);
-          element3.Applicability = Applicability.Allowed;
-          var p = element3.GetProperty(Constants.PROP_MATERIAL_MASK);
-          var prop = element3.GetProperty(Constants.PROP_MATERIAL_MASK).Definition as IStringPropertyDefinition;
-          var concept2 = _sesion.Objects.Get<IConcept>(Constants.CONCEPT_SORTAMENT);
-          var index = Constants.Standarts.Select(x => inputElementSortament.IndexOf(x, StringComparison.OrdinalIgnoreCase)).Where(x => x != -1).FirstOrDefault();
-          prop.AssignStringPropertyValue(element3, concept2, inputElementSortament.Substring(0, index));
-        }
-        else
-        {
-          var parentGroup = catalog.Groups.First().CreateGroup(char.ToUpper(inputWordFirst[0]) + inputWordFirst.Substring(1));
-          var element3 = parentGroup.CreateElement(inputElementSortament);
-          element3.Applicability = Applicability.Allowed;
-          var prop = element3.GetProperty(Constants.PROP_MATERIAL_MASK).Definition as IStringPropertyDefinition;
-          var concept2 = _sesion.Objects.Get<IConcept>(Constants.CONCEPT_SORTAMENT);
-          var index = Constants.Standarts.Select(x => inputElementSortament.IndexOf(x, StringComparison.OrdinalIgnoreCase)).Where(x => x != -1).FirstOrDefault();
-          prop.AssignStringPropertyValue(element3, concept2, inputElementSortament.Substring(0, index));
-        }
-      }
-      transaction.Commit();
+      var element = group.CreateElement(inputElementFormat);
+      element.Applicability = Applicability.Allowed;
+      var markProperty = element.GetProperty(Constants.PROP_SORTAMENT_MASK).Definition as IStringPropertyDefinition;
+      var conceptSortament = _sesion.Objects.Get<IConcept>(Constants.CONCEPT_SORTAMENT);
+      markProperty.AssignStringPropertyValue(element, conceptSortament, ExtractName(inputElementFormat));
+
+      return element;
     }
 
-    private void Material(SectionDefinitionViewModel sectionDefinition)
+    private IElement CreateOrReceiveMaterial(SectionDefinitionViewModel sectionDefinition)
     {
-      var inputElementMaterial = sectionDefinition.Material;
-      var simularElementMaterial = sectionDefinition.SuggestedMaterials.First();
+      var inputMaterial = sectionDefinition.Material;
+      var similarMaterial = sectionDefinition.SuggestedMaterials.First();
+      var searchElement = Search(similarMaterial, Constants.CATALOG_MATERIAL);
 
+      if (similarMaterial.Equals(inputMaterial, StringComparison.OrdinalIgnoreCase))
+        return searchElement;
+
+      var inputElementFormat = inputMaterial.FirstCharToUpper();
+      var group = searchElement.OwnerGroup;
+      var element = group.CreateElement(inputElementFormat);
+      element.Applicability = Applicability.Allowed;
+      var markProperty = element.GetProperty(Constants.PROP_MATERIAL_MASK).Definition as IStringPropertyDefinition;
+      var conceptMaterial = _sesion.Objects.Get<IConcept>(Constants.CONCEPT_MATERIAL);
+      markProperty.AssignStringPropertyValue(element, conceptMaterial, ExtractName(inputElementFormat));
+
+      return element;
+    }
+
+    private IElement? Search(string similarElement, string catalogName)
+    {
       var reference = _sesion.Objects.AllReferences.FirstOrDefault(r => r.Name == Constants.REFENCE_NAME);
-      var catalog = reference.Catalogs.FirstOrDefault(c => c.Name == Constants.CATALOG_MATERIAL);
+      var catalog = reference.Catalogs.FirstOrDefault(c => c.Name == catalogName);
       var concept = _sesion.Objects.GetKnownConcept(KnownConceptKind.Element);
       var propDef = _sesion.Objects.GetKnownPropertyDefinition(KnownPropertyDefinitionKind.Name);
-      var condition = _sesion.Objects.CreateSimpleCondition(concept, propDef, (int)StringCompareOperation.Equal, ((IStringPropertyDefinition)propDef).CreateStringPropertyValueData(inputElementMaterial));
+      var condition = _sesion.Objects.CreateSimpleCondition(concept, propDef, (int)StringCompareOperation.Equal, ((IStringPropertyDefinition)propDef).CreateStringPropertyValueData(similarElement));
+      var searchElement = catalog.Intersect(condition).GetEnumerable<IElement>().FirstOrDefault();
+      return searchElement;
+    }
 
-      var resultScope = catalog.Intersect(condition);
-      var element = resultScope.GetEnumerable<IElement>().FirstOrDefault();
-      if (element is null)
-      {
-        var condition2 = _sesion.Objects.CreateSimpleCondition(concept, propDef, (int)StringCompareOperation.Equal, ((IStringPropertyDefinition)propDef).CreateStringPropertyValueData(simularElementMaterial));
-        var resultScope2 = catalog.Intersect(condition2);
-        var element2 = resultScope2.GetEnumerable<IElement>().FirstOrDefault();
+    private static string ExtractName(string fullName)
+    {
+      var index = Constants.Standards
+        .Select(x => fullName.IndexOf(x, StringComparison.OrdinalIgnoreCase))
+        .Where(x => x > 0)
+        .FirstOrDefault();
 
-        if (inputElementMaterial.Contains("ГОСТ") && simularElementMaterial.Contains("ГОСТ"))
-        {
-          var inputElementWords = inputElementMaterial.Split(' ');
-          var simularElementWords = simularElementMaterial.Split(' ');
-          var inputElementGOST = inputElementWords[inputElementMaterial.IndexOf("ГОСТ") + 1];
-          var simularElementGOST = simularElementWords[simularElementMaterial.IndexOf("ГОСТ") + 1];
-          if (inputElementGOST == simularElementGOST)
-          {
-            var group = element2.OwnerGroup;
-            group.CreateElement(inputElementMaterial);
-          }
-        }
-        else
-        {
-          var group = element2.OwnerGroup;
-          group.CreateElement(inputElementMaterial);
-        }
-      }
+      return index > 0 ? fullName.Substring(0, index).Trim() : fullName.Trim();
     }
   }
 }
-//TODO: Может быть не гост а ту или другой стандарт
 //TODO: Могут цифры не идти сразу после госта ТБ 103/70 ГОСТ Р 70235-2022 
-//TODO: наверное не нужно делать новые группы для материалов (ложить туда где есть похожий)
-//TODO: наверное не нужно делать новые группы для сортаментов (ложить туда где есть похожий) (подумать о необычных случиях например восьмигранник (как вариант брать первое слово для названия группы))
 //TODO: для экземпляров нужно если не совпадает гост
 //TODO: может быть не Intersect
 //TODO: Разобраться с регистром
-//TODO: Заполнять для сортаментов свойство марка
-//TODO: Заполнять для сортаментов форма и профиль загаотовки вид заготовки код типа профиля
+//TODO: Заполнять для сортаментов форма и профиль загаотовки вид заготовки код типа профиля (подумать над этим)

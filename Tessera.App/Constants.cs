@@ -14,9 +14,11 @@ namespace Tessera.App
     public const string CATALOG_SORTAMENT = "Сортаменты";
     public const string CATALOG_SORTAMENT_EX = "Экземпляры сортаментов";
 
-    public const string PROP_MATERIAL_MASK = "c:Sortaments::pd:MaterialsMark";
+    public const string PROP_MATERIAL_MASK = "c:@Materials::c:Materials::pd:MaterialsMark";
+    public const string PROP_SORTAMENT_MASK = "c:Sortaments::pd:MaterialsMark";
 
     public const string CONCEPT_SORTAMENT = "c:Sortaments";
+    public const string CONCEPT_MATERIAL = "c:@Materials::c:Materials";
 
     public const string GOST = "ГОСТ";
     public const string GOST_R = "ГОСТ Р";
@@ -40,6 +42,6 @@ namespace Tessera.App
     public const string EN = "EN";
     public const string ASTM = "ASTM";
 
-    public static readonly List<string> Standarts = new() { GOST, GOST_R, TU, OST, STO, RD, SP, SNiP, TR_TS, TR_EAS, PNST, SANPIN, GN, MU, FS, ND, MK, MK2, ISO, EN, ASTM };
+    public static readonly List<string> Standards = new() { GOST, GOST_R, TU, OST, STO, RD, SP, SNiP, TR_TS, TR_EAS, PNST, SANPIN, GN, MU, FS, ND, MK, MK2, ISO, EN, ASTM };
   }
 }

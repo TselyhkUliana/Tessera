@@ -27,10 +27,7 @@ namespace Tessera.App.Command
     {
       var test = ReferenceProvider.Instance;
       var sectionDefinitions = parameter as ObservableCollection<SectionDefinitionViewModel>;
-      foreach (var item in sectionDefinitions)
-      {
-        test.Find(sectionDefinitions);
-      }
+      test.Find(sectionDefinitions);
     }
 
     protected override bool CanExecute(object parameter)
