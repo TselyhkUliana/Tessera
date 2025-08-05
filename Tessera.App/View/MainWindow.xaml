@@ -76,7 +76,7 @@
       <DataGrid.Columns>
         <DataGridTemplateColumn Header="Материалы" CellTemplate="{StaticResource MaterialCell}" CellEditingTemplate="{StaticResource MaterialCellEditing}" Width="200"/>
         <DataGridTemplateColumn Header="Сортаменты" CellTemplate="{StaticResource SectionProfileCell}" CellEditingTemplate="{StaticResource SectionProfileCellEditing}" Width="250"/>
-        <!--<DataGridTemplateColumn Header="Типоразмеры">
+        <DataGridTemplateColumn Header="Типоразмеры">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate>
               <TextBlock Text="{Binding TypeSize}" />
@@ -87,7 +87,7 @@
               <ComboBox/>
             </DataTemplate>
           </DataGridTemplateColumn.CellEditingTemplate>
-        </DataGridTemplateColumn>-->
+        </DataGridTemplateColumn>
         <DataGridTemplateColumn Header="Экземпляры сортаментов" CellTemplate="{StaticResource SectionInstanceCell}" CellEditingTemplate="{StaticResource SectionInstanceCellEditing}" Width="*"/>
       </DataGrid.Columns>
     </DataGrid>
