@@ -7,7 +7,7 @@
         xmlns:vm ="clr-namespace:Tessera.App.ViewModel"
         d:DataContext="{d:DesignData Type=vm:MainWindowViewModel}"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="1000"
+        Title="Harold" Height="450" Width="1000"
         WindowStartupLocation="CenterScreen" 
         TextOptions.TextFormattingMode="Display" FontFamily="Ascon Complex" SnapsToDevicePixels="True">
 
@@ -60,35 +60,17 @@
     <DataTemplate x:Key="SectionProfileCellEditing">
       <ComboBox ItemsSource="{Binding SuggestedProfiles}" Text="{Binding SectionProfile, UpdateSourceTrigger=PropertyChanged}" Loaded="ComboBoxProfiles_Loaded"/>
     </DataTemplate>
-    <DataTemplate x:Key="SectionInstanceCell">
-      <TextBlock Text="{Binding SectionInstance}" Style="{StaticResource TextBlockStyle}"/>
-    </DataTemplate>
-    <DataTemplate x:Key="SectionInstanceCellEditing">
-      <ComboBox ItemsSource="{Binding SuggestedInstances}" Text="{Binding SectionInstance, UpdateSourceTrigger=PropertyChanged}" Loaded="ComboBoxInstance_Loaded"/>
-    </DataTemplate>
   </Window.Resources>
 
   <DockPanel>
     <StackPanel DockPanel.Dock="Bottom">
-      <Button Content="Создать" Command="{Binding Commands}" CommandParameter="{Binding DataContext.SectionDefinitions, RelativeSource={RelativeSource AncestorType=Window}}"/>
+      <Button Content="Создать" Command="{Binding Commands}" CommandParameter="{Binding DataContext.SectionDefinitions, RelativeSource={RelativeSource AncestorType=Window}}" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0 5 5 7" Padding="5 2"/>
     </StackPanel>
     <DataGrid x:Name="datagrid" ItemsSource="{Binding SectionDefinitions}" SelectedItem="{Binding CurrentSection}" Margin="5" BorderBrush="#e0e0e0">
       <DataGrid.Columns>
-        <DataGridTemplateColumn Header="Материалы" CellTemplate="{StaticResource MaterialCell}" CellEditingTemplate="{StaticResource MaterialCellEditing}" Width="200"/>
-        <DataGridTemplateColumn Header="Сортаменты" CellTemplate="{StaticResource SectionProfileCell}" CellEditingTemplate="{StaticResource SectionProfileCellEditing}" Width="250"/>
-        <DataGridTemplateColumn Header="Типоразмеры">
-          <DataGridTemplateColumn.CellTemplate>
-            <DataTemplate>
-              <TextBlock Text="{Binding TypeSize}" />
-            </DataTemplate>
-          </DataGridTemplateColumn.CellTemplate>
-          <DataGridTemplateColumn.CellEditingTemplate>
-            <DataTemplate>
-              <ComboBox/>
-            </DataTemplate>
-          </DataGridTemplateColumn.CellEditingTemplate>
-        </DataGridTemplateColumn>
-        <DataGridTemplateColumn Header="Экземпляры сортаментов" CellTemplate="{StaticResource SectionInstanceCell}" CellEditingTemplate="{StaticResource SectionInstanceCellEditing}" Width="*"/>
+        <DataGridTemplateColumn Header="Материалы" CellTemplate="{StaticResource MaterialCell}" CellEditingTemplate="{StaticResource MaterialCellEditing}" Width="300"/>
+        <DataGridTemplateColumn Header="Сортаменты" CellTemplate="{StaticResource SectionProfileCell}" CellEditingTemplate="{StaticResource SectionProfileCellEditing}" Width="350"/>
+        <DataGridTextColumn Header="Типоразмеры" Binding="{Binding TypeSize, UpdateSourceTrigger=PropertyChanged}" Width="*"/>
       </DataGrid.Columns>
     </DataGrid>
   </DockPanel>

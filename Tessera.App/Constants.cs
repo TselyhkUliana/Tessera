@@ -13,12 +13,19 @@ namespace Tessera.App
     public const string CATALOG_MATERIAL = "Материалы";
     public const string CATALOG_SORTAMENT = "Сортаменты";
     public const string CATALOG_SORTAMENT_EX = "Экземпляры сортаментов";
+    public const string CATALOG_TYPE_SIZE = "Типоразмеры";
 
     public const string PROP_MATERIAL_MASK = "c:@Materials::c:Materials::pd:MaterialsMark";
     public const string PROP_SORTAMENT_MASK = "c:Sortaments::pd:MaterialsMark";
 
     public const string CONCEPT_SORTAMENT = "c:Sortaments";
     public const string CONCEPT_MATERIAL = "c:@Materials::c:Materials";
+
+    public const string LINK_SORTAMENT_MATERIAL = "ld:ExMatLinkCode";
+    public const string LINK_TYPESIZE_SORTAMENT = "ld:SizeSortLinkCode";
+    public const string LINK_SORTAMENTEX_MATERIAL = "ld:ExSortMatLinkCode";
+    public const string LINK_SORTAMENTEX_SORTAMENT = "ld:ExSortSortLinkCode";
+    public const string LINK_SORTAMENTEX_TYPE_SIZE = "ld:ExSortSizeLinkCode";
 
     public const string GOST = "ГОСТ";
     public const string GOST_R = "ГОСТ Р";
