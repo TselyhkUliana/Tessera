@@ -10,6 +10,7 @@ using Tessera.App.Model;
 
 namespace Tessera.App.ViewModel
 {
+  [DebuggerDisplay("SectionDefinitionViewModel: {Material} - {SectionProfile} - {TypeSize}")]
   internal class SectionDefinitionViewModel : ViewModelBase
   {
     private readonly SectionDefinition _sectionDefinition;

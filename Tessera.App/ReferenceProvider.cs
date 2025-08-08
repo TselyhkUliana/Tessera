@@ -1,13 +1,6 @@
 ﻿using Ascon.Polynom.Api;
 using Ascon.Polynom.Login;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Media.Media3D;
 using Tessera.App.ViewModel;
 
 namespace Tessera.App
@@ -15,20 +8,20 @@ namespace Tessera.App
   internal class ReferenceProvider
   {
     private static ReferenceProvider _instance;
-    private ISession _sesion;
+    private ISession _session;
     private IReference? _reference;
 
     private ReferenceProvider()
     {
-      LoginManager.TryOpenSession(Guid.Parse(Constants.POLYNOM_CLIENT_ID), out _sesion);
-      _reference = _sesion.Objects.AllReferences.FirstOrDefault(x => x.Name == Constants.REFENCE_NAME);
+      LoginManager.TryOpenSession(Guid.Parse(Constants.POLYNOM_CLIENT_ID), out _session);
+      _reference = _session.Objects.AllReferences.FirstOrDefault(x => x.Name == Constants.REFENCE_NAME);
     }
 
     public static ReferenceProvider Instance => _instance ??= new ReferenceProvider();
 
-    public void Find(IList<SectionDefinitionViewModel> sectionDefinitionViewModels)
+    public void Start(IList<SectionDefinitionViewModel> sectionDefinitionViewModels)
     {
-      var transaction = _sesion.Objects.StartTransaction();
+      var transaction = _session.Objects.StartTransaction();
       var sectionDefinition = sectionDefinitionViewModels.First();
       var material = CreateOrReceiveMaterial(sectionDefinition);
       var sortament = CreateOrReceiveSortament(sectionDefinition);
@@ -50,16 +43,32 @@ namespace Tessera.App
       var index = EntityNameHelper.GetStandardKeywordIndex(sortament.Name);
       var standardPart = sortament.Name.Substring(index);
       var groupName = $"{baseName} {standardPart} {standardPart}"; //такой формат названия групп (например: Анод (золотой) ГОСТ 25475-2015 ГОСТ 25475-2015))
-      var group = GetGroup(catalog.Groups, groupName) ?? CreateGroupSortamentEx(groupName, sortament.OwnerGroup.Name);
-      var element = group.CreateElement("тест");
+      var group = FindGroupByName<IGroup>(catalog.Groups, g => g.Groups, groupName) ?? CreateGroupSortamentEx(groupName, sortament.OwnerGroup.Name);
+      var element = group.CreateElement("Element"); //название по умолчанию
       element.Applicability = Applicability.Allowed;
+      var propName = element.GetProperty(Constants.PROP_NAME_AND_DESCRIPTION);
+      var formula = CreateOrReceiveFormula(sortament.OwnerGroup.Name, $"Обозначение {groupName}");
+      propName.EvaluationPropertyInfo.Formula = formula;
+      var conceptClassification = _session.Objects.Get<IConcept>(Constants.CONCEPT_CLASSIFICATION_ITEM);
+      var conceptPropertySourceClassificationName = conceptClassification.ConceptPropertySources.FirstOrDefault(s => s.AbsoluteCode == Constants.PROP_NAME_AND_DESCRIPTION_ABSOLUTE_CODE);
+      var appointedFormula2 = group.AllAppointedFormulas.FirstOrDefault(af => af.Formula == formula) ??
+                                     group.AddAppointedFormula(conceptPropertySourceClassificationName, formula);
       return element;
+    }
+
+    public IFormula CreateOrReceiveFormula(string sortamentGroup, string formulaName)
+    {
+      var formulaGroups = _session.Objects.FormulaCatalog.FormulaGroups;
+      var groupFormula = FindGroupByName<IFormulaGroup>(formulaGroups, g => g.FormulaGroups, sortamentGroup) ??
+                         FindGroupByName<IFormulaGroup>(formulaGroups, g => g.FormulaGroups, "Обозначения экземпляров сортаментов").CreateFormulaGroup(sortamentGroup);
+      var formula = groupFormula.Formulas.FirstOrDefault(x => x.Name == formulaName) ?? CreateNewFormula(groupFormula, formulaName);
+      return formula;
     }
 
     public IElement CreateOrReceiveTypeSize(SectionDefinitionViewModel sectionDefinition, string groupName)
     {
       var catalog = _reference.Catalogs.FirstOrDefault(x => x.Name == Constants.CATALOG_TYPE_SIZE);
-      var group = GetGroup(catalog.Groups, groupName) ?? catalog.CreateGroup(groupName);
+      var group = FindGroupByName<IGroup>(catalog.Groups, g => g.Groups, groupName) ?? catalog.CreateGroup(groupName);
       var element = group.Elements.Where(e => e.Name.Equals(sectionDefinition.TypeSize, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
       element ??= group.CreateElement(sectionDefinition.TypeSize);
       element.Applicability = Applicability.Allowed;
@@ -71,9 +80,9 @@ namespace Tessera.App
       var inputSortament = sectionDefinition.SectionProfile.Trim();
       var similarSortament = sectionDefinition.SuggestedProfiles.First().Trim();
       var catalog = _reference.Catalogs.FirstOrDefault(c => c.Name == Constants.CATALOG_SORTAMENT);
-      var concept = _sesion.Objects.GetKnownConcept(KnownConceptKind.Element);
-      var propDef = _sesion.Objects.GetKnownPropertyDefinition(KnownPropertyDefinitionKind.Name);
-      var simpleCondition = _sesion.Objects.CreateSimpleCondition(concept, propDef, (int)StringCompareOperation.Equal, ((IStringPropertyDefinition)propDef).CreateStringPropertyValueData(similarSortament));
+      var concept = _session.Objects.GetKnownConcept(KnownConceptKind.Element);
+      var propDef = _session.Objects.GetKnownPropertyDefinition(KnownPropertyDefinitionKind.Name);
+      var simpleCondition = _session.Objects.CreateSimpleCondition(concept, propDef, (int)StringCompareOperation.Equal, ((IStringPropertyDefinition)propDef).CreateStringPropertyValueData(similarSortament));
       var searchElement = SearchElement(similarSortament, Constants.CATALOG_SORTAMENT);
 
       if (similarSortament.Equals(inputSortament, StringComparison.OrdinalIgnoreCase))
@@ -90,7 +99,8 @@ namespace Tessera.App
       var element = group.CreateElement(inputElementFormat);
       element.Applicability = Applicability.Allowed;
       var markProperty = element.GetProperty(Constants.PROP_SORTAMENT_MASK).Definition as IStringPropertyDefinition;
-      var conceptSortament = _sesion.Objects.Get<IConcept>(Constants.CONCEPT_SORTAMENT);
+      var conceptSortament = _session.Objects.Get<IConcept>(Constants.CONCEPT_SORTAMENT);
+      var conceptShape = _session.Objects.Get<IConcept>(Constants.CONCEPT_SHAPE);
       markProperty.AssignStringPropertyValue(element, conceptSortament, EntityNameHelper.GetNameBeforeStandard(inputElementFormat));
       return element;
     }
@@ -109,7 +119,7 @@ namespace Tessera.App
       var element = group.CreateElement(inputElementFormat);
       element.Applicability = Applicability.Allowed;
       var markProperty = element.GetProperty(Constants.PROP_MATERIAL_MASK).Definition as IStringPropertyDefinition;
-      var conceptMaterial = _sesion.Objects.Get<IConcept>(Constants.CONCEPT_MATERIAL);
+      var conceptMaterial = _session.Objects.Get<IConcept>(Constants.CONCEPT_MATERIAL);
       markProperty.AssignStringPropertyValue(element, conceptMaterial, EntityNameHelper.GetNameBeforeStandard(inputElementFormat));
       return element;
     }
@@ -117,30 +127,38 @@ namespace Tessera.App
     private IElement SearchElement(string similarElement, string catalogName)
     {
       var catalog = _reference.Catalogs.FirstOrDefault(c => c.Name == catalogName);
-      var concept = _sesion.Objects.GetKnownConcept(KnownConceptKind.Element);
-      var propDef = _sesion.Objects.GetKnownPropertyDefinition(KnownPropertyDefinitionKind.Name);
-      var condition = _sesion.Objects.CreateSimpleCondition(concept, propDef, (int)StringCompareOperation.Equal, ((IStringPropertyDefinition)propDef).CreateStringPropertyValueData(similarElement));
+      var concept = _session.Objects.GetKnownConcept(KnownConceptKind.Element);
+      var propDef = _session.Objects.GetKnownPropertyDefinition(KnownPropertyDefinitionKind.Name);
+      var condition = _session.Objects.CreateSimpleCondition(concept, propDef, (int)StringCompareOperation.Equal, ((IStringPropertyDefinition)propDef).CreateStringPropertyValueData(similarElement));
       var searchElement = catalog.Intersect(condition).GetEnumerable<IElement>().FirstOrDefault();
       return searchElement;
     }
 
     public void CreateLink(ILinkable left, ILinkable right, string aboluteCodeLink)
     {
-      var group = _sesion.Objects.LinkDefCatalog.LinkDefGroups.FirstOrDefault(g => g.Name == Constants.REFENCE_NAME);
+      var group = _session.Objects.LinkDefCatalog.LinkDefGroups.FirstOrDefault(g => g.Name == Constants.REFENCE_NAME);
       var link = group.LinkDefinitions.FirstOrDefault(l => l.AbsoluteCode == aboluteCodeLink);
       link.Destination.CreateLink(left, right);
     }
 
-    private static IGroup GetGroup(IApiReadOnlyCollection<IGroup> groups, string groupName)
+    private static IFormula CreateNewFormula(IFormulaGroup groupFormula, string name)
     {
-      foreach (var group in groups)
-      {
-        if (group.Name == groupName)
-          return group;
+      var formula = groupFormula.CreateFormula(name, FormulaDefaults.BuildFormulaBodyDesignation());
+      foreach (var (Name, Expression) in FormulaDefaults.Parameters)
+        formula.CreateParameter(Name, Expression);
 
-        var foundGroup = GetGroup(group.Groups, groupName);
-        if (foundGroup is not null)
-          return foundGroup;
+      return formula;
+    }
+
+    public static T FindGroupByName<T>(IApiReadOnlyCollection<T> groups, Func<T, IApiReadOnlyCollection<T>> childrenSelector, string groupName) where T : class, IBaseGroup
+    {
+      foreach (var item in groups)
+      {
+        if (item.Name == groupName)
+          return item;
+        var found = FindGroupByName(childrenSelector(item), childrenSelector, groupName);
+        if (found is not null)
+          return found;
       }
       return null;
     }
@@ -151,6 +169,13 @@ namespace Tessera.App
       var group = catalog.Groups.FirstOrDefault(x => x.Name == baseGroupName) ?? catalog.CreateGroup(baseGroupName);
       return group.CreateGroup(derivedGroupName);
     }
+
+    //private void UpdateProperties()
+    //{
+    //  IAsyncOperation asyncOperation = _formula.EvaluateAsync();
+    //  asyncOperation.Start();
+    //  asyncOperation.Wait();
+    //}
 
     private void LinksTest(IElement element)
     {
@@ -166,9 +191,3 @@ namespace Tessera.App
     }
   }
 }
-//TODO: для экземпляров нужно если не совпадает гост
-//TODO: может быть не Intersect
-//TODO: Разобраться с регистром
-//TODO: Заполнять для сортаментов форма и профиль загаотовки вид заготовки код типа профиля (подумать над этим)
-//TODO: Подумать над заполнением понятия размерность для типоразмеров
-//TODO: для экземпляров сортамента подумать над созданием группы и добавлением понятия для группы свойства по гост...

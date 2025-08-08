@@ -17,9 +17,14 @@ namespace Tessera.App
 
     public const string PROP_MATERIAL_MASK = "c:@Materials::c:Materials::pd:MaterialsMark";
     public const string PROP_SORTAMENT_MASK = "c:Sortaments::pd:MaterialsMark";
+    public const string PROP_SHAPE_MIS = "c:ShapesMiS::pd:ShapeMiS";
+    public const string PROP_NAME_AND_DESCRIPTION = "c:@NameAndDescription::pd:@Name";
+    public const string PROP_NAME_AND_DESCRIPTION_ABSOLUTE_CODE = "c:@NameAndDescription::c:@ClassificationItem::pd:@Name";
 
     public const string CONCEPT_SORTAMENT = "c:Sortaments";
     public const string CONCEPT_MATERIAL = "c:@Materials::c:Materials";
+    public const string CONCEPT_SHAPE = "c:ShapesMiS";
+    public const string CONCEPT_CLASSIFICATION_ITEM = "c:@NameAndDescription::c:@ClassificationItem";
 
     public const string LINK_SORTAMENT_MATERIAL = "ld:ExMatLinkCode";
     public const string LINK_TYPESIZE_SORTAMENT = "ld:SizeSortLinkCode";

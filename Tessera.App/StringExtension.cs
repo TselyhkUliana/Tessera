@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Tessera.App
+﻿namespace Tessera.App
 {
   public static class StringExtension
   {
+    /// <summary>Преобразует первую букву строки в верхний регистр</summary>
     public static string FirstCharToUpper(this string str)
     {
       if (string.IsNullOrEmpty(str))
