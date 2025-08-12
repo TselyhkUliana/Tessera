@@ -43,15 +43,15 @@ namespace Tessera.App.ViewModel
     {
       Stopwatch stopwatch = Stopwatch.StartNew();
 
-      float[] embedding = null;
-      await Task.Run(() => _embeddingService.GetTextEmbedding(userInput, out embedding));
-      var searchResults = await Task.Run(() => _embeddingService.Search(embeddingDatabase, embedding, 8));
-      Application.Current.Dispatcher.Invoke(() =>
+      var searchResults = await Task.Run(() =>
       {
-        suggestionsTarget.Clear();
-        foreach (var (Name, Similarity) in searchResults)
-          suggestionsTarget.Add(Name);
+        _embeddingService.GetTextEmbedding(userInput, out var embedding);
+        return _embeddingService.Search(embeddingDatabase, embedding, 10);
       });
+
+      suggestionsTarget.Clear();
+      foreach (var (Name, Similarity) in searchResults)
+        suggestionsTarget.Add(Name);
 
       stopwatch.Stop();
       Debug.WriteLine($"Search took {stopwatch.ElapsedMilliseconds} - {stopwatch.Elapsed.Seconds} ms");
@@ -92,7 +92,7 @@ namespace Tessera.App.ViewModel
         SectionDefinitions.Add(NewSectionDefinition());
         return;
       }
-      
+
       var lastElement = SectionDefinitions.LastOrDefault();
       if (lastElement.Material is null && lastElement.SectionProfile is null && lastElement.SectionInstance is null)
         return;
@@ -103,9 +103,9 @@ namespace Tessera.App.ViewModel
     private SectionDefinitionViewModel NewSectionDefinition()
     {
       var sectionDefinitionViewModel = new SectionDefinitionViewModel(new SectionDefinition(), this);
-      sectionDefinitionViewModel.SuggestedMaterials = new(MaterialEmbeddings.Select(x => x.Name).Take(8).ToArray());
-      sectionDefinitionViewModel.SuggestedProfiles = new(ProfileEmbeddings.Select(x => x.Name).Take(8).ToArray());
-      sectionDefinitionViewModel.SuggestedInstances = new(InstanceEmbeddings.Select(x => x.Name).Take(8).ToArray());
+      sectionDefinitionViewModel.SuggestedMaterials = new(MaterialEmbeddings.Select(x => x.Name).Take(10).ToArray());
+      sectionDefinitionViewModel.SuggestedProfiles = new(ProfileEmbeddings.Select(x => x.Name).Take(10).ToArray());
+      sectionDefinitionViewModel.SuggestedInstances = new(InstanceEmbeddings.Select(x => x.Name).Take(10).ToArray());
       sectionDefinitionViewModel.RequestAddSectionDefinition += AddSectionDefinitionIfNeeded;
       return sectionDefinitionViewModel;
     }

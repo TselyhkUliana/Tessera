@@ -24,5 +24,53 @@
          .DefaultIfEmpty(-1)
          .First();
     }
+
+    /// <summary>
+    /// Убирает стандарт, часть после закрывающей скобки, лишние пробелы, скобки и запятые.
+    /// </summary>
+    public static string FormatNameParts(string input)
+    {
+      var baseName = GetNameBeforeStandard(input);
+
+      var closingParenIndex = baseName.IndexOf(')');
+      if (closingParenIndex > -1)
+        baseName = baseName.Substring(0, closingParenIndex);
+
+      var parts = baseName.Split(new[] { ' ', '(', ')', ',' }, StringSplitOptions.RemoveEmptyEntries);
+
+      return string.Join(" ", parts);
+    }
+
+    /// <summary>
+    /// Возвращает стандарт из имени, начиная с ключевого слова стандарта.
+    /// </summary>
+    public static string GetStandard(string fullName)
+    {
+      if (string.IsNullOrWhiteSpace(fullName))
+        return string.Empty;
+
+      var index = GetStandardKeywordIndex(fullName);
+      return index > 0 ? fullName.Substring(index).Trim() : string.Empty;
+    }
+
+    /// <summary>
+    /// Приводит полное имя к формату: первая буква — заглавная, стандарт — в верхнем регистре.
+    /// </summary>
+    public static string FormatFullName(string fullName)
+    {
+      if (string.IsNullOrWhiteSpace(fullName))
+        return string.Empty;
+
+      var normalized = fullName.FirstCharToUpper();
+      var standard = GetStandard(normalized);
+
+      if (!string.IsNullOrEmpty(standard))
+      {
+        var index = GetStandardKeywordIndex(normalized);
+        if (index > 0)
+          return normalized.Substring(0, index).Trim() + " " + standard.ToUpper();
+      }
+      return normalized;
+    }
   }
 }
