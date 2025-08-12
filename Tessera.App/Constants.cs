@@ -14,6 +14,10 @@ namespace Tessera.App
     public const string CATALOG_SORTAMENT = "Сортаменты";
     public const string CATALOG_SORTAMENT_EX = "Экземпляры сортаментов";
     public const string CATALOG_TYPE_SIZE = "Типоразмеры";
+    public const string GROUP_FORMULA_DESIGNATION_SORTAMENT = "Обозначения сортаментов";
+    public const string GROUP_FORMULA_DESIGNATION_SORTAMENT_EX = "Обозначения экземпляров сортаментов";
+    public const string FORMULA_DESIGNATION_SORTAMENT = "Обозначение сортамента";
+    public const string ELEMENT_DEFAULT_NAME = "Element";
 
     public const string PROP_MATERIAL_MASK = "c:@Materials::c:Materials::pd:MaterialsMark";
     public const string PROP_SORTAMENT_MASK = "c:Sortaments::pd:MaterialsMark";

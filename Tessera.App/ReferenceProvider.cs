@@ -45,14 +45,14 @@ namespace Tessera.App
       var standardPart = sortament.Name.Substring(index);
       var groupName = $"{baseName} {standardPart} {standardPart}"; //такой формат названия групп (например: Анод (золотой) ГОСТ 25475-2015 ГОСТ 25475-2015))
       var group = FindGroupByName(catalog.Groups, g => g.Groups, groupName) ?? CreateGroupSortamentEx(groupName, sortament.OwnerGroup.Name);
-      var element = group.CreateElement("Element"); //название по умолчанию
+      var element = group.CreateElement(Constants.ELEMENT_DEFAULT_NAME);
       element.Applicability = Applicability.Allowed;
       var propName = element.GetProperty(Constants.PROP_NAME_AND_DESCRIPTION);
       var formula = CreateOrReceiveFormula(sortament.OwnerGroup.Name, $"Обозначение {groupName}");
       propName.EvaluationPropertyInfo.Formula = formula;
       var conceptClassification = _session.Objects.Get<IConcept>(Constants.CONCEPT_CLASSIFICATION_ITEM);
       var conceptPropertySourceClassificationName = conceptClassification.ConceptPropertySources.FirstOrDefault(s => s.AbsoluteCode == Constants.PROP_NAME_AND_DESCRIPTION_ABSOLUTE_CODE);
-      var appointedFormula2 = group.AllAppointedFormulas.FirstOrDefault(af => af.Formula == formula) ??
+      var appointedFormula = group.AllAppointedFormulas.FirstOrDefault(af => af.Formula == formula) ??
                                      group.AddAppointedFormula(conceptPropertySourceClassificationName, formula);
       return element;
     }
@@ -86,14 +86,13 @@ namespace Tessera.App
       var similarFirstWord = similarSortament.Split(' ')[0];
       var group = inputElementWordFirst.Equals(similarFirstWord, StringComparison.OrdinalIgnoreCase)
         ? searchElement.OwnerGroup
-        : catalog.Groups.First().CreateGroup(inputElementWordFirst);
+        : CreateGroupSortament(catalog.Groups.First(), inputElementWordFirst);
 
       var element = group.CreateElement(inputElementFormat);
       element.Applicability = Applicability.Allowed;
       FillProperties(inputElementFormat, inputElementWordFirst, group, element);
-
       return element;
-    }   
+    }
 
     public IElement CreateOrReceiveMaterial(SectionDefinitionViewModel sectionDefinition)
     {
@@ -157,9 +156,21 @@ namespace Tessera.App
     {
       var formulaGroups = _session.Objects.FormulaCatalog.FormulaGroups;
       var groupFormula = FindGroupByName(formulaGroups, g => g.FormulaGroups, sortamentGroup) ??
-                         FindGroupByName(formulaGroups, g => g.FormulaGroups, "Обозначения экземпляров сортаментов").CreateFormulaGroup(sortamentGroup);
+                         FindGroupByName(formulaGroups, g => g.FormulaGroups, Constants.GROUP_FORMULA_DESIGNATION_SORTAMENT_EX).CreateFormulaGroup(sortamentGroup);
       var formula = groupFormula.Formulas.FirstOrDefault(x => x.Name == formulaName) ?? CreateNewFormula(groupFormula, formulaName);
       return formula;
+    }
+
+    private IGroup CreateGroupSortament(IGroup parentGroup, string groupName)
+    {
+      var formulaGroups = _session.Objects.FormulaCatalog.FormulaGroups;
+      var groupFormula = FindGroupByName(formulaGroups, g => g.FormulaGroups, Constants.GROUP_FORMULA_DESIGNATION_SORTAMENT);
+      var formula = groupFormula.Formulas.FirstOrDefault(x => x.Name == Constants.FORMULA_DESIGNATION_SORTAMENT);
+      var conceptClassification = _session.Objects.Get<IConcept>(Constants.CONCEPT_CLASSIFICATION_ITEM);
+      var group = parentGroup.CreateGroup(groupName);
+      var conceptPropertySourceClassificationName = conceptClassification.ConceptPropertySources.FirstOrDefault(s => s.AbsoluteCode == Constants.PROP_NAME_AND_DESCRIPTION_ABSOLUTE_CODE);
+      var appointedFormula = group.AddAppointedFormula(conceptPropertySourceClassificationName, formula);
+      return group;
     }
 
     private IGroup CreateGroupSortamentEx(string derivedGroupName, string baseGroupName)
