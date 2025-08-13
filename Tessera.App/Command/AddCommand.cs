@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using Tessera.App.PolinomHandlers;
 using Tessera.App.ViewModel;
 
 namespace Tessera.App.Command
@@ -27,7 +28,7 @@ namespace Tessera.App.Command
     {
       var test = ReferenceProvider.Instance;
       var sectionDefinitions = parameter as ObservableCollection<SectionDefinitionViewModel>;
-      test.Start(sectionDefinitions);
+      PolinomHandler.Instance.BuildPolinomStructure(sectionDefinitions);
     }
 
     protected override bool CanExecute(object parameter)

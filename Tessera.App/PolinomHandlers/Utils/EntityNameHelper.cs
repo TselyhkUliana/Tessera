@@ -1,4 +1,4 @@
-﻿namespace Tessera.App
+﻿namespace Tessera.App.PolinomHandlers.Utils
 {
   internal static class EntityNameHelper
   {

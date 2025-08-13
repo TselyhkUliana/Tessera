@@ -1,0 +1,31 @@
+﻿using Ascon.Polynom.Api;
+using Tessera.App.PolinomHandlers.Utils;
+using Tessera.App.ViewModel;
+
+namespace Tessera.App.PolinomHandlers.Strategies
+{
+  internal class TypeSizeStrategy : ITypeSizeStrategy
+  {
+    private PolinomApiHelper _apiHelper;
+
+    public TypeSizeStrategy(PolinomApiHelper polinomApiHelper)
+    {
+      _apiHelper = polinomApiHelper;
+    }
+
+    public IElement GetOrCreate(SectionDefinitionViewModel sectionDefinition, string groupName)
+    {
+      var catalog = _apiHelper.GetCatalog(Constants.CATALOG_TYPE_SIZE);
+      var group = _apiHelper.FindGroupByName(catalog.Groups, g => g.Groups, groupName) ?? catalog.CreateGroup(groupName);
+      var element = group.Elements.Where(e => e.Name.Equals(sectionDefinition.TypeSize, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+      element ??= group.CreateElement(sectionDefinition.TypeSize);
+      element.Applicability = Applicability.Allowed;
+      return element;
+    }
+
+    public void FillProperties()
+    {
+      throw new NotImplementedException();
+    }
+  }
+}

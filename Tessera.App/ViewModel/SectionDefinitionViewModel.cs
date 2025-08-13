@@ -11,7 +11,7 @@ using Tessera.App.Model;
 namespace Tessera.App.ViewModel
 {
   [DebuggerDisplay("SectionDefinitionViewModel: {Material} - {SectionProfile} - {TypeSize}")]
-  internal class SectionDefinitionViewModel : ViewModelBase
+  public class SectionDefinitionViewModel : ViewModelBase
   {
     private readonly SectionDefinition _sectionDefinition;
     private readonly ISuggestionProvider _suggestionProvider;
@@ -26,7 +26,6 @@ namespace Tessera.App.ViewModel
     }
 
     /// <summary>Материал</summary>
-
     public string Material
     {
       get => _sectionDefinition.Material;

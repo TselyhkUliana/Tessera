@@ -2,7 +2,7 @@
 
 namespace Tessera.App
 {
-  interface ISuggestionProvider
+  public interface ISuggestionProvider
   {
     List<(float[] Id, string Name)> MaterialEmbeddings { get; }
     List<(float[] Id, string Name)> ProfileEmbeddings { get; }
