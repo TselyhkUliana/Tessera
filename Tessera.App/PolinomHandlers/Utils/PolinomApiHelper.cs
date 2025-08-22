@@ -6,21 +6,21 @@ namespace Tessera.App.PolinomHandlers.Utils
   internal class PolinomApiHelper
   {
     private readonly ISession _session;
+    private readonly TransactionManager _transactionManager;
     private readonly IReference? _referenceMaterialAndSortament;
 
-    public PolinomApiHelper(ISession session)
+    public PolinomApiHelper(ISession session, TransactionManager transactionManager)
     {
       _session = session;
+      _transactionManager = transactionManager;
       _referenceMaterialAndSortament = _session.Objects.AllReferences.FirstOrDefault(x => x.Name == Constants.REFENCE_NAME);
     }
-
-    //public List<IElement> ElementsForApproval { get; set; } = new();
 
     public IConcept GetConcept(string conceptCode) => _session.Objects.Get<IConcept>(conceptCode);
 
     public ICatalog GetCatalog(string catalogName) => _referenceMaterialAndSortament.Catalogs.FirstOrDefault(x => x.Name == catalogName);
 
-    public IApiReadOnlyCollection<IFormulaGroup> GetFormulaGroup() => _session.Objects.FormulaCatalog.FormulaGroups;
+    public IApiReadOnlyCollection<IFormulaGroup> GetFormulaGroups() => _session.Objects.FormulaCatalog.FormulaGroups
 
     public IElement SearchElement(string similarElement, string catalogName)
     {
@@ -30,6 +30,35 @@ namespace Tessera.App.PolinomHandlers.Utils
       var condition = _session.Objects.CreateSimpleCondition(concept, propDef, (int)StringCompareOperation.Equal, ((IStringPropertyDefinition)propDef).CreateStringPropertyValueData(similarElement));
       var searchElement = catalog.Intersect(condition).GetEnumerable<IElement>().FirstOrDefault();
       return searchElement;
+    }
+
+    public IDocument SearchDocument(string standard)
+    {
+      var documentCatalog = _referenceMaterialAndSortament.DocumentCatalog;
+      var concept = _session.Objects.GetKnownConcept(KnownConceptKind.Document);
+      var propDef = _session.Objects.GetKnownPropertyDefinition(KnownPropertyDefinitionKind.Designation);
+      var condition = _session.Objects.CreateSimpleCondition(concept, propDef, (int)StringCompareOperation.Equal, ((IStringPropertyDefinition)propDef).CreateStringPropertyValueData(standard));
+      var searchDocument = documentCatalog.Intersect(condition).GetEnumerable<IDocument>().FirstOrDefault();
+      return searchDocument;
+    }
+
+    public void AddDocument(IElement element, string fullName, string documentGroupName)
+    {
+      var fullStandard = EntityNameHelper.GetFullStandard(fullName);
+      var documentCatalog = _referenceMaterialAndSortament.DocumentCatalog;
+      var documentGroup = documentCatalog.DocumentGroups.FirstOrDefault(x => x.Name == documentGroupName);
+      var document = SearchDocument(fullStandard) ?? CreateDocument(fullStandard, documentGroup);
+      element.LinkDocument(document);
+    }
+
+    public IDocument CreateDocument(string fullStandard, IDocumentGroup documentGroup)
+    {
+      var standard = EntityNameHelper.GetStandard(fullStandard);
+      var groupDocument = FindGroupByName(documentGroup.DocumentGroups, g => g.DocumentGroups, standard) ?? documentGroup.CreateDocumentGroup(standard);
+      var document = groupDocument.CreateDocument(fullStandard);
+      document.Designation = fullStandard;
+      document.Applicability = Applicability.Allowed;
+      return document;
     }
 
     public void CreateLink(ILinkable left, ILinkable right, string aboluteCodeLink)
@@ -52,11 +81,11 @@ namespace Tessera.App.PolinomHandlers.Utils
       return null;
     }
 
-    public IFormula CreateOrReceiveFormula(string sortamentGroup, string formulaName)
+    public IFormula CreateOrReceiveFormula(string sortamentGroup, string formulaName, string groupName)
     {
-      var formulaGroups = GetFormulaGroup();
+      var formulaGroups = GetFormulaGroups();
       var groupFormula = FindGroupByName(formulaGroups, g => g.FormulaGroups, sortamentGroup) ??
-                         FindGroupByName(formulaGroups, g => g.FormulaGroups, Constants.GROUP_FORMULA_DESIGNATION_SORTAMENT_EX).CreateFormulaGroup(sortamentGroup);
+                         FindGroupByName(formulaGroups, g => g.FormulaGroups, groupName).CreateFormulaGroup(sortamentGroup);
       var formula = groupFormula.Formulas.FirstOrDefault(x => x.Name == formulaName) ?? CreateFormula(groupFormula, formulaName);
       return formula;
     }

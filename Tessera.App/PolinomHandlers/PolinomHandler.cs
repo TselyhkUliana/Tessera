@@ -21,8 +21,8 @@ namespace Tessera.App.PolinomHandlers
     private PolinomHandler()
     {
       LoginManager.TryOpenSession(Guid.Parse(Constants.POLYNOM_CLIENT_ID), out _session);
-      _polinomApiHelper = new PolinomApiHelper(_session);
       _transactionManager = new TransactionManager(_session);
+      _polinomApiHelper = new PolinomApiHelper(_session, _transactionManager);
       _materialStrategy = new MaterialStrategy(_polinomApiHelper);
       _sortamentStrategy = new SortamentStrategy(_polinomApiHelper);
       _typeSizeStrategy = new TypeSizeStrategy(_polinomApiHelper);
@@ -31,7 +31,7 @@ namespace Tessera.App.PolinomHandlers
 
     public static PolinomHandler Instance => _instance.Value;
 
-    public void BuildPolinomStructure(IEnumerable<SectionDefinitionViewModel> sectionDefinitionViewModels)
+    public void EnsureEntitiesExist(IEnumerable<SectionDefinitionViewModel> sectionDefinitionViewModels)
     {
       _transactionManager.ApplyChanges(() =>
       {
@@ -46,7 +46,9 @@ namespace Tessera.App.PolinomHandlers
         _polinomApiHelper.CreateLink(sortamentEx, sortament, Constants.LINK_SORTAMENTEX_SORTAMENT);
         _polinomApiHelper.CreateLink(sortamentEx, material, Constants.LINK_SORTAMENTEX_MATERIAL);
         _polinomApiHelper.CreateLink(sortamentEx, typeSize, Constants.LINK_SORTAMENTEX_TYPE_SIZE);
-
+        
+        sortamentEx.Evaluate();
+        sectionDefinition.SectionInstance = sortamentEx.Name;
         _polinomApiHelper.LinksTest(sortament);
       });
     }

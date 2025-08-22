@@ -45,7 +45,6 @@ namespace Tessera.App.ViewModel
         _ = UpdateSuggestionsSafeAsync(value, SuggestedMaterials, _suggestionProvider.MaterialEmbeddings);
       }
     }
-
     /// <summary>Сортамент</summary>
     public string SectionProfile
     {

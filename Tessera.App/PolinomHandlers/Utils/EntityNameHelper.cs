@@ -20,7 +20,7 @@
     {
       return Constants.Standards
          .Select(x => fullName.IndexOf(x, StringComparison.OrdinalIgnoreCase))
-         .Where(index => index > 0)
+         .Where(index => index >= 0)
          .DefaultIfEmpty(-1)
          .First();
     }
@@ -42,15 +42,28 @@
     }
 
     /// <summary>
-    /// Возвращает стандарт из имени, начиная с ключевого слова стандарта.
+    /// Возвращает часть строки начиная с ключевого слова стандарта 
+    /// <br/>(например: "ГОСТ 10003-90").
     /// </summary>
-    public static string GetStandard(string fullName)
+    public static string GetFullStandard(string fullName)
     {
       if (string.IsNullOrWhiteSpace(fullName))
         return string.Empty;
 
       var index = GetStandardKeywordIndex(fullName);
       return index > 0 ? fullName.Substring(index).Trim() : string.Empty;
+    }
+
+    /// <summary>
+    /// Возвращает ключевое слово стандарта (например: "ГОСТ", "ISO"), 
+    /// <br/> если строка начинается с одного из стандартов в <see cref="Constants.Standards"/>.
+    /// </summary>
+    public static string GetStandard(string fullStandard)
+    {
+      if (string.IsNullOrWhiteSpace(fullStandard))
+        return string.Empty;
+
+      return Constants.Standards.FirstOrDefault(x => fullStandard.StartsWith(x, StringComparison.OrdinalIgnoreCase)) ?? string.Empty;
     }
 
     /// <summary>
@@ -62,7 +75,7 @@
         return string.Empty;
 
       var normalized = fullName.FirstCharToUpper();
-      var standard = GetStandard(normalized);
+      var standard = GetFullStandard(normalized);
 
       if (!string.IsNullOrEmpty(standard))
       {

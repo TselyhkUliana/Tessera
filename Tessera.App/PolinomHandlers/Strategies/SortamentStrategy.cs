@@ -33,10 +33,13 @@ namespace Tessera.App.PolinomHandlers.Strategies
       var group = inputElementWordFirst.Equals(similarFirstWord, StringComparison.OrdinalIgnoreCase)
         ? searchElement.OwnerGroup
         : CreateGroupSortament(catalog.Groups.First(), inputElementWordFirst);
-
-      var element = group.CreateElement(inputElementFormat);
+      
+      var element = group.CreateElement(Constants.ELEMENT_DEFAULT_NAME);
       element.Applicability = Applicability.Allowed;
+
+      _apiHelper.AddDocument(element, inputElementFormat, Constants.GROUP_DOCUMENT_SORTAMENT);
       FillProperties(inputElementFormat, inputElementWordFirst, group, element);
+      element.Evaluate();
       return element;
     }
 
@@ -59,7 +62,7 @@ namespace Tessera.App.PolinomHandlers.Strategies
     {
       var elements = group.Elements;
 
-      var gostSuffix = EntityNameHelper.GetStandard(inputElementFormat);
+      var gostSuffix = EntityNameHelper.GetFullStandard(inputElementFormat);
       if (!string.IsNullOrEmpty(gostSuffix))
       {
         var gostShapeValue = (group.Elements.FirstOrDefault(e => e.Name.Contains(gostSuffix, StringComparison.OrdinalIgnoreCase))?
@@ -107,13 +110,13 @@ namespace Tessera.App.PolinomHandlers.Strategies
 
     private IGroup CreateGroupSortament(IGroup parentGroup, string groupName)
     {
-      var formulaGroups = _apiHelper.GetFormulaGroup();
+      var formulaGroups = _apiHelper.GetFormulaGroups();
       var groupFormula = _apiHelper.FindGroupByName(formulaGroups, g => g.FormulaGroups, Constants.GROUP_FORMULA_DESIGNATION_SORTAMENT);
       var formula = groupFormula.Formulas.FirstOrDefault(x => x.Name == Constants.FORMULA_DESIGNATION_SORTAMENT);
       var conceptClassification = _apiHelper.GetConcept(Constants.CONCEPT_CLASSIFICATION_ITEM);
       var group = parentGroup.CreateGroup(groupName);
       var conceptPropertySourceClassificationName = conceptClassification.ConceptPropertySources.FirstOrDefault(s => s.AbsoluteCode == Constants.PROP_NAME_AND_DESCRIPTION_ABSOLUTE_CODE);
-      var appointedFormula = group.AddAppointedFormula(conceptPropertySourceClassificationName, formula);
+      group.AddAppointedFormula(conceptPropertySourceClassificationName, formula);
       return group;
     }
   }

@@ -12,6 +12,8 @@
     public const string GROUP_FORMULA_DESIGNATION_SORTAMENT_EX = "Обозначения экземпляров сортаментов";
     public const string FORMULA_DESIGNATION_SORTAMENT = "Обозначение сортамента";
     public const string ELEMENT_DEFAULT_NAME = "Element";
+    public const string GROUP_DOCUMENT_SORTAMENT = "Документы на сортаменты";
+    public const string GROUP_DOCUMENT_MATERIAL = "Документы на материалы";
 
     public const string PROP_MATERIAL_MASK = "c:@Materials::c:Materials::pd:MaterialsMark";
     public const string PROP_SORTAMENT_MASK = "c:Sortaments::pd:MaterialsMark";
@@ -31,6 +33,7 @@
     public const string LINK_SORTAMENTEX_TYPE_SIZE = "ld:ExSortSizeLinkCode";
 
     public const string GOST = "ГОСТ";
+    public const string GOST_R_ISO = "ГОСТ Р ИСО";
     public const string GOST_R = "ГОСТ Р";
     public const string TU = "ТУ";
     public const string OST = "ОСТ";
@@ -52,6 +55,6 @@
     public const string EN = "EN";
     public const string ASTM = "ASTM";
 
-    public static readonly List<string> Standards = new() { GOST, GOST_R, TU, OST, STO, RD, SP, SNiP, TR_TS, TR_EAS, PNST, SANPIN, GN, MU, FS, ND, MK, MK2, ISO, EN, ASTM };
+    public static readonly List<string> Standards = new() { GOST, GOST_R_ISO, GOST_R, TU, OST, STO, RD, SP, SNiP, TR_TS, TR_EAS, PNST, SANPIN, GN, MU, FS, ND, MK, MK2, ISO, EN, ASTM };
   }
 }

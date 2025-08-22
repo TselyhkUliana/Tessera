@@ -11,24 +11,21 @@ using Tessera.App.ViewModel;
 
 namespace Tessera.App.Command
 {
-  internal class AddCommand : DelegateCommandBase
+  internal class CheckAndCreateEntitiesCommand : DelegateCommandBase
   {
-    //private readonly ObservableCollection<SectionDefinitionViewModel> _sectionDefinitions;
     private readonly ISuggestionProvider _suggestionProvider;
 
-    public AddCommand(ObservableCollection<SectionDefinitionViewModel> sectionDefinitions, ISuggestionProvider suggestionProvider) : base()
+    public CheckAndCreateEntitiesCommand(ObservableCollection<SectionDefinitionViewModel> sectionDefinitions, ISuggestionProvider suggestionProvider) : base()
     {
-      Caption = "_Добавить";
-      Hint = "Добавить новую секцию (колонку)";
-      //_sectionDefinitions = sectionDefinitions;
+      Caption = "Создать недостающие элементы";
+      Hint = "Автоматическое создание отсутствующих материалов, сортаментов и типоразмеров в ПОЛИНОМ:MDM";
       _suggestionProvider = suggestionProvider;
     }
 
     protected override void Execute(object parameter)
     {
-      var test = ReferenceProvider.Instance;
       var sectionDefinitions = parameter as ObservableCollection<SectionDefinitionViewModel>;
-      PolinomHandler.Instance.BuildPolinomStructure(sectionDefinitions);
+      PolinomHandler.Instance.EnsureEntitiesExist(sectionDefinitions);
     }
 
     protected override bool CanExecute(object parameter)

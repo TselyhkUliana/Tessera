@@ -24,12 +24,14 @@ namespace Tessera.App.PolinomHandlers.Strategies
       var element = group.CreateElement(Constants.ELEMENT_DEFAULT_NAME);
       element.Applicability = Applicability.Allowed;
       var propName = element.GetProperty(Constants.PROP_NAME_AND_DESCRIPTION);
-      var formula = _apiHelper.CreateOrReceiveFormula(sortament.OwnerGroup.Name, $"Обозначение {groupName}");
+      var formula = _apiHelper.CreateOrReceiveFormula(sortament.OwnerGroup.Name, $"Обозначение {groupName}", Constants.GROUP_FORMULA_DESIGNATION_SORTAMENT_EX);
       propName.EvaluationPropertyInfo.Formula = formula;
       var conceptClassification = _apiHelper.GetConcept(Constants.CONCEPT_CLASSIFICATION_ITEM);
       var conceptPropertySourceClassificationName = conceptClassification.ConceptPropertySources.FirstOrDefault(s => s.AbsoluteCode == Constants.PROP_NAME_AND_DESCRIPTION_ABSOLUTE_CODE);
       var appointedFormula = group.AllAppointedFormulas.FirstOrDefault(af => af.Formula == formula) ??
-                                     group.AddAppointedFormula(conceptPropertySourceClassificationName, formula);
+                             group.AddAppointedFormula(conceptPropertySourceClassificationName, formula);
+      var document = sortament.Documents.FirstOrDefault();
+      group.LinkDocument(document);
       return element;
     }
 

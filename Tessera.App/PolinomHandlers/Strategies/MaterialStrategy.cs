@@ -24,11 +24,14 @@ namespace Tessera.App.PolinomHandlers.Strategies
 
       var inputElementFormat = EntityNameHelper.FormatFullName(inputMaterial);
       var group = searchElement.OwnerGroup;
-      var element = group.CreateElement(inputElementFormat);
+      var element = group.CreateElement(Constants.ELEMENT_DEFAULT_NAME);
       element.Applicability = Applicability.Allowed;
       FillProperties(element, inputElementFormat);
+      _apiHelper.AddDocument(element, inputElementFormat, Constants.GROUP_DOCUMENT_MATERIAL);
+      element.Evaluate();
       return element;
     }
+
 
     public void FillProperties(IElement element, string inputElementFormat)
     {

@@ -18,7 +18,7 @@ namespace Tessera.App
 
     public IEnumerable<ICommand> GetCommands(ObservableCollection<SectionDefinitionViewModel> sectionDefinitions, ISuggestionProvider suggestionProvider)
     {
-      yield return new AddCommand(sectionDefinitions, suggestionProvider);
+      yield return new CheckAndCreateEntitiesCommand(sectionDefinitions, suggestionProvider);
       yield return new RemoveCommand();
     }
   }
