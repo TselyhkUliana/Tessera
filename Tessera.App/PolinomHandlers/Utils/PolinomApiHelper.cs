@@ -20,33 +20,24 @@ namespace Tessera.App.PolinomHandlers.Utils
 
     public ICatalog GetCatalog(string catalogName) => _referenceMaterialAndSortament.Catalogs.FirstOrDefault(x => x.Name == catalogName);
 
-    public IApiReadOnlyCollection<IFormulaGroup> GetFormulaGroups() => _session.Objects.FormulaCatalog.FormulaGroups
+    public IDocumentCatalog GetDocumentCatalog() => _referenceMaterialAndSortament.DocumentCatalog;
+
+    public IApiReadOnlyCollection<IFormulaGroup> GetFormulaGroups() => _session.Objects.FormulaCatalog.FormulaGroups;
 
     public IElement SearchElement(string similarElement, string catalogName)
     {
-      var catalog = GetCatalog(catalogName);
-      var concept = _session.Objects.GetKnownConcept(KnownConceptKind.Element);
-      var propDef = _session.Objects.GetKnownPropertyDefinition(KnownPropertyDefinitionKind.Name);
-      var condition = _session.Objects.CreateSimpleCondition(concept, propDef, (int)StringCompareOperation.Equal, ((IStringPropertyDefinition)propDef).CreateStringPropertyValueData(similarElement));
-      var searchElement = catalog.Intersect(condition).GetEnumerable<IElement>().FirstOrDefault();
-      return searchElement;
+      return SearchEntity(KnownConceptKind.Element, KnownPropertyDefinitionKind.Name, similarElement, condition => GetCatalog(catalogName).Intersect(condition).GetEnumerable<IElement>());
     }
 
     public IDocument SearchDocument(string standard)
     {
-      var documentCatalog = _referenceMaterialAndSortament.DocumentCatalog;
-      var concept = _session.Objects.GetKnownConcept(KnownConceptKind.Document);
-      var propDef = _session.Objects.GetKnownPropertyDefinition(KnownPropertyDefinitionKind.Designation);
-      var condition = _session.Objects.CreateSimpleCondition(concept, propDef, (int)StringCompareOperation.Equal, ((IStringPropertyDefinition)propDef).CreateStringPropertyValueData(standard));
-      var searchDocument = documentCatalog.Intersect(condition).GetEnumerable<IDocument>().FirstOrDefault();
-      return searchDocument;
+      return SearchEntity(KnownConceptKind.Document, KnownPropertyDefinitionKind.Designation, standard, condition => GetDocumentCatalog().Intersect(condition).GetEnumerable<IDocument>());
     }
 
     public void AddDocument(IElement element, string fullName, string documentGroupName)
     {
       var fullStandard = EntityNameHelper.GetFullStandard(fullName);
-      var documentCatalog = _referenceMaterialAndSortament.DocumentCatalog;
-      var documentGroup = documentCatalog.DocumentGroups.FirstOrDefault(x => x.Name == documentGroupName);
+      var documentGroup = GetDocumentCatalog().DocumentGroups.FirstOrDefault(x => x.Name == documentGroupName);
       var document = SearchDocument(fullStandard) ?? CreateDocument(fullStandard, documentGroup);
       element.LinkDocument(document);
     }
@@ -88,6 +79,14 @@ namespace Tessera.App.PolinomHandlers.Utils
                          FindGroupByName(formulaGroups, g => g.FormulaGroups, groupName).CreateFormulaGroup(sortamentGroup);
       var formula = groupFormula.Formulas.FirstOrDefault(x => x.Name == formulaName) ?? CreateFormula(groupFormula, formulaName);
       return formula;
+    }
+
+    private T SearchEntity<T>(KnownConceptKind conceptKind, KnownPropertyDefinitionKind propertyDefinitionKind, string value, Func<ICondition, IEnumerable<T>> sourceProvider) where T : class
+    {
+      var concept = _session.Objects.GetKnownConcept(conceptKind);
+      var propDef = _session.Objects.GetKnownPropertyDefinition(propertyDefinitionKind);
+      var condition = _session.Objects.CreateSimpleCondition(concept, propDef, (int)StringCompareOperation.Equal, ((IStringPropertyDefinition)propDef).CreateStringPropertyValueData(value));
+      return sourceProvider(condition).FirstOrDefault();
     }
 
     private IFormula CreateFormula(IFormulaGroup groupFormula, string name)
