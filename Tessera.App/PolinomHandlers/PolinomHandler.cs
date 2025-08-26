@@ -1,7 +1,9 @@
 ﻿using Ascon.Polynom.Api;
 using Ascon.Polynom.Login;
+using System.Diagnostics;
 using Tessera.App.PolinomHandlers.Strategies;
 using Tessera.App.PolinomHandlers.Utils;
+using Tessera.App.PolinomHandlers.Utils.Constants;
 using Tessera.App.ViewModel;
 using TransactionManager = Tessera.App.PolinomHandlers.Utils.TransactionManager;
 
@@ -16,11 +18,11 @@ namespace Tessera.App.PolinomHandlers
     private readonly ITypeSizeStrategy _typeSizeStrategy;
     private readonly ISortamentExStrategy _sortamentExStrategy;
     private readonly TransactionManager _transactionManager;
-    private PolinomApiHelper _polinomApiHelper;
+    private readonly PolinomApiHelper _polinomApiHelper;
 
     private PolinomHandler()
     {
-      LoginManager.TryOpenSession(Guid.Parse(Constants.POLYNOM_CLIENT_ID), out _session);
+      LoginManager.TryOpenSession(Guid.Parse(CatalogConstants.POLYNOM_CLIENT_ID), out _session);
       _transactionManager = new TransactionManager(_session);
       _polinomApiHelper = new PolinomApiHelper(_session, _transactionManager);
       _materialStrategy = new MaterialStrategy(_polinomApiHelper);
@@ -32,7 +34,7 @@ namespace Tessera.App.PolinomHandlers
     public static PolinomHandler Instance => _instance.Value;
 
     public void EnsureEntitiesExist(IEnumerable<SectionDefinitionViewModel> sectionDefinitionViewModels)
-    {
+    {      
       _transactionManager.ApplyChanges(() =>
       {
         var sectionDefinition = sectionDefinitionViewModels.First();
@@ -41,12 +43,12 @@ namespace Tessera.App.PolinomHandlers
         var typeSize = _typeSizeStrategy.GetOrCreate(sectionDefinition, sortament.Name);
         var sortamentEx = _sortamentExStrategy.GetOrCreate(sortament);
 
-        _polinomApiHelper.CreateLink(sortament, material, Constants.LINK_SORTAMENT_MATERIAL);
-        _polinomApiHelper.CreateLink(typeSize, sortament, Constants.LINK_TYPESIZE_SORTAMENT);
-        _polinomApiHelper.CreateLink(sortamentEx, sortament, Constants.LINK_SORTAMENTEX_SORTAMENT);
-        _polinomApiHelper.CreateLink(sortamentEx, material, Constants.LINK_SORTAMENTEX_MATERIAL);
-        _polinomApiHelper.CreateLink(sortamentEx, typeSize, Constants.LINK_SORTAMENTEX_TYPE_SIZE);
-        
+        _polinomApiHelper.CreateLink(sortament, material, LinkConstants.LINK_SORTAMENT_MATERIAL);
+        _polinomApiHelper.CreateLink(typeSize, sortament, LinkConstants.LINK_TYPESIZE_SORTAMENT);
+        _polinomApiHelper.CreateLink(sortamentEx, sortament, LinkConstants.LINK_SORTAMENTEX_SORTAMENT);
+        _polinomApiHelper.CreateLink(sortamentEx, material, LinkConstants.LINK_SORTAMENTEX_MATERIAL);
+        _polinomApiHelper.CreateLink(sortamentEx, typeSize, LinkConstants.LINK_SORTAMENTEX_TYPE_SIZE);
+
         sortamentEx.Evaluate();
         sectionDefinition.SectionInstance = sortamentEx.Name;
         _polinomApiHelper.LinksTest(sortament);

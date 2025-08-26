@@ -1,5 +1,6 @@
 ﻿using Ascon.Polynom.Api;
 using Tessera.App.PolinomHandlers.Utils;
+using Tessera.App.PolinomHandlers.Utils.Constants;
 using Tessera.App.ViewModel;
 
 namespace Tessera.App.PolinomHandlers.Strategies
@@ -17,17 +18,17 @@ namespace Tessera.App.PolinomHandlers.Strategies
     {
       var inputMaterial = sectionDefinition.Material;
       var similarMaterial = sectionDefinition.SuggestedMaterials.First();
-      var searchElement = _apiHelper.SearchElement(similarMaterial, Constants.CATALOG_MATERIAL);
+      var searchElement = _apiHelper.SearchElement(similarMaterial, CatalogConstants.CATALOG_MATERIAL);
 
       if (similarMaterial.Equals(inputMaterial, StringComparison.OrdinalIgnoreCase))
         return searchElement;
 
       var inputElementFormat = EntityNameHelper.FormatFullName(inputMaterial);
       var group = searchElement.OwnerGroup;
-      var element = group.CreateElement(Constants.ELEMENT_DEFAULT_NAME);
+      var element = group.CreateElement(CatalogConstants.ELEMENT_DEFAULT_NAME);
       element.Applicability = Applicability.Allowed;
       FillProperties(element, inputElementFormat);
-      _apiHelper.AddDocument(element, inputElementFormat, Constants.GROUP_DOCUMENT_MATERIAL);
+      _apiHelper.AddDocument(element, inputElementFormat, CatalogConstants.GROUP_DOCUMENT_MATERIAL);
       element.Evaluate();
       return element;
     }
@@ -35,8 +36,8 @@ namespace Tessera.App.PolinomHandlers.Strategies
 
     public void FillProperties(IElement element, string inputElementFormat)
     {
-      var markProperty = element.GetProperty(Constants.PROP_MATERIAL_MASK).Definition as IStringPropertyDefinition;
-      var conceptMaterial = _apiHelper.GetConcept(Constants.CONCEPT_MATERIAL);
+      var markProperty = element.GetProperty(PropConstants.PROP_MATERIAL_MASK).Definition as IStringPropertyDefinition;
+      var conceptMaterial = _apiHelper.GetConceptByAbsoluteCode(ConceptConstants.CONCEPT_MATERIAL);
       markProperty.AssignStringPropertyValue(element, conceptMaterial, EntityNameHelper.GetNameBeforeStandard(inputElementFormat));
     }
   }

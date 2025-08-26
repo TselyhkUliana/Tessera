@@ -1,5 +1,6 @@
 ﻿using Ascon.Polynom.Api;
 using Tessera.App.PolinomHandlers.Utils;
+using Tessera.App.PolinomHandlers.Utils.Constants;
 using Tessera.App.ViewModel;
 
 namespace Tessera.App.PolinomHandlers.Strategies
@@ -15,7 +16,7 @@ namespace Tessera.App.PolinomHandlers.Strategies
 
     public IElement GetOrCreate(SectionDefinitionViewModel sectionDefinition, string groupName)
     {
-      var catalog = _apiHelper.GetCatalog(Constants.CATALOG_TYPE_SIZE);
+      var catalog = _apiHelper.GetCatalog(CatalogConstants.CATALOG_TYPE_SIZE);
       var group = _apiHelper.FindGroupByName(catalog.Groups, g => g.Groups, groupName) ?? catalog.CreateGroup(groupName);
       var element = group.Elements.Where(e => e.Name.Equals(sectionDefinition.TypeSize, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
       element ??= group.CreateElement(sectionDefinition.TypeSize);

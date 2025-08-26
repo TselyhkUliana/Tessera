@@ -1,5 +1,6 @@
 ﻿using Ascon.Polynom.Api;
 using Tessera.App.PolinomHandlers.Utils;
+using Tessera.App.PolinomHandlers.Utils.Constants;
 using Tessera.App.ViewModel;
 
 namespace Tessera.App.PolinomHandlers.Strategies
@@ -21,8 +22,8 @@ namespace Tessera.App.PolinomHandlers.Strategies
         .FirstOrDefault(x => x.Split(' ')[0].Equals(inputFirstWord, StringComparison.OrdinalIgnoreCase))?.Trim()
         ?? sectionDefinition.SuggestedInstances.First().Trim();
 
-      var catalog = _apiHelper.GetCatalog(Constants.CATALOG_SORTAMENT);
-      var searchElement = _apiHelper.SearchElement(similarSortament, Constants.CATALOG_SORTAMENT);
+      var catalog = _apiHelper.GetCatalog(CatalogConstants.CATALOG_SORTAMENT);
+      var searchElement = _apiHelper.SearchElement(similarSortament, CatalogConstants.CATALOG_SORTAMENT);
 
       if (similarSortament.Equals(inputSortament, StringComparison.OrdinalIgnoreCase))
         return searchElement;
@@ -34,10 +35,10 @@ namespace Tessera.App.PolinomHandlers.Strategies
         ? searchElement.OwnerGroup
         : CreateGroupSortament(catalog.Groups.First(), inputElementWordFirst);
       
-      var element = group.CreateElement(Constants.ELEMENT_DEFAULT_NAME);
+      var element = group.CreateElement(CatalogConstants.ELEMENT_DEFAULT_NAME);
       element.Applicability = Applicability.Allowed;
 
-      _apiHelper.AddDocument(element, inputElementFormat, Constants.GROUP_DOCUMENT_SORTAMENT);
+      _apiHelper.AddDocument(element, inputElementFormat, CatalogConstants.GROUP_DOCUMENT_SORTAMENT);
       FillProperties(inputElementFormat, inputElementWordFirst, group, element);
       element.Evaluate();
       return element;
@@ -47,8 +48,8 @@ namespace Tessera.App.PolinomHandlers.Strategies
     {
       AssignMarkProperty(inputElementFormat, element);
 
-      var shapeProperty = element.GetProperty(Constants.PROP_SHAPE_MIS).Definition as IEnumPropertyDefinition;
-      var conceptShape = _apiHelper.GetConcept(Constants.CONCEPT_SHAPE);
+      var shapeProperty = element.GetProperty(PropConstants.PROP_SHAPE_MIS).Definition as IEnumPropertyDefinition;
+      var conceptShape = _apiHelper.GetConceptByAbsoluteCode(ConceptConstants.CONCEPT_SHAPE);
       var formattedInputName = EntityNameHelper.FormatNameParts(inputElementFormat);
 
       var finalShapeValue = group.Elements.Count > 1
@@ -66,7 +67,7 @@ namespace Tessera.App.PolinomHandlers.Strategies
       if (!string.IsNullOrEmpty(gostSuffix))
       {
         var gostShapeValue = (group.Elements.FirstOrDefault(e => e.Name.Contains(gostSuffix, StringComparison.OrdinalIgnoreCase))?
-            .GetProperty(Constants.PROP_SHAPE_MIS) as IEnumPropertyValue)?.Value;
+            .GetProperty(PropConstants.PROP_SHAPE_MIS) as IEnumPropertyValue)?.Value;
         if (!string.IsNullOrEmpty(gostShapeValue))
           return gostShapeValue;
       }
@@ -76,7 +77,7 @@ namespace Tessera.App.PolinomHandlers.Strategies
           .Select(x => new
           {
             NormalizedName = EntityNameHelper.FormatNameParts(x.Name),
-            ShapeValue = (x.GetPropertyValue(Constants.PROP_SHAPE_MIS) as IEnumPropertyValue)?.Value
+            ShapeValue = (x.GetPropertyValue(PropConstants.PROP_SHAPE_MIS) as IEnumPropertyValue)?.Value
           }).ToList();
 
       if (normalizedElements.All(x => x.ShapeValue is null))
@@ -103,19 +104,19 @@ namespace Tessera.App.PolinomHandlers.Strategies
 
     private void AssignMarkProperty(string inputElementFormat, IElement element)
     {
-      var markProperty = element.GetProperty(Constants.PROP_SORTAMENT_MASK).Definition as IStringPropertyDefinition;
-      var conceptSortament = _apiHelper.GetConcept(Constants.CONCEPT_SORTAMENT);
+      var markProperty = element.GetProperty(PropConstants.PROP_SORTAMENT_MASK).Definition as IStringPropertyDefinition;
+      var conceptSortament = _apiHelper.GetConceptByAbsoluteCode(ConceptConstants.CONCEPT_SORTAMENT);
       markProperty.AssignStringPropertyValue(element, conceptSortament, EntityNameHelper.GetNameBeforeStandard(inputElementFormat));
     }
 
     private IGroup CreateGroupSortament(IGroup parentGroup, string groupName)
     {
       var formulaGroups = _apiHelper.GetFormulaGroups();
-      var groupFormula = _apiHelper.FindGroupByName(formulaGroups, g => g.FormulaGroups, Constants.GROUP_FORMULA_DESIGNATION_SORTAMENT);
-      var formula = groupFormula.Formulas.FirstOrDefault(x => x.Name == Constants.FORMULA_DESIGNATION_SORTAMENT);
-      var conceptClassification = _apiHelper.GetConcept(Constants.CONCEPT_CLASSIFICATION_ITEM);
+      var groupFormula = _apiHelper.FindGroupByName(formulaGroups, g => g.FormulaGroups, CatalogConstants.GROUP_FORMULA_DESIGNATION_SORTAMENT);
+      var formula = groupFormula.Formulas.FirstOrDefault(x => x.Name == CatalogConstants.FORMULA_DESIGNATION_SORTAMENT);
+      var conceptClassification = _apiHelper.GetConceptByAbsoluteCode(ConceptConstants.CONCEPT_CLASSIFICATION_ITEM);
       var group = parentGroup.CreateGroup(groupName);
-      var conceptPropertySourceClassificationName = conceptClassification.ConceptPropertySources.FirstOrDefault(s => s.AbsoluteCode == Constants.PROP_NAME_AND_DESCRIPTION_ABSOLUTE_CODE);
+      var conceptPropertySourceClassificationName = conceptClassification.ConceptPropertySources.FirstOrDefault(s => s.AbsoluteCode == PropConstants.PROP_NAME_AND_DESCRIPTION_ABSOLUTE_CODE);
       group.AddAppointedFormula(conceptPropertySourceClassificationName, formula);
       return group;
     }

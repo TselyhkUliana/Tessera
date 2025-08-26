@@ -1,4 +1,6 @@
-﻿namespace Tessera.App.PolinomHandlers.Utils
+﻿using Tessera.App.PolinomHandlers.Utils.Constants;
+
+namespace Tessera.App.PolinomHandlers.Utils
 {
   internal static class EntityNameHelper
   {
@@ -18,7 +20,7 @@
     /// </summary>
     public static int GetStandardKeywordIndex(string fullName)
     {
-      return Constants.Standards
+      return StandardConstants.Standards
          .Select(x => fullName.IndexOf(x, StringComparison.OrdinalIgnoreCase))
          .Where(index => index >= 0)
          .DefaultIfEmpty(-1)
@@ -63,7 +65,7 @@
       if (string.IsNullOrWhiteSpace(fullStandard))
         return string.Empty;
 
-      return Constants.Standards.FirstOrDefault(x => fullStandard.StartsWith(x, StringComparison.OrdinalIgnoreCase)) ?? string.Empty;
+      return StandardConstants.Standards.FirstOrDefault(x => fullStandard.StartsWith(x, StringComparison.OrdinalIgnoreCase)) ?? string.Empty;
     }
 
     /// <summary>

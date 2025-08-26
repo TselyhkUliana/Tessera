@@ -1,6 +1,7 @@
 ﻿using Ascon.Polynom.Api;
 using System.Reflection.Metadata;
 using Tessera.App.PolinomHandlers.Utils;
+using Tessera.App.PolinomHandlers.Utils.Constants;
 
 namespace Tessera.App.PolinomHandlers.Strategies
 {
@@ -12,7 +13,7 @@ namespace Tessera.App.PolinomHandlers.Strategies
     public SortamentExStrategy(PolinomApiHelper polinomApiHelper)
     {
       _apiHelper = polinomApiHelper;
-      _catalog = _apiHelper.GetCatalog(Constants.CATALOG_SORTAMENT_EX);
+      _catalog = _apiHelper.GetCatalog(CatalogConstants.CATALOG_SORTAMENT_EX);
     }
 
     public IElement GetOrCreate(IElement sortament)
@@ -22,13 +23,13 @@ namespace Tessera.App.PolinomHandlers.Strategies
       var standardPart = sortament.Name.Substring(index);
       var groupName = $"{baseName} {standardPart} {standardPart}"; //такой формат названия групп (например: Анод (золотой) ГОСТ 25475-2015 ГОСТ 25475-2015))
       var group = _apiHelper.FindGroupByName(_catalog.Groups, g => g.Groups, groupName) ?? CreateGroupSortamentEx(groupName, sortament.OwnerGroup.Name);
-      var element = group.CreateElement(Constants.ELEMENT_DEFAULT_NAME);
+      var element = group.CreateElement(CatalogConstants.ELEMENT_DEFAULT_NAME);
       element.Applicability = Applicability.Allowed;
-      var propName = element.GetProperty(Constants.PROP_NAME_AND_DESCRIPTION);
-      var formula = _apiHelper.CreateOrReceiveFormula(sortament.OwnerGroup.Name, $"Обозначение {groupName}", Constants.GROUP_FORMULA_DESIGNATION_SORTAMENT_EX);
+      var propName = element.GetProperty(PropConstants.PROP_NAME_AND_DESCRIPTION);
+      var formula = _apiHelper.CreateOrReceiveFormula(sortament.OwnerGroup.Name, $"Обозначение {groupName}", CatalogConstants.GROUP_FORMULA_DESIGNATION_SORTAMENT_EX);
       propName.EvaluationPropertyInfo.Formula = formula;
-      var conceptClassification = _apiHelper.GetConceptByAbsoluteCode(Constants.CONCEPT_CLASSIFICATION_ITEM);
-      var conceptPropertySourceClassificationName = conceptClassification.ConceptPropertySources.FirstOrDefault(s => s.AbsoluteCode == Constants.PROP_NAME_AND_DESCRIPTION_ABSOLUTE_CODE);
+      var conceptClassification = _apiHelper.GetConceptByAbsoluteCode(ConceptConstants.CONCEPT_CLASSIFICATION_ITEM);
+      var conceptPropertySourceClassificationName = conceptClassification.ConceptPropertySources.FirstOrDefault(s => s.AbsoluteCode == PropConstants.PROP_NAME_AND_DESCRIPTION_ABSOLUTE_CODE);
       var appointedFormula = group.AllAppointedFormulas.FirstOrDefault(af => af.Formula == formula) ??
                              group.AddAppointedFormula(conceptPropertySourceClassificationName, formula);
       var document = sortament.Documents.FirstOrDefault();
@@ -48,8 +49,8 @@ namespace Tessera.App.PolinomHandlers.Strategies
     {
       var description = $"Свойства по {standard}";
       var concept = _apiHelper.GetConceptByName(description) ??
-                    _apiHelper.GetConceptByAbsoluteCode(Constants.CONCEPT_SORTAMENT_EX).CreateSubConcept(description);
-      var prop = concept.GetConceptPropertySource(Constants.PROP_SPECIFICATION_OBJECT_SETTINGS_TEMPLATE);
+                    _apiHelper.GetConceptByAbsoluteCode(ConceptConstants.CONCEPT_SORTAMENT_EX).CreateSubConcept(description);
+      var prop = concept.GetConceptPropertySource(PropConstants.PROP_SPECIFICATION_OBJECT_SETTINGS_TEMPLATE);
       prop.IsDynamic = true;
       element.RealizeContract(concept);
     }

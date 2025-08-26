@@ -1,5 +1,6 @@
 ﻿using Ascon.Polynom.Api;
 using System.Diagnostics;
+using Tessera.App.PolinomHandlers.Utils.Constants;
 
 namespace Tessera.App.PolinomHandlers.Utils
 {
@@ -13,7 +14,7 @@ namespace Tessera.App.PolinomHandlers.Utils
     {
       _session = session;
       _transactionManager = transactionManager;
-      _referenceMaterialAndSortament = _session.Objects.AllReferences.FirstOrDefault(x => x.Name == Constants.REFENCE_NAME);
+      _referenceMaterialAndSortament = _session.Objects.AllReferences.FirstOrDefault(x => x.Name == CatalogConstants.REFENCE_NAME);
     }
 
     public IConcept GetConceptByAbsoluteCode(string absoluteCode) => _session.Objects.Get<IConcept>(absoluteCode);
@@ -56,7 +57,7 @@ namespace Tessera.App.PolinomHandlers.Utils
 
     public void CreateLink(ILinkable left, ILinkable right, string aboluteCodeLink)
     {
-      var group = _session.Objects.LinkDefCatalog.LinkDefGroups.FirstOrDefault(g => g.Name == Constants.REFENCE_NAME);
+      var group = _session.Objects.LinkDefCatalog.LinkDefGroups.FirstOrDefault(g => g.Name == CatalogConstants.REFENCE_NAME);
       var link = group.LinkDefinitions.FirstOrDefault(l => l.AbsoluteCode == aboluteCodeLink);
       link.Destination.CreateLink(left, right);
     }
