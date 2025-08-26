@@ -59,19 +59,30 @@ namespace Tessera.App.PolinomHandlers.Strategies
       shapeProperty.AssignEnumPropertyValue(element, conceptShape, finalShapeValue);
     }
 
+    /// <summary>
+    /// Определяет значение формы (Shape) для нового элемента в группе.
+    /// <br/>Сначала ищет форму по стандарту (ГОСТ, ТУ и т.п.).
+    /// <br/>Если стандарт не найден, анализирует существующие элементы группы:
+    /// <br/> - Если у всех элементов одинаковое значение формы — возвращает его.
+    /// <br/> - Если форма совпадает с первой частью имени — возвращает первую часть.
+    /// <br/> - Если форма совпадает с полным нормализованным именем — возвращает нормализованное имя.
+    /// <br/> - Иначе возвращает null.
+    /// </summary>
     private static string GetShapeValueForMultipleElements(IGroup group, IElement element, string inputElementFormat, string inputElementWordFirst, string formattedInputName)
     {
       var elements = group.Elements;
 
-      var gostSuffix = EntityNameHelper.GetFullStandard(inputElementFormat);
-      if (!string.IsNullOrEmpty(gostSuffix))
+      //Поиск формы по стандарту
+      var standardSuffix = EntityNameHelper.GetFullStandard(inputElementFormat);
+      if (!string.IsNullOrEmpty(standardSuffix))
       {
-        var gostShapeValue = (group.Elements.FirstOrDefault(e => e.Name.Contains(gostSuffix, StringComparison.OrdinalIgnoreCase))?
+        var standardShapeValue = (group.Elements.FirstOrDefault(e => e.Name.Contains(standardSuffix, StringComparison.OrdinalIgnoreCase))?
             .GetProperty(PropConstants.PROP_SHAPE_MIS) as IEnumPropertyValue)?.Value;
-        if (!string.IsNullOrEmpty(gostShapeValue))
-          return gostShapeValue;
+        if (!string.IsNullOrEmpty(standardShapeValue)) // Если нашли форму по стандарту — сразу возвращаем
+          return standardShapeValue;
       }
 
+      // Формируем список нормализованных элементов и их формы, исключая текущий элемент
       var normalizedElements = elements.AsEnumerable()
           .Where(x => x.Id != element.Id)
           .Select(x => new
@@ -80,13 +91,14 @@ namespace Tessera.App.PolinomHandlers.Strategies
             ShapeValue = (x.GetPropertyValue(PropConstants.PROP_SHAPE_MIS) as IEnumPropertyValue)?.Value
           }).ToList();
 
-      if (normalizedElements.All(x => x.ShapeValue is null))
+      // Различные варианты возвращаемого значения в зависимости от данных группы
+      if (normalizedElements.All(x => x.ShapeValue is null)) 
         return null;
       if (normalizedElements.All(x => x.ShapeValue == normalizedElements[0].ShapeValue))
         return normalizedElements.First().ShapeValue;
       else if (normalizedElements.All(x => x.NormalizedName.Split(' ')[0] == x.ShapeValue))
         return inputElementWordFirst;
-      if (normalizedElements.All(x => x.NormalizedName == x.ShapeValue))
+      if (normalizedElements.All(x => x.NormalizedName == x.ShapeValue)) 
         return formattedInputName;
 
       return null;
