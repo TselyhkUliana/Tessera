@@ -16,23 +16,15 @@ namespace Tessera.App.PolinomHandlers.Utils
       _referenceMaterialAndSortament = _session.Objects.AllReferences.FirstOrDefault(x => x.Name == Constants.REFENCE_NAME);
     }
 
-    public IConcept GetConcept(string conceptCode) => _session.Objects.Get<IConcept>(conceptCode);
+    public IConcept GetConceptByAbsoluteCode(string absoluteCode) => _session.Objects.Get<IConcept>(absoluteCode);
+
+    public IConcept GetConceptByName(string conceptName) => _session.Objects.AllConcepts.FirstOrDefault(c => c.Name == conceptName);
 
     public ICatalog GetCatalog(string catalogName) => _referenceMaterialAndSortament.Catalogs.FirstOrDefault(x => x.Name == catalogName);
 
     public IDocumentCatalog GetDocumentCatalog() => _referenceMaterialAndSortament.DocumentCatalog;
 
     public IApiReadOnlyCollection<IFormulaGroup> GetFormulaGroups() => _session.Objects.FormulaCatalog.FormulaGroups;
-
-    public IElement SearchElement(string similarElement, string catalogName)
-    {
-      return SearchEntity(KnownConceptKind.Element, KnownPropertyDefinitionKind.Name, similarElement, condition => GetCatalog(catalogName).Intersect(condition).GetEnumerable<IElement>());
-    }
-
-    public IDocument SearchDocument(string standard)
-    {
-      return SearchEntity(KnownConceptKind.Document, KnownPropertyDefinitionKind.Designation, standard, condition => GetDocumentCatalog().Intersect(condition).GetEnumerable<IDocument>());
-    }
 
     public void AddDocument(IElement element, string fullName, string documentGroupName)
     {
@@ -50,6 +42,16 @@ namespace Tessera.App.PolinomHandlers.Utils
       document.Designation = fullStandard;
       document.Applicability = Applicability.Allowed;
       return document;
+    }
+
+    public IElement SearchElement(string similarElement, string catalogName)
+    {
+      return SearchEntity(KnownConceptKind.Element, KnownPropertyDefinitionKind.Name, similarElement, condition => GetCatalog(catalogName).Intersect(condition).GetEnumerable<IElement>());
+    }
+
+    public IDocument SearchDocument(string standard)
+    {
+      return SearchEntity(KnownConceptKind.Document, KnownPropertyDefinitionKind.Designation, standard, condition => GetDocumentCatalog().Intersect(condition).GetEnumerable<IDocument>());
     }
 
     public void CreateLink(ILinkable left, ILinkable right, string aboluteCodeLink)
@@ -109,18 +111,6 @@ namespace Tessera.App.PolinomHandlers.Utils
           Debug.WriteLine("\t\t" + ((IElement)linkedElement).Name + $" -  -  - {((IElement)linkedElement).ObjectId}");
         }
       }
-
-      //var elementsName = elements.Select(e => EntityNameHelper.NormalizeName(e.Name)).ToList();
-      //var elementsFirstWords = elementsName.Select(name => name.Split(' ')[0]).Distinct().ToList();
-      //var matches = elementsShapeValue.Where(item => elementsFirstWords.Any(w => w.Equals(item, StringComparison.OrdinalIgnoreCase))).ToList();
-
-      //var elementsShape = elements.AsEnumerable()
-      //          .Select(e => (e.GetPropertyValue(Constants.PROP_SHAPE_MIS) as IEnumPropertyValue)?.Value)
-      //          .Where(v => v != null)
-      //          .Distinct()
-      //          .ToList();
-      //if (elementsShape.Count > 1)
-      //{
     }
   }
 }

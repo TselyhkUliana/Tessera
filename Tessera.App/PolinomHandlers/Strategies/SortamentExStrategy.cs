@@ -1,4 +1,5 @@
 ﻿using Ascon.Polynom.Api;
+using System.Reflection.Metadata;
 using Tessera.App.PolinomHandlers.Utils;
 
 namespace Tessera.App.PolinomHandlers.Strategies
@@ -26,12 +27,14 @@ namespace Tessera.App.PolinomHandlers.Strategies
       var propName = element.GetProperty(Constants.PROP_NAME_AND_DESCRIPTION);
       var formula = _apiHelper.CreateOrReceiveFormula(sortament.OwnerGroup.Name, $"Обозначение {groupName}", Constants.GROUP_FORMULA_DESIGNATION_SORTAMENT_EX);
       propName.EvaluationPropertyInfo.Formula = formula;
-      var conceptClassification = _apiHelper.GetConcept(Constants.CONCEPT_CLASSIFICATION_ITEM);
+      var conceptClassification = _apiHelper.GetConceptByAbsoluteCode(Constants.CONCEPT_CLASSIFICATION_ITEM);
       var conceptPropertySourceClassificationName = conceptClassification.ConceptPropertySources.FirstOrDefault(s => s.AbsoluteCode == Constants.PROP_NAME_AND_DESCRIPTION_ABSOLUTE_CODE);
       var appointedFormula = group.AllAppointedFormulas.FirstOrDefault(af => af.Formula == formula) ??
                              group.AddAppointedFormula(conceptPropertySourceClassificationName, formula);
       var document = sortament.Documents.FirstOrDefault();
       group.LinkDocument(document);
+      AddConceptPropAccordingToStandart(element, EntityNameHelper.GetFullStandard(sortament.Name));
+      
       return element;
     }
 
@@ -39,6 +42,16 @@ namespace Tessera.App.PolinomHandlers.Strategies
     {
       var group = _catalog.Groups.FirstOrDefault(x => x.Name == baseGroupName) ?? _catalog.CreateGroup(baseGroupName);
       return group.CreateGroup(derivedGroupName);
+    }
+
+    private void AddConceptPropAccordingToStandart(IElement element, string standard)
+    {
+      var description = $"Свойства по {standard}";
+      var concept = _apiHelper.GetConceptByName(description) ??
+                    _apiHelper.GetConceptByAbsoluteCode(Constants.CONCEPT_SORTAMENT_EX).CreateSubConcept(description);
+      var prop = concept.GetConceptPropertySource(Constants.PROP_SPECIFICATION_OBJECT_SETTINGS_TEMPLATE);
+      prop.IsDynamic = true;
+      element.RealizeContract(concept);
     }
 
     public void FillProperties()
