@@ -1,4 +1,5 @@
 ﻿using Ascon.Polynom.Api;
+using System.Diagnostics;
 using System.Reflection.Metadata;
 using Tessera.App.PolinomHandlers.Utils;
 using Tessera.App.PolinomHandlers.Utils.Constants;
@@ -35,7 +36,7 @@ namespace Tessera.App.PolinomHandlers.Strategies
       var document = sortament.Documents.FirstOrDefault();
       group.LinkDocument(document);
       AddConceptPropAccordingToStandart(element, EntityNameHelper.GetFullStandard(sortament.Name));
-      
+
       return element;
     }
 
@@ -47,12 +48,14 @@ namespace Tessera.App.PolinomHandlers.Strategies
 
     private void AddConceptPropAccordingToStandart(IElement element, string standard)
     {
+      _apiHelper.SetClientType(ClientType.Editor); //для создания понятия нужно сменить тип клиента на Editor
       var description = $"Свойства по {standard}";
       var concept = _apiHelper.GetConceptByName(description) ??
                     _apiHelper.GetConceptByAbsoluteCode(ConceptConstants.CONCEPT_SORTAMENT_EX).CreateSubConcept(description);
-      var prop = concept.GetConceptPropertySource(PropConstants.PROP_SPECIFICATION_OBJECT_SETTINGS_TEMPLATE);
+      var prop = concept.ConceptPropertySources.FirstOrDefault(x => x.AbsoluteCode == concept.AbsoluteCode + PropConstants.PROP_SPECIFICATION_OBJECT_SETTINGS_TEMPLATE);
       prop.IsDynamic = true;
       element.RealizeContract(concept);
+      _apiHelper.SetClientType(ClientType.Client);
     }
 
     public void FillProperties()

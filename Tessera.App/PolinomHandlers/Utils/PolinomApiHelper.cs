@@ -17,6 +17,8 @@ namespace Tessera.App.PolinomHandlers.Utils
       _referenceMaterialAndSortament = _session.Objects.AllReferences.FirstOrDefault(x => x.Name == CatalogConstants.REFENCE_NAME);
     }
 
+    public void SetClientType(ClientType clientType) => _session.ClientType = clientType;
+
     public IConcept GetConceptByAbsoluteCode(string absoluteCode) => _session.Objects.Get<IConcept>(absoluteCode);
 
     public IConcept GetConceptByName(string conceptName) => _session.Objects.AllConcepts.FirstOrDefault(c => c.Name == conceptName);
