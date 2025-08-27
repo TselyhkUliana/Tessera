@@ -1,18 +1,7 @@
 ﻿using MappingManager.ViewModel.Base;
-using Microsoft.Practices.Prism.Commands;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
-using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Input;
-using System.Windows.Media.Media3D;
-using System.Windows.Threading;
 using Tessera.App.Command;
 using Tessera.App.Model;
 using Tessera.DataAccess;
@@ -26,18 +15,23 @@ namespace Tessera.App.ViewModel
     private const string SORTAMENT_EX_TAG = "SortamentEx";
     private SectionDefinitionViewModel _сurrentSection;
     private EmbeddingService _embeddingService;
+    private CommandManager _commandManager;
 
     public MainWindowViewModel()
     {
       _ = InitiInitializeAsync();
+      _commandManager = new CommandManager(this);
     }
 
-    public ICommand Commands => Initializer.Instance.GetCommands(SectionDefinitions, this).First();
     public ObservableCollection<SectionDefinitionViewModel> SectionDefinitions { get; set; }
     public SectionDefinitionViewModel CurrentSection { get => _сurrentSection; set => Set(ref _сurrentSection, value); }
     public List<(float[] Id, string Name)> MaterialEmbeddings { get; private set; }
     public List<(float[] Id, string Name)> ProfileEmbeddings { get; private set; }
     public List<(float[] Id, string Name)> InstanceEmbeddings { get; private set; }
+
+    public ICommand CreateCommand => _commandManager.Get<CheckAndCreateEntitiesCommand>();
+    public ICommand AddFileForMaterialCommand => _commandManager.Get<AddFileForMaterialCommand>();
+    public ICommand AddFileForSortamentCommand => _commandManager.Get<AddFileForSortamentCommand>();
 
     public async Task UpdateSuggestionsAsync(string userInput, ObservableCollection<string> suggestionsTarget, List<(float[] Id, string Name)> embeddingDatabase)
     {

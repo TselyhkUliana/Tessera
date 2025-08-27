@@ -78,11 +78,11 @@ namespace Tessera.App.PolinomHandlers.Strategies
       {
         var standardShapeValue = (group.Elements.FirstOrDefault(e => e.Name.Contains(standardSuffix, StringComparison.OrdinalIgnoreCase))?
             .GetProperty(PropConstants.PROP_SHAPE_MIS) as IEnumPropertyValue)?.Value;
-        if (!string.IsNullOrEmpty(standardShapeValue)) // Если нашли форму по стандарту — сразу возвращаем
+        if (!string.IsNullOrEmpty(standardShapeValue)) //Если нашли форму по стандарту — сразу возвращаем
           return standardShapeValue;
       }
 
-      // Формируем список нормализованных элементов и их формы, исключая текущий элемент
+      //Формируем список нормализованных элементов и их формы, исключая текущий элемент
       var normalizedElements = elements.AsEnumerable()
           .Where(x => x.Id != element.Id)
           .Select(x => new
@@ -91,7 +91,7 @@ namespace Tessera.App.PolinomHandlers.Strategies
             ShapeValue = (x.GetPropertyValue(PropConstants.PROP_SHAPE_MIS) as IEnumPropertyValue)?.Value
           }).ToList();
 
-      // Различные варианты возвращаемого значения в зависимости от данных группы
+      //Различные варианты возвращаемого значения в зависимости от данных группы
       if (normalizedElements.All(x => x.ShapeValue is null)) 
         return null;
       if (normalizedElements.All(x => x.ShapeValue == normalizedElements[0].ShapeValue))

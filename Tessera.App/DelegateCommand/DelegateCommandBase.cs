@@ -41,6 +41,7 @@ namespace Microsoft.Practices.Prism.Commands
     private string _hint;
     private string _inputGestureText;
     private string _iconFont;
+    private string _name;
     private ImageSource _icon;
 #pragma warning disable CS0169 // Поле "DelegateCommandBase._isBeta" никогда не используется.
     private bool _isBeta;
@@ -130,6 +131,16 @@ namespace Microsoft.Practices.Prism.Commands
       {
         _icon = value;
         OnPropertyChanged("Icon");
+      }
+    }
+
+    public string Name
+    {
+      get { return _name; }
+      set
+      {
+        _name = value;
+        OnPropertyChanged("Name");
       }
     }
 

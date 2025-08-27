@@ -15,10 +15,11 @@ namespace Tessera.App.Command
   {
     private readonly ISuggestionProvider _suggestionProvider;
 
-    public CheckAndCreateEntitiesCommand(ObservableCollection<SectionDefinitionViewModel> sectionDefinitions, ISuggestionProvider suggestionProvider) : base()
+    public CheckAndCreateEntitiesCommand(ISuggestionProvider suggestionProvider) : base()
     {
       Caption = "Создать недостающие элементы";
       Hint = "Автоматическое создание отсутствующих материалов, сортаментов и типоразмеров в ПОЛИНОМ:MDM";
+      Name = "CheckAndCreateEntitiesCommand";
       _suggestionProvider = suggestionProvider;
     }
 

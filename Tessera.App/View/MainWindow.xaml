@@ -63,8 +63,18 @@
   </Window.Resources>
 
   <DockPanel>
+    <UniformGrid DockPanel.Dock="Top" Margin="5"  HorizontalAlignment="Left" Rows="1">
+      <UniformGrid.Resources>
+        <Style TargetType="Button">
+          <Setter Property="Margin" Value="0 0 5 0"/>
+          <Setter Property="Padding" Value="5 2"/>
+        </Style>
+      </UniformGrid.Resources>
+      <Button Content="Добавить файл для материала" Command="{Binding AddFileForMaterialCommand}" CommandParameter="{Binding DataContext.CurrentSection, RelativeSource={RelativeSource AncestorType=Window}}"/>
+      <Button Content="Добавить файл для сортамента" Command="{Binding AddFileForSortamentCommand}" CommandParameter="{Binding CurrentSection}"/>
+    </UniformGrid>
     <StackPanel DockPanel.Dock="Bottom">
-      <Button Content="Создать" Command="{Binding Commands}" CommandParameter="{Binding DataContext.SectionDefinitions, RelativeSource={RelativeSource AncestorType=Window}}" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0 5 5 7" Padding="5 2"/>
+      <Button Content="Создать" Command="{Binding CreateCommand}" CommandParameter="{Binding SectionDefinitions}" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0 5 5 7" Padding="5 2"/>
     </StackPanel>
     <DataGrid x:Name="datagrid" ItemsSource="{Binding SectionDefinitions}" SelectedItem="{Binding CurrentSection}" Margin="5" BorderBrush="#e0e0e0">
       <DataGrid.Columns>

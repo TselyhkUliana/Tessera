@@ -1,11 +1,12 @@
-﻿using Tessera.App.PolinomHandlers.Utils.Constants;
+﻿using Tessera.App.Extensions;
+using Tessera.App.PolinomHandlers.Utils.Constants;
 
 namespace Tessera.App.PolinomHandlers.Utils
 {
   internal static class EntityNameHelper
   {
     /// <summary>
-    /// Возвращает часть имени, расположенную перед первым найденным в строке упоминанием любого стандарта из <see cref="Constants.Standards"/> 
+    /// Возвращает часть имени, расположенную перед первым найденным в строке упоминанием любого стандарта из <see cref="StandardConstants.Standards"/> 
     /// <br/>Если ни один стандарт не найден, возвращает обрезанное (Trim) исходное имя
     /// </summary>
     public static string GetNameBeforeStandard(string fullName)
@@ -15,7 +16,7 @@ namespace Tessera.App.PolinomHandlers.Utils
     }
 
     /// <summary>
-    /// Находит индекс первого упоминания любого стандарта из <see cref="Constants.Standards"/> в имени (без учёта регистра). 
+    /// Находит индекс первого упоминания любого стандарта из <see cref="StandardConstants.Standards"/> в имени (без учёта регистра). 
     /// <br/>Если ни один стандарт не найден, возвращает -1
     /// </summary>
     public static int GetStandardKeywordIndex(string fullName)
@@ -58,7 +59,7 @@ namespace Tessera.App.PolinomHandlers.Utils
 
     /// <summary>
     /// Возвращает ключевое слово стандарта (например: "ГОСТ", "ISO"), 
-    /// <br/> если строка начинается с одного из стандартов в <see cref="Constants.Standards"/>.
+    /// <br/> если строка начинается с одного из стандартов в <see cref="StandardConstants.Standards"/>.
     /// </summary>
     public static string GetStandard(string fullStandard)
     {

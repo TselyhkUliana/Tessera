@@ -1,4 +1,4 @@
-﻿namespace Tessera.App
+﻿namespace Tessera.App.Extensions
 {
   public static class StringExtension
   {

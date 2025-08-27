@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Tessera.App.PolinomHandlers.Utils.Constants
+﻿namespace Tessera.App.PolinomHandlers.Utils.Constants
 {
   internal class CatalogConstants
   {
@@ -20,5 +14,6 @@ namespace Tessera.App.PolinomHandlers.Utils.Constants
     public const string ELEMENT_DEFAULT_NAME = "Element";
     public const string GROUP_DOCUMENT_SORTAMENT = "Документы на сортаменты";
     public const string GROUP_DOCUMENT_MATERIAL = "Документы на материалы";
+    public const string DEFAULT_SUFFIX_DOCUMENT = "Технические условия.";
   }
 }

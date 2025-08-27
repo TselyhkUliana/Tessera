@@ -33,15 +33,16 @@ namespace Tessera.App.PolinomHandlers.Utils
     {
       var fullStandard = EntityNameHelper.GetFullStandard(fullName);
       var documentGroup = GetDocumentCatalog().DocumentGroups.FirstOrDefault(x => x.Name == documentGroupName);
-      var document = SearchDocument(fullStandard) ?? CreateDocument(fullStandard, documentGroup);
+      var document = SearchDocument(fullStandard) ?? CreateDocument(fullName, fullStandard, documentGroup);
       element.LinkDocument(document);
     }
 
-    public IDocument CreateDocument(string fullStandard, IDocumentGroup documentGroup)
+    public IDocument CreateDocument(string fullName, string fullStandard, IDocumentGroup documentGroup)
     {
+      var baseName = EntityNameHelper.FormatNameParts(fullName);
       var standard = EntityNameHelper.GetStandard(fullStandard);
       var groupDocument = FindGroupByName(documentGroup.DocumentGroups, g => g.DocumentGroups, standard) ?? documentGroup.CreateDocumentGroup(standard);
-      var document = groupDocument.CreateDocument(fullStandard);
+      var document = groupDocument.CreateDocument(fullStandard + " " + baseName + ". " + CatalogConstants.DEFAULT_SUFFIX_DOCUMENT);
       document.Designation = fullStandard;
       document.Applicability = Applicability.Allowed;
       return document;
