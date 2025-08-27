@@ -48,6 +48,14 @@ namespace Tessera.App.PolinomHandlers.Utils
       return document;
     }
 
+    public void AttachFileToDocument(object sender, FileAttachmentEventArgs eventArgs) => AttachFile(eventArgs.Element, eventArgs.FileName, eventArgs.FileBody);
+
+    public void AttachFile(IElement element, string fileName, byte[] fileBody)
+    {
+      var document = element.Documents.FirstOrDefault();
+      document.CreateFile(fileName, fileBody);
+    }
+
     public IElement SearchElement(string similarElement, string catalogName)
     {
       return SearchEntity(KnownConceptKind.Element, KnownPropertyDefinitionKind.Name, similarElement, condition => GetCatalog(catalogName).Intersect(condition).GetEnumerable<IElement>());

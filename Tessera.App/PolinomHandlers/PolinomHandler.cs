@@ -18,6 +18,8 @@ namespace Tessera.App.PolinomHandlers
     private readonly ISortamentExStrategy _sortamentExStrategy;
     private readonly TransactionManager _transactionManager;
     private readonly PolinomApiHelper _polinomApiHelper;
+    private (string FileName, byte[] FileBody) _pendingMaterialFile;
+    private (string FileName, byte[] FileBody) _pendingSortamentFile;
 
     private PolinomHandler()
     {
@@ -31,6 +33,8 @@ namespace Tessera.App.PolinomHandlers
     }
 
     public static PolinomHandler Instance => _instance.Value;
+    public event EventHandler<FileAttachmentEventArgs> MaterialFilePending;
+    public event EventHandler<FileAttachmentEventArgs> SortamentFilePending;
 
     public void EnsureEntitiesExist(IEnumerable<SectionDefinitionViewModel> sectionDefinitionViewModels)
     {
@@ -51,7 +55,30 @@ namespace Tessera.App.PolinomHandlers
         sortamentEx.Evaluate();
         sectionDefinition.SortamentEx = sortamentEx.Name;
         _polinomApiHelper.LinksTest(sortament);
+        MaterialFilePending?.Invoke(this, new FileAttachmentEventArgs(material, _pendingMaterialFile.FileName, _pendingMaterialFile.FileBody));
+        SortamentFilePending?.Invoke(this, new FileAttachmentEventArgs(sortament, _pendingSortamentFile.FileName, _pendingSortamentFile.FileBody));
       });
+    }
+
+    public void AttachFileToDocument(string fileName, byte[] fileBody, string elementName, string catalog)
+    {
+      var element = _polinomApiHelper.SearchElement(elementName, catalog);
+      if (element is not null)
+      {
+        _transactionManager.ApplyChanges(() => { _polinomApiHelper.AttachFile(element, fileName, fileBody); });
+        return;
+      }
+
+      if (catalog is CatalogConstants.CATALOG_MATERIAL)
+      {
+        _pendingMaterialFile = (fileName, fileBody);
+        MaterialFilePending += _polinomApiHelper.AttachFileToDocument;
+      }
+      else if (catalog is CatalogConstants.CATALOG_SORTAMENT)
+      {
+        _pendingSortamentFile = (fileName, fileBody);
+        SortamentFilePending += _polinomApiHelper.AttachFileToDocument;
+      }
     }
   }
 }
