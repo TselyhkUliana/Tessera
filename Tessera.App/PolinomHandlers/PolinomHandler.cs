@@ -1,6 +1,5 @@
 ﻿using Ascon.Polynom.Api;
 using Ascon.Polynom.Login;
-using System.Diagnostics;
 using Tessera.App.PolinomHandlers.Strategies;
 using Tessera.App.PolinomHandlers.Utils;
 using Tessera.App.PolinomHandlers.Utils.Constants;
@@ -34,7 +33,7 @@ namespace Tessera.App.PolinomHandlers
     public static PolinomHandler Instance => _instance.Value;
 
     public void EnsureEntitiesExist(IEnumerable<SectionDefinitionViewModel> sectionDefinitionViewModels)
-    {      
+    {
       _transactionManager.ApplyChanges(() =>
       {
         var sectionDefinition = sectionDefinitionViewModels.First();
@@ -50,7 +49,7 @@ namespace Tessera.App.PolinomHandlers
         _polinomApiHelper.CreateLink(sortamentEx, typeSize, LinkConstants.LINK_SORTAMENTEX_TYPE_SIZE);
 
         sortamentEx.Evaluate();
-        sectionDefinition.SectionInstance = sortamentEx.Name;
+        sectionDefinition.SortamentEx = sortamentEx.Name;
         _polinomApiHelper.LinksTest(sortament);
       });
     }

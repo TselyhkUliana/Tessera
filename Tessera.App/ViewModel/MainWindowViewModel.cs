@@ -13,9 +13,9 @@ namespace Tessera.App.ViewModel
     private const string MATERIAL_TAG = "Material";
     private const string SORTAMENT_TAG = "Sortament";
     private const string SORTAMENT_EX_TAG = "SortamentEx";
+    private readonly CommandManager _commandManager;
     private SectionDefinitionViewModel _сurrentSection;
     private EmbeddingService _embeddingService;
-    private CommandManager _commandManager;
 
     public MainWindowViewModel()
     {
@@ -26,8 +26,8 @@ namespace Tessera.App.ViewModel
     public ObservableCollection<SectionDefinitionViewModel> SectionDefinitions { get; set; }
     public SectionDefinitionViewModel CurrentSection { get => _сurrentSection; set => Set(ref _сurrentSection, value); }
     public List<(float[] Id, string Name)> MaterialEmbeddings { get; private set; }
-    public List<(float[] Id, string Name)> ProfileEmbeddings { get; private set; }
-    public List<(float[] Id, string Name)> InstanceEmbeddings { get; private set; }
+    public List<(float[] Id, string Name)> SortamentEmbeddings { get; private set; }
+    public List<(float[] Id, string Name)> SortamentExEmbeddings { get; private set; }
 
     public ICommand CreateCommand => _commandManager.Get<CheckAndCreateEntitiesCommand>();
     public ICommand AddFileForMaterialCommand => _commandManager.Get<AddFileForMaterialCommand>();
@@ -58,16 +58,16 @@ namespace Tessera.App.ViewModel
       var embeddingService = Task.Run(() => _embeddingService = EmbeddingService.Instance);
       var class1 = await Class1.CreateAsync();
       MaterialEmbeddings = new List<(float[] Vectors, string Name)>();
-      ProfileEmbeddings = new List<(float[] Vectors, string Name)>();
-      InstanceEmbeddings = new List<(float[] Vectors, string Name)>();
+      SortamentEmbeddings = new List<(float[] Vectors, string Name)>();
+      SortamentExEmbeddings = new List<(float[] Vectors, string Name)>();
       await foreach (var (Vectors, Name, UniqueId) in class1.GetElementsWithVectorsAndNamesAsync())
       {
         if (UniqueId.StartsWith(MATERIAL_TAG))
           MaterialEmbeddings.Add((Vectors, Name));
         else if (UniqueId.StartsWith(SORTAMENT_EX_TAG))
-          InstanceEmbeddings.Add((Vectors, Name));
+          SortamentExEmbeddings.Add((Vectors, Name));
         else if (UniqueId.StartsWith(SORTAMENT_TAG))
-          ProfileEmbeddings.Add((Vectors, Name));
+          SortamentEmbeddings.Add((Vectors, Name));
       }
       SectionDefinitions = new ObservableCollection<SectionDefinitionViewModel> { NewSectionDefinition() };
       OnPropertyChanged(nameof(SectionDefinitions));
@@ -88,7 +88,7 @@ namespace Tessera.App.ViewModel
       }
 
       var lastElement = SectionDefinitions.LastOrDefault();
-      if (lastElement.Material is null && lastElement.SectionProfile is null && lastElement.SectionInstance is null)
+      if (lastElement.Material is null && lastElement.Sortament is null && lastElement.SortamentEx is null)
         return;
 
       SectionDefinitions.Add(NewSectionDefinition());
@@ -98,8 +98,8 @@ namespace Tessera.App.ViewModel
     {
       var sectionDefinitionViewModel = new SectionDefinitionViewModel(new SectionDefinition(), this);
       sectionDefinitionViewModel.SuggestedMaterials = new(MaterialEmbeddings.Select(x => x.Name).Take(10).ToArray());
-      sectionDefinitionViewModel.SuggestedProfiles = new(ProfileEmbeddings.Select(x => x.Name).Take(10).ToArray());
-      sectionDefinitionViewModel.SuggestedInstances = new(InstanceEmbeddings.Select(x => x.Name).Take(10).ToArray());
+      sectionDefinitionViewModel.SuggestedSortament = new(SortamentEmbeddings.Select(x => x.Name).Take(10).ToArray());
+      sectionDefinitionViewModel.SuggestedSortamentEx = new(SortamentExEmbeddings.Select(x => x.Name).Take(10).ToArray());
       sectionDefinitionViewModel.RequestAddSectionDefinition += AddSectionDefinitionIfNeeded;
       return sectionDefinitionViewModel;
     }

@@ -54,11 +54,11 @@
     <DataTemplate x:Key="MaterialCellEditing">
       <ComboBox ItemsSource="{Binding SuggestedMaterials}" Text="{Binding Material, UpdateSourceTrigger=PropertyChanged}" Loaded="ComboBoxMaterial_Loaded"/>
     </DataTemplate>
-    <DataTemplate x:Key="SectionProfileCell">
-      <TextBlock Text="{Binding SectionProfile}" Style="{StaticResource TextBlockStyle}"/>
+    <DataTemplate x:Key="SortamentCell">
+      <TextBlock Text="{Binding Sortament}" Style="{StaticResource TextBlockStyle}"/>
     </DataTemplate>
-    <DataTemplate x:Key="SectionProfileCellEditing">
-      <ComboBox ItemsSource="{Binding SuggestedProfiles}" Text="{Binding SectionProfile, UpdateSourceTrigger=PropertyChanged}" Loaded="ComboBoxProfiles_Loaded"/>
+    <DataTemplate x:Key="SortamentCellEditing">
+      <ComboBox ItemsSource="{Binding SuggestedSortament}" Text="{Binding Sortament, UpdateSourceTrigger=PropertyChanged}" Loaded="ComboBoxProfiles_Loaded"/>
     </DataTemplate>
   </Window.Resources>
 
@@ -70,7 +70,7 @@
           <Setter Property="Padding" Value="5 2"/>
         </Style>
       </UniformGrid.Resources>
-      <Button Content="Добавить файл для материала" Command="{Binding AddFileForMaterialCommand}" CommandParameter="{Binding DataContext.CurrentSection, RelativeSource={RelativeSource AncestorType=Window}}"/>
+      <Button Content="Добавить файл для материала" Command="{Binding AddFileForMaterialCommand}" CommandParameter="{Binding CurrentSection}"/>
       <Button Content="Добавить файл для сортамента" Command="{Binding AddFileForSortamentCommand}" CommandParameter="{Binding CurrentSection}"/>
     </UniformGrid>
     <StackPanel DockPanel.Dock="Bottom">
@@ -79,7 +79,7 @@
     <DataGrid x:Name="datagrid" ItemsSource="{Binding SectionDefinitions}" SelectedItem="{Binding CurrentSection}" Margin="5" BorderBrush="#e0e0e0">
       <DataGrid.Columns>
         <DataGridTemplateColumn Header="Материалы" CellTemplate="{StaticResource MaterialCell}" CellEditingTemplate="{StaticResource MaterialCellEditing}" Width="300"/>
-        <DataGridTemplateColumn Header="Сортаменты" CellTemplate="{StaticResource SectionProfileCell}" CellEditingTemplate="{StaticResource SectionProfileCellEditing}" Width="350"/>
+        <DataGridTemplateColumn Header="Сортаменты" CellTemplate="{StaticResource SortamentCell}" CellEditingTemplate="{StaticResource SortamentCellEditing}" Width="350"/>
         <DataGridTextColumn Header="Типоразмеры" Binding="{Binding TypeSize, UpdateSourceTrigger=PropertyChanged}" Width="150"/>
         <DataGridTextColumn Header="Экземпляры сортаментов" Binding="{Binding SectionInstance}" Width="*"/>
       </DataGrid.Columns>

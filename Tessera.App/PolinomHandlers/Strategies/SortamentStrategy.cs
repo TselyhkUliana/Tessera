@@ -16,11 +16,11 @@ namespace Tessera.App.PolinomHandlers.Strategies
 
     public IElement GetOrCreate(SectionDefinitionViewModel sectionDefinition)
     {
-      var inputSortament = sectionDefinition.SectionProfile.Trim();
+      var inputSortament = sectionDefinition.Sortament.Trim();
       var inputFirstWord = inputSortament.Split(' ')[0];
-      var similarSortament = sectionDefinition.SuggestedProfiles
+      var similarSortament = sectionDefinition.SuggestedSortament
         .FirstOrDefault(x => x.Split(' ')[0].Equals(inputFirstWord, StringComparison.OrdinalIgnoreCase))?.Trim()
-        ?? sectionDefinition.SuggestedInstances.First().Trim();
+        ?? sectionDefinition.SuggestedSortamentEx.First().Trim();
 
       var catalog = _apiHelper.GetCatalog(CatalogConstants.CATALOG_SORTAMENT);
       var searchElement = _apiHelper.SearchElement(similarSortament, CatalogConstants.CATALOG_SORTAMENT);

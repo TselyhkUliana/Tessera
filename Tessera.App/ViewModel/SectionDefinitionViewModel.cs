@@ -10,7 +10,7 @@ using Tessera.App.Model;
 
 namespace Tessera.App.ViewModel
 {
-  [DebuggerDisplay("SectionDefinitionViewModel: {Material} - {SectionProfile} - {TypeSize}")]
+  [DebuggerDisplay("SectionDefinitionViewModel: {Material} - {Sortament} - {TypeSize}")]
   public class SectionDefinitionViewModel : ViewModelBase
   {
     private readonly SectionDefinition _sectionDefinition;
@@ -46,15 +46,15 @@ namespace Tessera.App.ViewModel
       }
     }
     /// <summary>Сортамент</summary>
-    public string SectionProfile
+    public string Sortament
     {
-      get => _sectionDefinition.SectionProfile;
+      get => _sectionDefinition.Sortament;
       set
       {
         if (_isInternalChange)
           return;
 
-        if (!Set((v) => _sectionDefinition.SectionProfile = v, _sectionDefinition.SectionProfile, value))
+        if (!Set((v) => _sectionDefinition.Sortament = v, _sectionDefinition.Sortament, value))
           return;
 
         if (!_isUpdatingSuggestions)
@@ -62,19 +62,19 @@ namespace Tessera.App.ViewModel
           RequestAddSectionDefinition?.Invoke();
           _isUpdatingSuggestions = true;
         }
-        _ = UpdateSuggestionsSafeAsync(value, SuggestedProfiles, _suggestionProvider.ProfileEmbeddings);
+        _ = UpdateSuggestionsSafeAsync(value, SuggestedSortament, _suggestionProvider.SortamentEmbeddings);
       }
     }
     /// <summary>Экземпляр сортамента</summary>
-    public string SectionInstance
+    public string SortamentEx
     {
-      get => _sectionDefinition.SectionInstance;
+      get => _sectionDefinition.SortamentEx;
       set
       {
         if (_isInternalChange)
           return;
 
-        if (!Set((v) => _sectionDefinition.SectionInstance = v, _sectionDefinition.SectionInstance, value))
+        if (!Set((v) => _sectionDefinition.SortamentEx = v, _sectionDefinition.SortamentEx, value))
           return;
 
         if (!_isUpdatingSuggestions)
@@ -82,7 +82,7 @@ namespace Tessera.App.ViewModel
           RequestAddSectionDefinition?.Invoke();
           _isUpdatingSuggestions = true;
         }
-        _ = UpdateSuggestionsSafeAsync(value, SuggestedInstances, _suggestionProvider.InstanceEmbeddings);
+        _ = UpdateSuggestionsSafeAsync(value, SuggestedSortamentEx, _suggestionProvider.SortamentExEmbeddings);
       }
     }
     /// <summary>Типоразмер</summary>
@@ -91,9 +91,9 @@ namespace Tessera.App.ViewModel
     /// <summary>Список похожих материалов</summary>
     public ObservableCollection<string> SuggestedMaterials { get; set; }
     /// <summary>Список похожих сортаментов</summary>
-    public ObservableCollection<string> SuggestedProfiles { get; set; }
+    public ObservableCollection<string> SuggestedSortament { get; set; }
     /// <summary>Список похожих экземпляров сортаментов</summary>
-    public ObservableCollection<string> SuggestedInstances { get; set; }
+    public ObservableCollection<string> SuggestedSortamentEx { get; set; }
 
     public SectionDefinition Model => _sectionDefinition;
 
