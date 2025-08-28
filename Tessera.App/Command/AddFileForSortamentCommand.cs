@@ -1,5 +1,4 @@
-﻿using Ascon.Polynom.Api;
-using Tessera.App.PolinomHandlers;
+﻿using Tessera.App.PolinomHandlers;
 using Tessera.App.PolinomHandlers.Utils.Constants;
 using Tessera.App.ViewModel;
 
@@ -10,11 +9,10 @@ namespace Tessera.App.Command
     public AddFileForSortamentCommand() : base()
     {
       Caption = "Добавить файл для сортамента";
-      Hint = "Добавить файл для сортамента";
+      Hint = "Добавляет файл для документа сортамента в ПОЛИНОМ:MDM";
       Name = "AddFileForSortamentCommand";
+      Icon = new System.Windows.Media.Imaging.BitmapImage(new Uri("pack://application:,,,/Tessera.App;component/Resources/Images/AttachSortamentFile.png"));
     }
-
-    public event Action<IElement> SortamentCreated;
 
     protected override void Execute(object parameter)
     {

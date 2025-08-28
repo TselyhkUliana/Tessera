@@ -9,6 +9,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\1.png" />
+    <None Remove="Resources\2.png" />
+    <None Remove="Resources\Images\AttachMaterialFile.png" />
+    <None Remove="Resources\Images\AttachSortamentFile.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Harold\Harold.csproj" />
     <ProjectReference Include="..\Tessera.DataAccess\Tessera.DataAccess.csproj" />
   </ItemGroup>
@@ -23,6 +30,11 @@
     <Reference Include="Ascon.Polynom.Login">
       <HintPath>C:\Program Files (x86)\ASCON\Polynom\Bin\Client\Ascon.Polynom.Login.dll</HintPath>
     </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\Images\AttachMaterialFile.png" />
+    <Resource Include="Resources\Images\AttachSortamentFile.png" />
   </ItemGroup>
 
 </Project>

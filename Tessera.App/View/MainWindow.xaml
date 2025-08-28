@@ -70,8 +70,18 @@
           <Setter Property="Padding" Value="5 2"/>
         </Style>
       </UniformGrid.Resources>
-      <Button Content="Добавить файл для материала" Command="{Binding AddFileForMaterialCommand}" CommandParameter="{Binding CurrentSection}"/>
-      <Button Content="Добавить файл для сортамента" Command="{Binding AddFileForSortamentCommand}" CommandParameter="{Binding CurrentSection}"/>
+      <Button Command="{Binding AddFileForMaterialCommand}" CommandParameter="{Binding CurrentSection}" ToolTip="{Binding AddFileForMaterialCommand.Hint}" Background="Transparent">
+        <StackPanel Orientation="Horizontal">
+          <Image Source="{Binding AddFileForMaterialCommand.Icon}" Width="16" Height="16" />
+          <TextBlock Text="{Binding AddFileForMaterialCommand.Caption}" />
+        </StackPanel>
+      </Button>
+      <Button Command="{Binding AddFileForSortamentCommand}" CommandParameter="{Binding CurrentSection}" ToolTip="{Binding AddFileForSortamentCommand.Hint}" Background="Transparent">
+        <StackPanel Orientation="Horizontal">
+          <Image Source="{Binding AddFileForSortamentCommand.Icon}" Width="16" Height="16"/>
+          <TextBlock Text="{Binding AddFileForSortamentCommand.Caption}"/>
+        </StackPanel>
+      </Button>
     </UniformGrid>
     <StackPanel DockPanel.Dock="Bottom">
       <Button Content="Создать" Command="{Binding CreateCommand}" CommandParameter="{Binding SectionDefinitions}" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0 5 5 7" Padding="5 2"/>

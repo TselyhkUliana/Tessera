@@ -9,8 +9,9 @@ namespace Tessera.App.Command
     public AddFileForMaterialCommand() : base()
     {
       Caption = "Добавить файл для материала";
-      Hint = "Добавить файл для материала в ПОЛИНОМ:MDM";
+      Hint = "Добавляет файл для документа материала в ПОЛИНОМ:MDM";
       Name = "AddFileForMaterial";
+      Icon = new System.Windows.Media.Imaging.BitmapImage(new Uri("pack://application:,,,/Tessera.App;component/Resources/Images/AttachMaterialFile.png"));
     }
 
     protected override void Execute(object parameter)
