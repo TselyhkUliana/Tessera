@@ -55,30 +55,25 @@ namespace Tessera.App.PolinomHandlers
         sortamentEx.Evaluate();
         sectionDefinition.SortamentEx = sortamentEx.Name;
         _polinomApiHelper.LinksTest(sortament);
-        MaterialFilePending?.Invoke(this, new FileAttachmentEventArgs(material, _pendingMaterialFile.FileName, _pendingMaterialFile.FileBody));
-        SortamentFilePending?.Invoke(this, new FileAttachmentEventArgs(sortament, _pendingSortamentFile.FileName, _pendingSortamentFile.FileBody));
+        MaterialFilePending?.Invoke(this, new FileAttachmentEventArgs(material, _pendingMaterialFile.FileBody, _pendingMaterialFile.FileName, CatalogConstants.CATALOG_MATERIAL));
+        SortamentFilePending?.Invoke(this, new FileAttachmentEventArgs(sortament, _pendingSortamentFile.FileBody, _pendingSortamentFile.FileName, CatalogConstants.CATALOG_SORTAMENT));
       });
     }
 
     public void AttachFileToDocument(string fileName, byte[] fileBody, string elementName, string catalog)
     {
-      var element = _polinomApiHelper.SearchElement(elementName, catalog);
-      if (element is not null)
-      {
-        _transactionManager.ApplyChanges(() => { _polinomApiHelper.AttachFile(element, fileName, fileBody); });
-        return;
-      }
-
       if (catalog is CatalogConstants.CATALOG_MATERIAL)
       {
         _pendingMaterialFile = (fileName, fileBody);
-        MaterialFilePending += _polinomApiHelper.AttachFileToDocument;
+        MaterialFilePending += AttachFileToDocument;
       }
       else if (catalog is CatalogConstants.CATALOG_SORTAMENT)
       {
         _pendingSortamentFile = (fileName, fileBody);
-        SortamentFilePending += _polinomApiHelper.AttachFileToDocument;
+        SortamentFilePending += AttachFileToDocument;
       }
     }
+
+    private void AttachFileToDocument(object sender, FileAttachmentEventArgs eventArgs) => _polinomApiHelper.AttachFile(eventArgs.Element, eventArgs.FileName, eventArgs.FileBody, eventArgs.DocumentGroupName);
   }
 }

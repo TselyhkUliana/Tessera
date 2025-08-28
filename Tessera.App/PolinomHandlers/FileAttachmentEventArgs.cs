@@ -4,15 +4,17 @@ namespace Tessera.App.PolinomHandlers
 {
   public class FileAttachmentEventArgs : EventArgs
   {
-    public FileAttachmentEventArgs(IElement element, string fileName, byte[] fileBody)
+    public FileAttachmentEventArgs(IElement element, byte[] fileBody, string fileName, string documentGroupName)
     {
       Element = element;
       FileName = fileName;
       FileBody = fileBody;
+      DocumentGroupName = documentGroupName;
     }
 
     public IElement Element { get; }
-    public string FileName { get; }
     public byte[] FileBody { get; }
+    public string FileName { get; }
+    public string DocumentGroupName { get; }
   }
 }

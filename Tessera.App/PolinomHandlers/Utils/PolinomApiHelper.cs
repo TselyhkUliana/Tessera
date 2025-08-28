@@ -29,13 +29,14 @@ namespace Tessera.App.PolinomHandlers.Utils
 
     public IApiReadOnlyCollection<IFormulaGroup> GetFormulaGroups() => _session.Objects.FormulaCatalog.FormulaGroups;
 
-    public void AddDocument(IElement element, string fullName, string documentGroupName)
+    public IDocument AddDocument(IElement element, string fullName, string documentGroupName)
     {
       var fullStandard = EntityNameHelper.GetFullStandard(fullName);
       var documentGroup = GetDocumentCatalog().DocumentGroups.FirstOrDefault(x => x.Name == documentGroupName);
       var document = SearchDocument(fullStandard) ?? CreateDocument(fullName, fullStandard, documentGroup);
       document.Applicability = Applicability.Allowed;
       element.LinkDocument(document);
+      return document;
     }
 
     public IDocument CreateDocument(string fullName, string fullStandard, IDocumentGroup documentGroup)
@@ -48,11 +49,9 @@ namespace Tessera.App.PolinomHandlers.Utils
       return document;
     }
 
-    public void AttachFileToDocument(object sender, FileAttachmentEventArgs eventArgs) => AttachFile(eventArgs.Element, eventArgs.FileName, eventArgs.FileBody);
-
-    public void AttachFile(IElement element, string fileName, byte[] fileBody)
+    public void AttachFile(IElement element, string fileName, byte[] fileBody, string documentGroupName)
     {
-      var document = element.Documents.FirstOrDefault();
+      var document = element.Documents.FirstOrDefault() ?? AddDocument(element, element.Name, documentGroupName);
       document.CreateFile(fileName, fileBody);
     }
 
