@@ -34,6 +34,7 @@ namespace Tessera.App.PolinomHandlers.Utils
       var fullStandard = EntityNameHelper.GetFullStandard(fullName);
       var documentGroup = GetDocumentCatalog().DocumentGroups.FirstOrDefault(x => x.Name == documentGroupName);
       var document = SearchDocument(fullStandard) ?? CreateDocument(fullName, fullStandard, documentGroup);
+      document.Applicability = Applicability.Allowed;
       element.LinkDocument(document);
     }
 
@@ -44,7 +45,6 @@ namespace Tessera.App.PolinomHandlers.Utils
       var groupDocument = FindGroupByName(documentGroup.DocumentGroups, g => g.DocumentGroups, standard) ?? documentGroup.CreateDocumentGroup(standard);
       var document = groupDocument.CreateDocument(fullStandard + " " + baseName + ". " + CatalogConstants.DEFAULT_SUFFIX_DOCUMENT);
       document.Designation = fullStandard;
-      document.Applicability = Applicability.Allowed;
       return document;
     }
 

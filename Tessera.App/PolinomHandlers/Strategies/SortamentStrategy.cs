@@ -26,7 +26,10 @@ namespace Tessera.App.PolinomHandlers.Strategies
       var searchElement = _apiHelper.SearchElement(similarSortament, CatalogConstants.CATALOG_SORTAMENT);
 
       if (similarSortament.Equals(inputSortament, StringComparison.OrdinalIgnoreCase))
+      {
+        searchElement.Applicability = Applicability.Allowed;
         return searchElement;
+      }
 
       var inputElementFormat = EntityNameHelper.FormatFullName(inputSortament);
       var inputElementWordFirst = inputElementFormat.Split(' ')[0];

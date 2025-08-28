@@ -21,7 +21,10 @@ namespace Tessera.App.PolinomHandlers.Strategies
       var searchElement = _apiHelper.SearchElement(similarMaterial, CatalogConstants.CATALOG_MATERIAL);
 
       if (similarMaterial.Equals(inputMaterial, StringComparison.OrdinalIgnoreCase))
+      {
+        searchElement.Applicability = Applicability.Allowed;
         return searchElement;
+      }
 
       var inputElementFormat = EntityNameHelper.FormatFullName(inputMaterial);
       var group = searchElement.OwnerGroup;
