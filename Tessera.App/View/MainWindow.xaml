@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Tessera.App"
         xmlns:vm ="clr-namespace:Tessera.App.ViewModel"
+        xmlns:converters="clr-namespace:Tessera.App.Converters"
         d:DataContext="{d:DesignData Type=vm:MainWindowViewModel}"
         mc:Ignorable="d"
         Title="Tessera" Height="550" Width="1200"
@@ -12,6 +13,8 @@
         TextOptions.TextFormattingMode="Display" FontFamily="Ascon Complex" SnapsToDevicePixels="True">
 
   <Window.Resources>
+    <converters:MaterialHasStandardConverter x:Key="MaterialHasStandardConverter"/>
+    
     <Style TargetType="DataGrid">
       <Setter Property="AutoGenerateColumns" Value="False"/>
       <Setter Property="Background" Value="Transparent"/>
@@ -25,7 +28,7 @@
         </Trigger>
       </Style.Triggers>
     </Style>
-    <Style TargetType="DataGridCell">
+    <Style TargetType="DataGridCell" x:Key="DataGridCellStyle">
       <Setter Property="BorderBrush" Value="#e0e0e0"/>
       <Setter Property="BorderThickness" Value="0 0 1 1"/>
       <Style.Triggers>
@@ -34,6 +37,14 @@
           <Setter Property="Foreground" Value="#376cf0"/>
           <Setter Property="BorderBrush" Value="#ccdbeb"/>
         </Trigger>
+      </Style.Triggers>
+    </Style>
+    <Style TargetType="DataGridCell" x:Key="MaterialCellStyle" BasedOn="{StaticResource DataGridCellStyle}">
+      <Style.Triggers>
+        <DataTrigger Binding="{Binding Material, Converter={StaticResource MaterialHasStandardConverter}}" Value="False">
+          <Setter Property="Background" Value="#faf8ca"/>
+          <Setter Property="ToolTip" Value="Материал должен содержать стандарт (например, ГОСТ, ISO и т.д.)"/>
+        </DataTrigger>
       </Style.Triggers>
     </Style>
 
@@ -88,10 +99,10 @@
     </StackPanel>
     <DataGrid x:Name="datagrid" ItemsSource="{Binding SectionDefinitions}" SelectedItem="{Binding CurrentSection}" Margin="5" BorderBrush="#e0e0e0">
       <DataGrid.Columns>
-        <DataGridTemplateColumn Header="Материалы" CellTemplate="{StaticResource MaterialCell}" CellEditingTemplate="{StaticResource MaterialCellEditing}" Width="300"/>
-        <DataGridTemplateColumn Header="Сортаменты" CellTemplate="{StaticResource SortamentCell}" CellEditingTemplate="{StaticResource SortamentCellEditing}" Width="350"/>
-        <DataGridTextColumn Header="Типоразмеры" Binding="{Binding TypeSize, UpdateSourceTrigger=PropertyChanged}" Width="150"/>
-        <DataGridTextColumn Header="Экземпляры сортаментов" Binding="{Binding SectionInstance}" Width="*"/>
+        <DataGridTemplateColumn Header="Материалы" CellTemplate="{StaticResource MaterialCell}" CellStyle="{StaticResource MaterialCellStyle}" CellEditingTemplate="{StaticResource MaterialCellEditing}" Width="300"/>
+        <DataGridTemplateColumn Header="Сортаменты" CellTemplate="{StaticResource SortamentCell}" CellStyle="{StaticResource DataGridCellStyle}" CellEditingTemplate="{StaticResource SortamentCellEditing}" Width="350"/>
+        <DataGridTextColumn Header="Типоразмеры" Binding="{Binding TypeSize, UpdateSourceTrigger=PropertyChanged}" CellStyle="{StaticResource DataGridCellStyle}" Width="150"/>
+        <DataGridTextColumn Header="Экземпляры сортаментов" Binding="{Binding SectionInstance}" CellStyle="{StaticResource DataGridCellStyle}" Width="*"/>
       </DataGrid.Columns>
     </DataGrid>
   </DockPanel>
