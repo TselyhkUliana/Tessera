@@ -44,9 +44,17 @@ namespace Tessera.App.PolinomHandlers.Utils
       var baseName = EntityNameHelper.FormatNameParts(fullName);
       var standard = EntityNameHelper.GetStandard(fullStandard);
       var groupDocument = FindGroupByName(documentGroup.DocumentGroups, g => g.DocumentGroups, standard) ?? documentGroup.CreateDocumentGroup(standard);
-      var document = groupDocument.CreateDocument(fullStandard + " " + baseName + ". " + CatalogConstants.DEFAULT_SUFFIX_DOCUMENT);
-      document.Designation = fullStandard;
-      return document;
+      if (StandardConstants.SpecialDocumentStandards.Contains(standard))
+        return groupDocument.CreateDocument(fullStandard, null, fullStandard);
+      if (StandardConstants.DocumentStandards.Contains(standard))
+        return FindGroupByName(documentGroup.DocumentGroups, g => g.DocumentGroups, standard).CreateDocument(fullStandard, null, fullStandard);
+      if (standard is StandardConstants.STANDARD)
+        return groupDocument.CreateDocument(fullStandard, null, fullStandard);
+      if (StandardConstants.DocumentTuStandards.FirstOrDefault(x => fullStandard.StartsWith(x.Key)) is var kvp && !string.IsNullOrEmpty(kvp.Value))
+        return FindGroupByName(documentGroup.DocumentGroups, g => g.DocumentGroups, kvp.Value).CreateDocument(fullStandard, null, fullStandard);
+
+      var (Name, Description) = EntityNameHelper.GetNameAndDescriptionForDocument(fullStandard, baseName);
+      return groupDocument.CreateDocument(Name, Description, fullStandard);
     }
 
     public void AttachFile(IElement element, string fileName, byte[] fileBody, string documentGroupName)
@@ -55,9 +63,9 @@ namespace Tessera.App.PolinomHandlers.Utils
       document.CreateFile(fileName, fileBody);
     }
 
-    public IElement SearchElement(string similarElement, string catalogName)
+    public IElement SearchElement(string element, string catalogName)
     {
-      return SearchEntity(KnownConceptKind.Element, KnownPropertyDefinitionKind.Name, similarElement, condition => GetCatalog(catalogName).Intersect(condition).GetEnumerable<IElement>());
+      return SearchEntity(KnownConceptKind.Element, KnownPropertyDefinitionKind.Name, element, condition => GetCatalog(catalogName).Intersect(condition).GetEnumerable<IElement>());
     }
 
     public IDocument SearchDocument(string standard)

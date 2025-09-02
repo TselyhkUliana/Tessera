@@ -58,7 +58,7 @@ namespace Tessera.App.PolinomHandlers.Utils
     }
 
     /// <summary>
-    /// Возвращает ключевое слово стандарта (например: "ГОСТ", "ISO"), 
+    /// Возвращает ключевое слово стандарта (например: <c>"ГОСТ"</c>, <c>"ISO"</c>), 
     /// <br/> если строка начинается с одного из стандартов в <see cref="StandardConstants.Standards"/>.
     /// </summary>
     public static string GetStandard(string fullStandard)
@@ -70,23 +70,45 @@ namespace Tessera.App.PolinomHandlers.Utils
     }
 
     /// <summary>
-    /// Приводит полное имя к формату: первая буква — заглавная, стандарт — в верхнем регистре.
-    /// </summary>
+    /// Приводит полное имя материала к корректному формату:
+    ///<br/>- Первая буква имени — заглавная.
+    ///<br/>- Стандарт выделяется отдельно:
+    ///<br/>- Для стандартов из <see cref="StandardConstants.StandardsTitleCase"/> первая буква заглавная.
+    ///<br/>- Для специальных стандартов <c>"SNiP"</c> и <c>"SANPIN"</c> используется особое форматирование.
+    ///<br/>- Все остальные стандарты приводятся к верхнему регистру.
+    /// </summary>   
     public static string FormatFullName(string fullName)
     {
       if (string.IsNullOrWhiteSpace(fullName))
         return string.Empty;
 
       var normalized = fullName.FirstCharToUpper();
-      var standard = GetFullStandard(normalized);
+      var fullStandard = GetFullStandard(normalized);
 
-      if (!string.IsNullOrEmpty(standard))
+      if (!string.IsNullOrEmpty(fullStandard))
       {
         var index = GetStandardKeywordIndex(normalized);
         if (index > 0)
-          return normalized.Substring(0, index).Trim() + " " + standard.ToUpper();
+        {
+          var standard = GetStandard(fullStandard);
+          var prefix = normalized.Substring(0, index).Trim();
+          if (StandardConstants.StandardsTitleCase.FirstOrDefault(x => x.Equals(standard, StringComparison.OrdinalIgnoreCase)) != null)
+            return $"{prefix} {standard.FirstCharToUpper()} {fullStandard.Substring(standard.Length)}";
+          if (standard.Equals(StandardConstants.SNiP, StringComparison.OrdinalIgnoreCase))
+            return $"{prefix} {StandardConstants.SNiP} {fullStandard.Substring(standard.Length)}";
+          if (standard.Equals(StandardConstants.SANPIN, StringComparison.OrdinalIgnoreCase))
+            return $"{prefix} {StandardConstants.SANPIN} {fullStandard.Substring(standard.Length)}";
+          return $"{prefix} {fullStandard.ToUpper()}";
+        }
       }
       return normalized;
+    }
+
+    /// <summary>Формирует имя и описание документа на основе стандарта и базового имени.</summary>
+    public static (string Name, string Description) GetNameAndDescriptionForDocument(string fullStandard, string baseName)
+    {
+      return (fullStandard + " " + baseName + ". " + CatalogConstants.SUFFIX_DOCUMENT,
+              $"ОБОЗНАЧЕНИЕ \t\t{fullStandard} \nНАИМЕНОВАНИЕ \t\t {baseName}. {CatalogConstants.SUFFIX_DOCUMENT}");
     }
   }
 }

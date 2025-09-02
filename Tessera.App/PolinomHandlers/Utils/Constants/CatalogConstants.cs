@@ -14,6 +14,16 @@
     public const string ELEMENT_DEFAULT_NAME = "Element";
     public const string GROUP_DOCUMENT_SORTAMENT = "Документы на сортаменты";
     public const string GROUP_DOCUMENT_MATERIAL = "Документы на материалы";
-    public const string DEFAULT_SUFFIX_DOCUMENT = "Технические условия.";
+    public const string SUFFIX_DOCUMENT = "Технические условия.";
+    public const string GROUP_DOCUMENT_STANDARD = "Стандарт";
+    public const string GROUP_DOCUMENT_TU02 = "ТУ 02...";
+    public const string GROUP_DOCUMENT_TU14 = "ТУ 14...";
+    public const string GROUP_DOCUMENT_TU16 = "ТУ 16...";
+    public const string GROUP_DOCUMENT_TU1 = "ТУ 1...";
+    public const string GROUP_DOCUMENT_TU2 = "ТУ 2...";
+    public const string GROUP_DOCUMENT_TU38 = "ТУ 38...";
+    public const string GROUP_DOCUMENT_TU48 = "ТУ 48...";
+    public const string GROUP_DOCUMENT_TU6 = "ТУ 6...";
+    public const string GROUP_DOCUMENT_TU_RB = "ТУ РБ...";
   }
 }

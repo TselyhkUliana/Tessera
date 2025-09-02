@@ -42,21 +42,21 @@ namespace Tessera.App.PolinomHandlers
       {
         var sectionDefinition = sectionDefinitionViewModels.First();
         var material = _materialStrategy.GetOrCreate(sectionDefinition);
-        var sortament = _sortamentStrategy.GetOrCreate(sectionDefinition);
-        var typeSize = _typeSizeStrategy.GetOrCreate(sectionDefinition, sortament.Name);
-        var sortamentEx = _sortamentExStrategy.GetOrCreate(sortament);
+        //var sortament = _sortamentStrategy.GetOrCreate(sectionDefinition);
+        //var typeSize = _typeSizeStrategy.GetOrCreate(sectionDefinition, sortament.Name);
+        //var sortamentEx = _sortamentExStrategy.GetOrCreate(sortament);
 
-        _polinomApiHelper.CreateLink(sortament, material, LinkConstants.LINK_SORTAMENT_MATERIAL);
-        _polinomApiHelper.CreateLink(typeSize, sortament, LinkConstants.LINK_TYPESIZE_SORTAMENT);
-        _polinomApiHelper.CreateLink(sortamentEx, sortament, LinkConstants.LINK_SORTAMENTEX_SORTAMENT);
-        _polinomApiHelper.CreateLink(sortamentEx, material, LinkConstants.LINK_SORTAMENTEX_MATERIAL);
-        _polinomApiHelper.CreateLink(sortamentEx, typeSize, LinkConstants.LINK_SORTAMENTEX_TYPE_SIZE);
+        //_polinomApiHelper.CreateLink(sortament, material, LinkConstants.LINK_SORTAMENT_MATERIAL);
+        //_polinomApiHelper.CreateLink(typeSize, sortament, LinkConstants.LINK_TYPESIZE_SORTAMENT);
+        //_polinomApiHelper.CreateLink(sortamentEx, sortament, LinkConstants.LINK_SORTAMENTEX_SORTAMENT);
+        //_polinomApiHelper.CreateLink(sortamentEx, material, LinkConstants.LINK_SORTAMENTEX_MATERIAL);
+        //_polinomApiHelper.CreateLink(sortamentEx, typeSize, LinkConstants.LINK_SORTAMENTEX_TYPE_SIZE);
 
-        sortamentEx.Evaluate();
-        sectionDefinition.SortamentEx = sortamentEx.Name;
-        _polinomApiHelper.LinksTest(sortament);
+        //sortamentEx.Evaluate();
+        //sectionDefinition.SortamentEx = sortamentEx.Name;
+        //_polinomApiHelper.LinksTest(sortament);
         MaterialFilePending?.Invoke(this, new FileAttachmentEventArgs(material, _pendingMaterialFile.FileBody, _pendingMaterialFile.FileName, CatalogConstants.CATALOG_MATERIAL));
-        SortamentFilePending?.Invoke(this, new FileAttachmentEventArgs(sortament, _pendingSortamentFile.FileBody, _pendingSortamentFile.FileName, CatalogConstants.CATALOG_SORTAMENT));
+        //SortamentFilePending?.Invoke(this, new FileAttachmentEventArgs(sortament, _pendingSortamentFile.FileBody, _pendingSortamentFile.FileName, CatalogConstants.CATALOG_SORTAMENT));
       });
     }
 
