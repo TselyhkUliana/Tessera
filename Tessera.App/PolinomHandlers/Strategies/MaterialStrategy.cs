@@ -31,7 +31,7 @@ namespace Tessera.App.PolinomHandlers.Strategies
       var element = group.CreateElement(CatalogConstants.ELEMENT_DEFAULT_NAME);
       element.Applicability = Applicability.Allowed;
       FillProperties(element, inputElementFormat);
-      _apiHelper.AddDocument(element, inputElementFormat, CatalogConstants.GROUP_DOCUMENT_MATERIAL);
+      _apiHelper.AddOrCreateDocument(element, inputElementFormat, CatalogConstants.GROUP_DOCUMENT_MATERIAL);
       element.Evaluate();
       return element;
     }

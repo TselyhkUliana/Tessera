@@ -29,14 +29,25 @@ namespace Tessera.App.PolinomHandlers.Utils
 
     public IApiReadOnlyCollection<IFormulaGroup> GetFormulaGroups() => _session.Objects.FormulaCatalog.FormulaGroups;
 
-    public IDocument AddDocument(IElement element, string fullName, string documentGroupName)
+    public IDocument AddOrCreateDocument(IElement element, string fullName, string documentGroupName)
     {
       var fullStandard = EntityNameHelper.GetFullStandard(fullName);
       var documentGroup = GetDocumentCatalog().DocumentGroups.FirstOrDefault(x => x.Name == documentGroupName);
       var document = SearchDocument(fullStandard) ?? CreateDocument(fullName, fullStandard, documentGroup);
+      
+      if (!IsInGroupPath(document.OwnerGroup, documentGroupName))
+        AddDocument(fullStandard, documentGroup, document);
+
       document.Applicability = Applicability.Allowed;
       element.LinkDocument(document);
       return document;
+    }
+
+    public void AddDocument(string fullStandard, IDocumentGroup documentGroup, IDocument document)
+    {
+      var standard = EntityNameHelper.GetStandard(fullStandard);
+      var groupDocument = FindGroupByName(documentGroup.DocumentGroups, g => g.DocumentGroups, standard) ?? documentGroup.CreateDocumentGroup(standard);
+      groupDocument.AddDocument(document);
     }
 
     public IDocument CreateDocument(string fullName, string fullStandard, IDocumentGroup documentGroup)
@@ -59,7 +70,7 @@ namespace Tessera.App.PolinomHandlers.Utils
 
     public void AttachFile(IElement element, string fileName, byte[] fileBody, string documentGroupName)
     {
-      var document = element.Documents.FirstOrDefault() ?? AddDocument(element, element.Name, documentGroupName);
+      var document = element.Documents.FirstOrDefault() ?? AddOrCreateDocument(element, element.Name, documentGroupName);
       document.CreateFile(fileName, fileBody);
     }
 
@@ -91,6 +102,11 @@ namespace Tessera.App.PolinomHandlers.Utils
           return found;
       }
       return null;
+    }
+
+    public bool IsInGroupPath(IDocumentGroup group, string findGroupName)
+    {
+      return group.Name == findGroupName || (group.ParentGroup is not null && IsInGroupPath(group.ParentGroup, findGroupName));
     }
 
     public IFormula CreateOrReceiveFormula(string sortamentGroup, string formulaName, string groupName)
