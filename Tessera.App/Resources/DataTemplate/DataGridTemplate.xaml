@@ -1,0 +1,16 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"                    >
+
+  <DataTemplate x:Key="MaterialCell">
+    <TextBlock Text="{Binding Material}" Style="{StaticResource TextBlockStyle}"/>
+  </DataTemplate>
+  <DataTemplate x:Key="MaterialCellEditing">
+    <ComboBox ItemsSource="{Binding SuggestedMaterials}" Text="{Binding Material, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource MaterialComboBoxStyle}"/>
+  </DataTemplate>
+  <DataTemplate x:Key="SortamentCell">
+    <TextBlock Text="{Binding Sortament}" Style="{StaticResource TextBlockStyle}"/>
+  </DataTemplate>
+  <DataTemplate x:Key="SortamentCellEditing">
+    <ComboBox ItemsSource="{Binding SuggestedSortament}" Text="{Binding Sortament, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource SortamentComboBoxStyle}"/>
+  </DataTemplate>
+</ResourceDictionary>

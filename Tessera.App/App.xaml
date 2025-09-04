@@ -3,7 +3,16 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:Tessera.App"
              StartupUri="View/MainWindow.xaml">
-    <Application.Resources>
-         
-    </Application.Resources>
+  
+  <Application.Resources>
+    <ResourceDictionary>
+      <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="Resources/Brush/Brushes.xaml"/>
+        <ResourceDictionary Source="Resources/Styles/DataGridStyle.xaml"/>
+        <ResourceDictionary Source="Resources/Styles/ComboBoxStyle.xaml"/>
+        <ResourceDictionary Source="Resources/Styles/TextBlockStyle.xaml"/>
+        <ResourceDictionary Source="Resources/DataTemplate/DataGridTemplate.xaml"/>
+      </ResourceDictionary.MergedDictionaries>
+    </ResourceDictionary>
+  </Application.Resources>
 </Application>
