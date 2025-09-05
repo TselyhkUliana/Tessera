@@ -7,14 +7,14 @@ namespace Tessera.App
   {
     private readonly Dictionary<string, ICommand> _commands;
 
-    public CommandManager(ISuggestionProvider suggestionProvider)
+    public CommandManager(ISuggestionProvider suggestionProvider, IReferenceProvider referenceProvider)
     {
       _commands = new Dictionary<string, ICommand>
       {
-        [nameof(CheckAndCreateEntitiesCommand)] = CommandFactory.CreateCheckAndCreateEntities(suggestionProvider),
-        [nameof(AddFileForMaterialCommand)] = CommandFactory.CreateAddFileForMaterial(),
-        [nameof(AddFileForSortamentCommand)] = CommandFactory.CreateAddFileForSortament(),
-        [nameof(RemoveCommand)] = CommandFactory.CreateRemove()
+        [nameof(CheckAndCreateEntitiesCommand)] = CommandFactory.CreateCheckAndCreateEntities(suggestionProvider, referenceProvider),
+        [nameof(AddFileForMaterialCommand)] = CommandFactory.CreateAddFileForMaterial(referenceProvider),
+        [nameof(AddFileForSortamentCommand)] = CommandFactory.CreateAddFileForSortament(referenceProvider),
+        [nameof(RemoveCommand)] = CommandFactory.CreateRemove(referenceProvider)
       };
     }
 

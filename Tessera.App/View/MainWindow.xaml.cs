@@ -20,7 +20,20 @@ namespace Tessera.App.View
     public MainWindow()
     {
       InitializeComponent();
-      DataContext = new MainWindowViewModel();
+      DataContext = new MainWindowViewModel(PolinomProvider.PolinomProvider.Instance);
+    }
+
+    private void MyGrid_BeginningEdit(object sender, DataGridBeginningEditEventArgs e)
+    {
+      if (DataContext is MainWindowViewModel vm)
+        vm.CurrentSection.IsTypeSizeEditing = e.Column.Header.ToString() == "Типоразмеры";
+    }
+
+    private void MyGrid_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
+    {
+      //подумать что сделать чтобы после потери фокуса с ячейки редактирования не сбрасывался IsTypeSizeEditing
+      if (DataContext is MainWindowViewModel vm)
+        vm.CurrentSection.IsTypeSizeEditing = false;
     }
   }
 }

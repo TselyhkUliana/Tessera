@@ -1,16 +1,16 @@
 ﻿using Ascon.Polynom.Api;
 using Ascon.Polynom.Login;
-using Tessera.App.PolinomHandlers.Strategies;
-using Tessera.App.PolinomHandlers.Utils;
-using Tessera.App.PolinomHandlers.Utils.Constants;
+using Tessera.App.PolinomProvider.Strategies;
+using Tessera.App.PolinomProvider.Utils;
+using Tessera.App.PolinomProvider.Utils.Constants;
 using Tessera.App.ViewModel;
-using TransactionManager = Tessera.App.PolinomHandlers.Utils.TransactionManager;
+using TransactionManager = Tessera.App.PolinomProvider.Utils.TransactionManager;
 
-namespace Tessera.App.PolinomHandlers
+namespace Tessera.App.PolinomProvider
 {
-  internal class PolinomHandler
+  internal class PolinomProvider : IReferenceProvider
   {
-    private static readonly Lazy<PolinomHandler> _instance = new(() => new PolinomHandler());
+    private static readonly Lazy<PolinomProvider> _instance = new(() => new PolinomProvider());
     private readonly ISession _session;
     private readonly IMaterialStrategy _materialStrategy;
     private readonly ISortamentStrategy _sortamentStrategy;
@@ -21,7 +21,7 @@ namespace Tessera.App.PolinomHandlers
     private (string FileName, byte[] FileBody) _pendingMaterialFile;
     private (string FileName, byte[] FileBody) _pendingSortamentFile;
 
-    private PolinomHandler()
+    private PolinomProvider()
     {
       LoginManager.TryOpenSession(Guid.Parse(CatalogConstants.POLYNOM_CLIENT_ID), out _session);
       _transactionManager = new TransactionManager(_session);
@@ -32,7 +32,7 @@ namespace Tessera.App.PolinomHandlers
       _sortamentExStrategy = new SortamentExStrategy(_polinomApiHelper);
     }
 
-    public static PolinomHandler Instance => _instance.Value;
+    public static PolinomProvider Instance => _instance.Value;
     public event EventHandler<FileAttachmentEventArgs> MaterialFilePending;
     public event EventHandler<FileAttachmentEventArgs> SortamentFilePending;
 
@@ -55,7 +55,7 @@ namespace Tessera.App.PolinomHandlers
         //sortamentEx.Evaluate();
         //sectionDefinition.SortamentEx = sortamentEx.Name;
         //_polinomApiHelper.LinksTest(sortament);
-        MaterialFilePending?.Invoke(this, new FileAttachmentEventArgs(material, _pendingMaterialFile.FileBody, _pendingMaterialFile.FileName, CatalogConstants.CATALOG_MATERIAL));
+        //MaterialFilePending?.Invoke(this, new FileAttachmentEventArgs(material, _pendingMaterialFile.FileBody, _pendingMaterialFile.FileName, CatalogConstants.CATALOG_MATERIAL));
         //SortamentFilePending?.Invoke(this, new FileAttachmentEventArgs(sortament, _pendingSortamentFile.FileBody, _pendingSortamentFile.FileName, CatalogConstants.CATALOG_SORTAMENT));
       });
     }

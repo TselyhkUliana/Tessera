@@ -97,6 +97,20 @@ namespace Tessera.App.ViewModel
 
     public SectionDefinition Model => _sectionDefinition;
 
+    private bool _isTypeSizeEditing;
+    public bool IsTypeSizeEditing
+    {
+      get => _isTypeSizeEditing;
+      set
+      {
+        if (_isTypeSizeEditing != value)
+        {
+          _isTypeSizeEditing = value;
+          OnPropertyChanged();
+        }
+      }
+    }
+
     private async Task UpdateSuggestionsSafeAsync(string value, ObservableCollection<string> suggestionsTarget, List<(float[] Id, string Name)> embeddingDatabase)
     {
       _isInternalChange = true;

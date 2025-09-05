@@ -1,7 +1,7 @@
 ﻿using Ascon.Polynom.Api;
 using Tessera.App.ViewModel;
 
-namespace Tessera.App.PolinomHandlers
+namespace Tessera.App.PolinomProvider
 {
   public interface IMaterialStrategy
   {

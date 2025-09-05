@@ -1,6 +1,6 @@
 ﻿using Microsoft.Practices.Prism.Commands;
 using System.Collections.ObjectModel;
-using Tessera.App.PolinomHandlers;
+using Tessera.App.PolinomProvider;
 using Tessera.App.ViewModel;
 
 namespace Tessera.App.Command
@@ -8,19 +8,21 @@ namespace Tessera.App.Command
   internal class CheckAndCreateEntitiesCommand : DelegateCommandBase
   {
     private readonly ISuggestionProvider _suggestionProvider;
+    private readonly IReferenceProvider _referenceProvider;
 
-    public CheckAndCreateEntitiesCommand(ISuggestionProvider suggestionProvider) : base()
+    public CheckAndCreateEntitiesCommand(ISuggestionProvider suggestionProvider, IReferenceProvider referenceProvider) : base()
     {
       Caption = "Создать недостающие элементы";
       Hint = "Автоматическое создание отсутствующих материалов, сортаментов и типоразмеров в ПОЛИНОМ:MDM";
       Name = "CheckAndCreateEntitiesCommand";
       _suggestionProvider = suggestionProvider;
+      _referenceProvider = referenceProvider;
     }
 
     protected override void Execute(object parameter)
     {
       var sectionDefinitions = parameter as ObservableCollection<SectionDefinitionViewModel>;
-      PolinomHandler.Instance.EnsureEntitiesExist(sectionDefinitions);
+      _referenceProvider.EnsureEntitiesExist(sectionDefinitions);
     }
 
     protected override bool CanExecute(object parameter)

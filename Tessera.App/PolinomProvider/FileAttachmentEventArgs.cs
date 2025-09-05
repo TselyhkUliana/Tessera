@@ -1,6 +1,6 @@
 ﻿using Ascon.Polynom.Api;
 
-namespace Tessera.App.PolinomHandlers
+namespace Tessera.App.PolinomProvider
 {
   public class FileAttachmentEventArgs : EventArgs
   {

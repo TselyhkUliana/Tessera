@@ -13,14 +13,16 @@ namespace Tessera.App.ViewModel
     private const string MATERIAL_TAG = "Material";
     private const string SORTAMENT_TAG = "Sortament";
     private const string SORTAMENT_EX_TAG = "SortamentEx";
+    private readonly IReferenceProvider _referenceProvider;
     private readonly CommandManager _commandManager;
     private SectionDefinitionViewModel _сurrentSection;
     private EmbeddingService _embeddingService;
 
-    public MainWindowViewModel()
+    public MainWindowViewModel(IReferenceProvider referenceProvider)
     {
       _ = InitiInitializeAsync();
-      _commandManager = new CommandManager(this);
+      _referenceProvider = referenceProvider;
+      _commandManager = new CommandManager(this, _referenceProvider);
     }
 
     public ObservableCollection<SectionDefinitionViewModel> SectionDefinitions { get; set; }

@@ -1,10 +1,10 @@
 ﻿using Ascon.Polynom.Api;
 using System.Diagnostics;
 using System.Reflection.Metadata;
-using Tessera.App.PolinomHandlers.Utils;
-using Tessera.App.PolinomHandlers.Utils.Constants;
+using Tessera.App.PolinomProvider.Utils;
+using Tessera.App.PolinomProvider.Utils.Constants;
 
-namespace Tessera.App.PolinomHandlers.Strategies
+namespace Tessera.App.PolinomProvider.Strategies
 {
   internal class SortamentExStrategy : ISortamentExStrategy
   {

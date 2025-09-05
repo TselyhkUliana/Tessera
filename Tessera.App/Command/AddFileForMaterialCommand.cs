@@ -1,28 +1,30 @@
-﻿using Tessera.App.PolinomHandlers;
-using Tessera.App.PolinomHandlers.Utils.Constants;
+﻿using Tessera.App.PolinomProvider;
+using Tessera.App.PolinomProvider.Utils.Constants;
 using Tessera.App.ViewModel;
 
 namespace Tessera.App.Command
 {
   class AddFileForMaterialCommand : AddFileCommandBase
   {
-    public AddFileForMaterialCommand() : base()
+    private readonly IReferenceProvider _referenceProvider;
+
+    public AddFileForMaterialCommand(IReferenceProvider referenceProvider) : base()
     {
       Caption = "Добавить файл для материала";
       Hint = "Добавляет файл для документа материала в ПОЛИНОМ:MDM";
       Name = "AddFileForMaterial";
       Icon = new System.Windows.Media.Imaging.BitmapImage(new Uri("pack://application:,,,/Tessera.App;component/Resources/Images/AttachMaterialFile.png"));
+      _referenceProvider = referenceProvider;
     }
 
     protected override void Execute(object parameter)
     {
       var sectionDefinitions = parameter as SectionDefinitionViewModel;
-      var polinomHandler = PolinomHandler.Instance;
 
       var (name, body) = GetSelectedFile();
       if (name == null || body == null)
         return;
-      polinomHandler.AttachFileToDocument(name, body, sectionDefinitions.Material, CatalogConstants.CATALOG_MATERIAL);
+      _referenceProvider.AttachFileToDocument(name, body, sectionDefinitions.Material, CatalogConstants.CATALOG_MATERIAL);
     }
 
     protected override bool CanExecute(object parameter)

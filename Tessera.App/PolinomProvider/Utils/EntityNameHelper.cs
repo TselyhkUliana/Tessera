@@ -1,7 +1,7 @@
 ﻿using Tessera.App.Extensions;
-using Tessera.App.PolinomHandlers.Utils.Constants;
+using Tessera.App.PolinomProvider.Utils.Constants;
 
-namespace Tessera.App.PolinomHandlers.Utils
+namespace Tessera.App.PolinomProvider.Utils
 {
   internal static class EntityNameHelper
   {

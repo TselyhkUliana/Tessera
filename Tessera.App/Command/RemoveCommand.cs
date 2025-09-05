@@ -9,7 +9,7 @@ namespace Tessera.App.Command
 {
   internal class RemoveCommand : DelegateCommandBase
   {
-    public RemoveCommand()
+    public RemoveCommand(IReferenceProvider referenceProvider)
     {
       Caption = "_Удалить";
       Hint = "Удалить текущую секцию (колонку)";

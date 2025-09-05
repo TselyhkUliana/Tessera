@@ -1,4 +1,4 @@
-﻿namespace Tessera.App.PolinomHandlers.Utils.Constants
+﻿namespace Tessera.App.PolinomProvider.Utils.Constants
 {
   internal class PropConstants
   {

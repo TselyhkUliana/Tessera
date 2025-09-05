@@ -5,44 +5,71 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Tessera.App"
         xmlns:vm ="clr-namespace:Tessera.App.ViewModel"
-        xmlns:converters="clr-namespace:Tessera.App.Converters"
         d:DataContext="{d:DesignData Type=vm:MainWindowViewModel}"
+        xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
         mc:Ignorable="d"
-        Title="Tessera" Height="550" Width="1300"
+        Title="Tessera" Height="550" Width="1400"
         WindowStartupLocation="CenterScreen" 
         TextOptions.TextFormattingMode="Display" FontFamily="Ascon Complex" SnapsToDevicePixels="True">
 
-  <DockPanel>
-    <UniformGrid DockPanel.Dock="Top" Margin="5"  HorizontalAlignment="Left" Rows="1">
-      <UniformGrid.Resources>
-        <Style TargetType="Button">
-          <Setter Property="Margin" Value="0 0 5 0"/>
-          <Setter Property="Padding" Value="5 2"/>
-        </Style>
-      </UniformGrid.Resources>
-      <Button Command="{Binding AddFileForMaterialCommand}" CommandParameter="{Binding CurrentSection}" ToolTip="{Binding AddFileForMaterialCommand.Hint}" Background="Transparent">
-        <StackPanel Orientation="Horizontal">
-          <Image Source="{Binding AddFileForMaterialCommand.Icon}" Width="16" Height="16" />
-          <TextBlock Text="{Binding AddFileForMaterialCommand.Caption}" />
-        </StackPanel>
-      </Button>
-      <Button Command="{Binding AddFileForSortamentCommand}" CommandParameter="{Binding CurrentSection}" ToolTip="{Binding AddFileForSortamentCommand.Hint}" Background="Transparent">
-        <StackPanel Orientation="Horizontal">
-          <Image Source="{Binding AddFileForSortamentCommand.Icon}" Width="16" Height="16"/>
-          <TextBlock Text="{Binding AddFileForSortamentCommand.Caption}"/>
-        </StackPanel>
-      </Button>
-    </UniformGrid>
-    <StackPanel DockPanel.Dock="Bottom">
-      <Button Content="Создать" Command="{Binding CreateCommand}" CommandParameter="{Binding SectionDefinitions}" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0 5 5 7" Padding="5 2"/>
-    </StackPanel>
-    <DataGrid x:Name="datagrid" ItemsSource="{Binding SectionDefinitions}" SelectedItem="{Binding CurrentSection}" Margin="5" BorderBrush="#e0e0e0">
-      <DataGrid.Columns>
-        <DataGridTemplateColumn Header="Материалы" CellTemplate="{StaticResource MaterialCell}" CellStyle="{StaticResource MaterialCellStyle}" CellEditingTemplate="{StaticResource MaterialCellEditing}" Width="300"/>
-        <DataGridTemplateColumn Header="Сортаменты" CellTemplate="{StaticResource SortamentCell}" CellStyle="{StaticResource SortamentCellStyle}" CellEditingTemplate="{StaticResource SortamentCellEditing}" Width="400"/>
-        <DataGridTextColumn Header="Типоразмеры" Binding="{Binding TypeSize, UpdateSourceTrigger=PropertyChanged}" CellStyle="{StaticResource DataGridCellStyle}" Width="150"/>
-        <DataGridTextColumn Header="Экземпляры сортаментов" Binding="{Binding SectionInstance}" CellStyle="{StaticResource DataGridCellStyle}" Width="*"/>
-      </DataGrid.Columns>
-    </DataGrid>
-  </DockPanel>
+  <Window.Resources>
+    <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+  </Window.Resources>
+
+  <Grid>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="*"/>
+      <ColumnDefinition Width="Auto"/>
+    </Grid.ColumnDefinitions>
+
+    <DockPanel Grid.Column="0">
+      <UniformGrid DockPanel.Dock="Top" Margin="5"  HorizontalAlignment="Left" Rows="1">
+        <UniformGrid.Resources>
+          <Style TargetType="Button">
+            <Setter Property="Margin" Value="0 0 5 0"/>
+            <Setter Property="Padding" Value="5 2"/>
+          </Style>
+        </UniformGrid.Resources>
+        <Button Command="{Binding AddFileForMaterialCommand}" CommandParameter="{Binding CurrentSection}" ToolTip="{Binding AddFileForMaterialCommand.Hint}" Background="Transparent">
+          <StackPanel Orientation="Horizontal">
+            <Image Source="{Binding AddFileForMaterialCommand.Icon}" Width="16" Height="16" />
+            <TextBlock Text="{Binding AddFileForMaterialCommand.Caption}" />
+          </StackPanel>
+        </Button>
+        <Button Command="{Binding AddFileForSortamentCommand}" CommandParameter="{Binding CurrentSection}" ToolTip="{Binding AddFileForSortamentCommand.Hint}" Background="Transparent">
+          <StackPanel Orientation="Horizontal">
+            <Image Source="{Binding AddFileForSortamentCommand.Icon}" Width="16" Height="16"/>
+            <TextBlock Text="{Binding AddFileForSortamentCommand.Caption}"/>
+          </StackPanel>
+        </Button>
+      </UniformGrid>
+      <StackPanel DockPanel.Dock="Bottom">
+        <Button Content="Создать" Command="{Binding CreateCommand}" CommandParameter="{Binding SectionDefinitions}" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0 5 5 7" Padding="5 2"/>
+      </StackPanel>
+      <DataGrid x:Name="datagrid" ItemsSource="{Binding SectionDefinitions}" SelectedItem="{Binding CurrentSection}" Margin="5" BorderBrush="#e0e0e0" BeginningEdit="MyGrid_BeginningEdit" CellEditEnding="MyGrid_CellEditEnding" >
+        <DataGrid.Columns>
+          <DataGridTemplateColumn Header="Материалы" CellTemplate="{StaticResource MaterialCell}" CellStyle="{StaticResource MaterialCellStyle}" CellEditingTemplate="{StaticResource MaterialCellEditing}" Width="300"/>
+          <DataGridTemplateColumn Header="Сортаменты" CellTemplate="{StaticResource SortamentCell}" CellStyle="{StaticResource SortamentCellStyle}" CellEditingTemplate="{StaticResource SortamentCellEditing}" Width="400"/>
+          <DataGridTextColumn Header="Типоразмеры" Binding="{Binding TypeSize, UpdateSourceTrigger=PropertyChanged}" CellStyle="{StaticResource DataGridCellStyle}" Width="150"/>
+          <DataGridTextColumn Header="Экземпляры сортаментов" Binding="{Binding SortamentEx}" CellStyle="{StaticResource DataGridCellStyle}" Width="*"/>
+        </DataGrid.Columns>
+      </DataGrid>
+    </DockPanel>
+
+    <GridSplitter Panel.ZIndex="2" Grid.Column="1" Width="3" ShowsPreview="True" VerticalAlignment="Stretch" HorizontalAlignment="Left"/>
+    <Border x:Name="SideBar" Panel.ZIndex="1" Width="230" Visibility="{Binding CurrentSection.IsTypeSizeEditing, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Collapsed}" Grid.Column="2" Background="LightBlue">
+      <DockPanel>
+        <ItemsControl>
+          <ItemsControl.ItemTemplate>
+            <DataTemplate>
+              <StackPanel>
+                <TextBlock Text="{Binding}"/>
+                <TextBox Text="{Binding}"/>
+              </StackPanel>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </DockPanel>
+    </Border>
+  </Grid>
 </Window>
