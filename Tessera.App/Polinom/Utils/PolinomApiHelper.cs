@@ -1,8 +1,8 @@
 ﻿using Ascon.Polynom.Api;
 using System.Diagnostics;
-using Tessera.App.PolinomProvider.Utils.Constants;
+using Tessera.App.Polinom.Utils.Constants;
 
-namespace Tessera.App.PolinomProvider.Utils
+namespace Tessera.App.Polinom.Utils
 {
   internal class PolinomApiHelper
   {

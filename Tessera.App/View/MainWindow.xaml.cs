@@ -8,6 +8,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Tessera.App.Polinom;
 using Tessera.App.ViewModel;
 
 namespace Tessera.App.View
@@ -20,7 +21,7 @@ namespace Tessera.App.View
     public MainWindow()
     {
       InitializeComponent();
-      DataContext = new MainWindowViewModel(PolinomProvider.PolinomProvider.Instance);
+      DataContext = new MainWindowViewModel(PolinomProvider.Instance);
     }
 
     private void MyGrid_BeginningEdit(object sender, DataGridBeginningEditEventArgs e)

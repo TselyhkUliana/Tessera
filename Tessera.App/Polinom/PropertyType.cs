@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Tessera.App.PolinomProvider
+namespace Tessera.App.Polinom
 {
   public enum PropertyType
   {

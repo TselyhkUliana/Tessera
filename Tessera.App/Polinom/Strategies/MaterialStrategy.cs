@@ -1,10 +1,10 @@
 ﻿using Ascon.Polynom.Api;
-using Tessera.App.PolinomProvider;
-using Tessera.App.PolinomProvider.Utils;
-using Tessera.App.PolinomProvider.Utils.Constants;
+using Tessera.App.Polinom;
+using Tessera.App.Polinom.Utils;
+using Tessera.App.Polinom.Utils.Constants;
 using Tessera.App.ViewModel;
 
-namespace Tessera.App.PolinomProvider.Strategies
+namespace Tessera.App.Polinom.Strategies
 {
   internal class MaterialStrategy : IMaterialStrategy
   {

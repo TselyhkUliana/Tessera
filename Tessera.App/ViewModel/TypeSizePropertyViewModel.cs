@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Tessera.App.PolinomProvider;
+using Tessera.App.Polinom;
 
 namespace Tessera.App.ViewModel
 {

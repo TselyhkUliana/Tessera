@@ -1,6 +1,6 @@
 ﻿using Ascon.Polynom.Api;
 
-namespace Tessera.App.PolinomProvider.Utils
+namespace Tessera.App.Polinom.Utils
 {
   internal class TransactionManager
   {

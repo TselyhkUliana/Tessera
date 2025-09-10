@@ -1,5 +1,5 @@
-﻿using Tessera.App.PolinomProvider;
-using Tessera.App.PolinomProvider.Utils.Constants;
+﻿using Tessera.App.Polinom;
+using Tessera.App.Polinom.Utils.Constants;
 using Tessera.App.ViewModel;
 
 namespace Tessera.App.Command

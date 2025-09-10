@@ -1,4 +1,4 @@
-﻿namespace Tessera.App.PolinomProvider.Utils
+﻿namespace Tessera.App.Polinom.Utils
 {
   internal static class FormulaDefaults
   {

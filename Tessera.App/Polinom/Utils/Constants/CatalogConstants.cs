@@ -1,4 +1,4 @@
-﻿namespace Tessera.App.PolinomProvider.Utils.Constants
+﻿namespace Tessera.App.Polinom.Utils.Constants
 {
   internal class CatalogConstants
   {

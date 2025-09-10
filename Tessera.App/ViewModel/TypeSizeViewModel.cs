@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Tessera.App.Model;
-using Tessera.App.PolinomProvider;
+using Tessera.App.Polinom;
 
 namespace Tessera.App.ViewModel
 {
@@ -20,7 +20,7 @@ namespace Tessera.App.ViewModel
     public TypeSizeViewModel(SectionDefinitionViewModel sectionDefinitionViewModel)
     {
       _sectionDefinitionViewModel = sectionDefinitionViewModel;
-      _properties = new ObservableCollection<TypeSizePropertyViewModel>(PolinomProvider.PolinomProvider.Instance.AllDimensionProperties.Select(x => new TypeSizePropertyViewModel
+      _properties = new ObservableCollection<TypeSizePropertyViewModel>(PolinomProvider.Instance.AllDimensionProperties.Select(x => new TypeSizePropertyViewModel
       {
         Name = x.Key,
         Type = x.Value,
@@ -60,7 +60,7 @@ namespace Tessera.App.ViewModel
       if (string.IsNullOrEmpty(_sectionDefinitionViewModel.Sortament))
         return;
 
-      var properties = PolinomProvider.PolinomProvider.Instance.GetPropertiesForTypeSize(_sectionDefinitionViewModel.Sortament);
+      var properties = PolinomProvider.Instance.GetPropertiesForTypeSize(_sectionDefinitionViewModel.Sortament);
       foreach (var item in properties)
       {
         var propertyViewModel = _properties.FirstOrDefault(x => x.Name == item);
