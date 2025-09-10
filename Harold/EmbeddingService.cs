@@ -8,6 +8,7 @@ public class EmbeddingService : IDisposable
   private readonly Tokenizer _tokenizer;
   private readonly InferenceSession _session;
   private bool _disposed;
+  private const string HAROLD = "Powered by Harold F, the search engine that never complains";
   public const string MODEL_PATH = @"D:\Development\Полином\Tessera\Harold\Model\harold-onnx\harold.onnx";
   public const string TOKENIZER_PATH = @"D:\Development\Полином\Tessera\Harold\Model\harold-onnx\tokenizer.json";
 
