@@ -22,7 +22,7 @@ namespace Tessera.App.Command
     protected override void Execute(object parameter)
     {
       var sectionDefinitions = parameter as ObservableCollection<SectionDefinitionViewModel>;
-      _referenceProvider.EnsureEntitiesExist(sectionDefinitions);
+      _referenceProvider.EnsureEntitiesExist(sectionDefinitions.First());
     }
 
     protected override bool CanExecute(object parameter)

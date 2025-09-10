@@ -23,7 +23,7 @@
     </Grid.ColumnDefinitions>
 
     <DockPanel Grid.Column="0">
-      <UniformGrid DockPanel.Dock="Top" Margin="5"  HorizontalAlignment="Left" Rows="1">
+      <UniformGrid DockPanel.Dock="Top" Margin="5" HorizontalAlignment="Left" Rows="1">
         <UniformGrid.Resources>
           <Style TargetType="Button">
             <Setter Property="Margin" Value="0 0 5 0"/>
@@ -46,29 +46,47 @@
       <StackPanel DockPanel.Dock="Bottom">
         <Button Content="Создать" Command="{Binding CreateCommand}" CommandParameter="{Binding SectionDefinitions}" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0 5 5 7" Padding="5 2"/>
       </StackPanel>
-      <DataGrid x:Name="datagrid" ItemsSource="{Binding SectionDefinitions}" SelectedItem="{Binding CurrentSection}" Margin="5" BorderBrush="#e0e0e0" BeginningEdit="MyGrid_BeginningEdit" CellEditEnding="MyGrid_CellEditEnding" >
+      <DataGrid x:Name="datagrid" ItemsSource="{Binding SectionDefinitions}" SelectedItem="{Binding CurrentSection}" Margin="5" BorderBrush="#e0e0e0" BeginningEdit="MyGrid_BeginningEdit" CellEditEnding="MyGrid_CellEditEnding">
         <DataGrid.Columns>
           <DataGridTemplateColumn Header="Материалы" CellTemplate="{StaticResource MaterialCell}" CellStyle="{StaticResource MaterialCellStyle}" CellEditingTemplate="{StaticResource MaterialCellEditing}" Width="300"/>
           <DataGridTemplateColumn Header="Сортаменты" CellTemplate="{StaticResource SortamentCell}" CellStyle="{StaticResource SortamentCellStyle}" CellEditingTemplate="{StaticResource SortamentCellEditing}" Width="400"/>
-          <DataGridTextColumn Header="Типоразмеры" Binding="{Binding TypeSize, UpdateSourceTrigger=PropertyChanged}" CellStyle="{StaticResource DataGridCellStyle}" Width="150"/>
+          <DataGridTextColumn Header="Типоразмеры" Binding="{Binding TypeSizeViewModel.TypeSize, UpdateSourceTrigger=PropertyChanged}" CellStyle="{StaticResource DataGridCellStyle}" Width="150"/>
           <DataGridTextColumn Header="Экземпляры сортаментов" Binding="{Binding SortamentEx}" CellStyle="{StaticResource DataGridCellStyle}" Width="*"/>
         </DataGrid.Columns>
       </DataGrid>
     </DockPanel>
 
-    <GridSplitter Panel.ZIndex="2" Grid.Column="1" Width="3" ShowsPreview="True" VerticalAlignment="Stretch" HorizontalAlignment="Left"/>
-    <Border x:Name="SideBar" Panel.ZIndex="1" Width="230" Visibility="{Binding CurrentSection.IsTypeSizeEditing, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Collapsed}" Grid.Column="2" Background="LightBlue">
-      <DockPanel>
-        <ItemsControl>
-          <ItemsControl.ItemTemplate>
-            <DataTemplate>
-              <StackPanel>
-                <TextBlock Text="{Binding}"/>
-                <TextBox Text="{Binding}"/>
-              </StackPanel>
-            </DataTemplate>
-          </ItemsControl.ItemTemplate>
-        </ItemsControl>
+    <!--<GridSplitter Panel.ZIndex="2" Grid.Column="1" Width="3" ShowsPreview="True" VerticalAlignment="Stretch" HorizontalAlignment="Left"/>-->
+    <Border x:Name="SideBar" Panel.ZIndex="1" MinWidth="270" Visibility="{Binding CurrentSection.TypeSizeViewModel.IsTypeSizeEditing, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Collapsed}" Grid.Column="2">
+      <DockPanel Margin="5">
+        <StackPanel DockPanel.Dock="Top">
+          <TextBlock Text="Наименование"/>
+          <TextBox Text="{Binding CurrentSection.TypeSizeViewModel.TypeSize, UpdateSourceTrigger=PropertyChanged}"/>
+        </StackPanel>
+        <GroupBox Header="Свойства" Margin="0 5 0 0">
+          <ItemsControl ItemsSource="{Binding CurrentSection.TypeSizeViewModel.TypeSizePropertiesViewModel}" IsTabStop="False">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <VirtualizingStackPanel/>
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.Template>
+              <ControlTemplate>
+                <ScrollViewer x:Name="ScrollViewer" Padding="{TemplateBinding Padding}" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                  <ItemsPresenter/>
+                </ScrollViewer>
+              </ControlTemplate>
+            </ItemsControl.Template>
+            <ItemsControl.ItemTemplate>
+              <DataTemplate>
+                <StackPanel Margin="0 5 5 0">
+                  <TextBlock Text="{Binding Name}"/>
+                  <TextBox Text="{Binding Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                </StackPanel>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </GroupBox>
       </DockPanel>
     </Border>
   </Grid>

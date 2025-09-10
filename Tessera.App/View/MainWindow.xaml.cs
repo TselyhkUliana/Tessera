@@ -26,14 +26,14 @@ namespace Tessera.App.View
     private void MyGrid_BeginningEdit(object sender, DataGridBeginningEditEventArgs e)
     {
       if (DataContext is MainWindowViewModel vm)
-        vm.CurrentSection.IsTypeSizeEditing = e.Column.Header.ToString() == "Типоразмеры";
+        vm.CurrentSection.TypeSizeViewModel.IsTypeSizeEditing = e.Column.Header.ToString() == "Типоразмеры";
     }
 
     private void MyGrid_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
     {
       //подумать что сделать чтобы после потери фокуса с ячейки редактирования не сбрасывался IsTypeSizeEditing
-      if (DataContext is MainWindowViewModel vm)
-        vm.CurrentSection.IsTypeSizeEditing = false;
+      //if (DataContext is MainWindowViewModel vm)
+      //  vm.CurrentSection.TypeSizeViewModel.IsTypeSizeEditing = false;
     }
   }
 }

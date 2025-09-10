@@ -81,7 +81,7 @@ namespace Tessera.App.ViewModel
       Debug.WriteLine($"InitiInitializeAsync took {stopwatch.ElapsedMilliseconds} - {stopwatch.Elapsed.Seconds} ms.");
     }
 
-    private void AddSectionDefinitionIfNeeded()
+    private void AddSectionDefinitionIfNeeded(object sender, EventArgs e)
     {
       if (SectionDefinitions.Count == 1)
       {
@@ -90,7 +90,7 @@ namespace Tessera.App.ViewModel
       }
 
       var lastElement = SectionDefinitions.LastOrDefault();
-      if (lastElement.Material is null && lastElement.Sortament is null && lastElement.SortamentEx is null)
+      if (lastElement.Material is null && lastElement.Sortament is null && lastElement.TypeSizeViewModel.TypeSize is null && lastElement.SortamentEx is null)
         return;
 
       SectionDefinitions.Add(NewSectionDefinition());

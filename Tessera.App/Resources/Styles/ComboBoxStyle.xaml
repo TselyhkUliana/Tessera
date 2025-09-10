@@ -12,5 +12,6 @@
   </Style>
   <Style TargetType="ComboBox" x:Key="SortamentComboBoxStyle" BasedOn="{StaticResource ComboBoxStyle}">
     <EventSetter Event="Loaded" Handler="ComboBoxSortament_Loaded"/>
+    <EventSetter Event="LostFocus" Handler="SortamentLostFocus"/>
   </Style>
 </ResourceDictionary>

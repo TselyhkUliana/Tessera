@@ -29,12 +29,29 @@ namespace Tessera.App.PolinomProvider.Utils
 
     public IApiReadOnlyCollection<IFormulaGroup> GetFormulaGroups() => _session.Objects.FormulaCatalog.FormulaGroups;
 
+    public Dictionary<string, PropertyType> GetProperties()
+    {
+      var propGroup = FindGroupByName(_session.Objects.PropDefCatalog.PropDefGroups, prop => prop.PropDefGroups, CatalogConstants.GROUP_PROP_DEFINABLE_DIMENSION);
+      return propGroup.PropertyDefinitions.OrderBy(x => x.Name).ToDictionary
+                                          (p => p.Name,
+                                           p => Enum.Parse<PropertyType>(p.Type.ToString()));
+    }
+
+    public List<string> GetPropertiesForTypeSizeInternal(string similarSortament)
+    {
+      var sortament = SearchElement(similarSortament, CatalogConstants.CATALOG_SORTAMENT);
+      var typeSizeLink = sortament.Links.FirstOrDefault(l => l.Name == LinkConstants.LINK_TYPE_SIZE_SORTAMENT_NAME);
+      var typeSizeElement = (IElement)typeSizeLink.LinkedItems.First();
+      var dimensionContract = typeSizeElement.AllContracts.FirstOrDefault(c => c.Name.Contains("Размерность"));
+      return dimensionContract.AllPropertySources.Select(x => x.Definition.Name).ToList();
+    }
+
     public IDocument AddOrCreateDocument(IElement element, string fullName, string documentGroupName)
     {
       var fullStandard = EntityNameHelper.GetFullStandard(fullName);
       var documentGroup = GetDocumentCatalog().DocumentGroups.FirstOrDefault(x => x.Name == documentGroupName);
       var document = SearchDocument(fullStandard) ?? CreateDocument(fullName, fullStandard, documentGroup);
-      
+
       if (!IsInGroupPath(document.OwnerGroup, documentGroupName))
         AddDocument(fullStandard, documentGroup, document);
 
@@ -42,7 +59,6 @@ namespace Tessera.App.PolinomProvider.Utils
       element.LinkDocument(document);
       return document;
     }
-
     public void AddDocument(string fullStandard, IDocumentGroup documentGroup, IDocument document)
     {
       var standard = EntityNameHelper.GetStandard(fullStandard);

@@ -12,6 +12,7 @@
     public const string GROUP_FORMULA_DESIGNATION_SORTAMENT_EX = "Обозначения экземпляров сортаментов";
     public const string FORMULA_DESIGNATION_SORTAMENT = "Обозначение сортамента";
     public const string ELEMENT_DEFAULT_NAME = "Element";
+    public const string GROUP_PROP_DEFINABLE_DIMENSION = "Определяемые размеры";
     public const string GROUP_DOCUMENT_SORTAMENT = "Документы на сортаменты";
     public const string GROUP_DOCUMENT_MATERIAL = "Документы на материалы";
     public const string SUFFIX_DOCUMENT = "Технические условия.";

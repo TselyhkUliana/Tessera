@@ -18,8 +18,8 @@ namespace Tessera.App.PolinomProvider.Strategies
     {
       var catalog = _apiHelper.GetCatalog(CatalogConstants.CATALOG_TYPE_SIZE);
       var group = _apiHelper.FindGroupByName(catalog.Groups, g => g.Groups, groupName) ?? catalog.CreateGroup(groupName);
-      var element = group.Elements.Where(e => e.Name.Equals(sectionDefinition.TypeSize, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
-      element ??= group.CreateElement(sectionDefinition.TypeSize);
+      var element = group.Elements.Where(e => e.Name.Equals(sectionDefinition.TypeSizeViewModel.TypeSize, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+      element ??= group.CreateElement(sectionDefinition.TypeSizeViewModel.TypeSize);
       element.Applicability = Applicability.Allowed;
       return element;
     }

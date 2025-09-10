@@ -18,6 +18,7 @@ namespace Tessera.App.PolinomProvider
     private readonly ISortamentExStrategy _sortamentExStrategy;
     private readonly TransactionManager _transactionManager;
     private readonly PolinomApiHelper _polinomApiHelper;
+    private readonly Dictionary<string, PropertyType> _cachedProperties;
     private (string FileName, byte[] FileBody) _pendingMaterialFile;
     private (string FileName, byte[] FileBody) _pendingSortamentFile;
 
@@ -30,19 +31,22 @@ namespace Tessera.App.PolinomProvider
       _sortamentStrategy = new SortamentStrategy(_polinomApiHelper);
       _typeSizeStrategy = new TypeSizeStrategy(_polinomApiHelper);
       _sortamentExStrategy = new SortamentExStrategy(_polinomApiHelper);
+      _cachedProperties = _polinomApiHelper.GetProperties();
     }
 
     public static PolinomProvider Instance => _instance.Value;
     public event EventHandler<FileAttachmentEventArgs> MaterialFilePending;
     public event EventHandler<FileAttachmentEventArgs> SortamentFilePending;
+    public Dictionary<string, PropertyType> AllDimensionProperties => _cachedProperties;
+    public List<string> GetPropertiesForTypeSize(string similarSortament) => _polinomApiHelper.GetPropertiesForTypeSizeInternal(similarSortament);
 
-    public void EnsureEntitiesExist(IEnumerable<SectionDefinitionViewModel> sectionDefinitionViewModels)
+    public void EnsureEntitiesExist(SectionDefinitionViewModel sectionDefinition)
     {
       _transactionManager.ApplyChanges(() =>
       {
-        var sectionDefinition = sectionDefinitionViewModels.First();
-        var material = _materialStrategy.GetOrCreate(sectionDefinition);
-        //var sortament = _sortamentStrategy.GetOrCreate(sectionDefinition);
+        //var sectionDefinition = sectionDefinitionViewModels.First();
+        //var material = _materialStrategy.GetOrCreate(sectionDefinition);
+        var sortament = _sortamentStrategy.GetOrCreate(sectionDefinition);
         //var typeSize = _typeSizeStrategy.GetOrCreate(sectionDefinition, sortament.Name);
         //var sortamentEx = _sortamentExStrategy.GetOrCreate(sortament);
 
@@ -57,6 +61,8 @@ namespace Tessera.App.PolinomProvider
         //_polinomApiHelper.LinksTest(sortament);
         //MaterialFilePending?.Invoke(this, new FileAttachmentEventArgs(material, _pendingMaterialFile.FileBody, _pendingMaterialFile.FileName, CatalogConstants.CATALOG_MATERIAL));
         //SortamentFilePending?.Invoke(this, new FileAttachmentEventArgs(sortament, _pendingSortamentFile.FileBody, _pendingSortamentFile.FileName, CatalogConstants.CATALOG_SORTAMENT));
+        //_polinomApiHelper.GetProperties();
+        //_polinomApiHelper.Test(sortament);
       });
     }
 

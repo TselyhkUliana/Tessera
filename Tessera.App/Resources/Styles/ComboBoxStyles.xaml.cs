@@ -23,5 +23,11 @@ namespace Tessera.App.Resources.Styles
       comboBox.IsDropDownOpen = true;
       comboBox.Focus();
     }
+
+    private void SortamentLostFocus(object sender, RoutedEventArgs e)
+    {
+      if (sender is ComboBox comboBox && comboBox.DataContext is ViewModel.SectionDefinitionViewModel sectionDefinitionViewModel)
+        sectionDefinitionViewModel.FinishEditSortament();
+    }
   }
 }

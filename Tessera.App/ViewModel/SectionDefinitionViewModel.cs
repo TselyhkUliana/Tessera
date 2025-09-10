@@ -10,12 +10,12 @@ using Tessera.App.Model;
 
 namespace Tessera.App.ViewModel
 {
-  [DebuggerDisplay("SectionDefinitionViewModel: {Material} - {Sortament} - {TypeSize}")]
+  [DebuggerDisplay("SectionDefinitionViewModel: {Material} - {Sortament} - {TypeSizeViewModel.TypeSize}")]
   public class SectionDefinitionViewModel : ViewModelBase
   {
     private readonly SectionDefinition _sectionDefinition;
     private readonly ISuggestionProvider _suggestionProvider;
-    public event Action RequestAddSectionDefinition;
+    private readonly TypeSizeViewModel _typeSizeViewModel;
     private bool _isUpdatingSuggestions;
     private bool _isInternalChange = false;
 
@@ -23,8 +23,12 @@ namespace Tessera.App.ViewModel
     {
       _sectionDefinition = sectionDefinition;
       _suggestionProvider = suggestionProvider;
+      _typeSizeViewModel = new TypeSizeViewModel(this);
     }
 
+    public event EventHandler RequestAddSectionDefinition;
+    public event EventHandler SortamentEditFinished;
+    public SectionDefinition Model => _sectionDefinition;
     /// <summary>Материал</summary>
     public string Material
     {
@@ -40,7 +44,7 @@ namespace Tessera.App.ViewModel
         if (!_isUpdatingSuggestions)
         {
           _isUpdatingSuggestions = true;
-          RequestAddSectionDefinition?.Invoke();
+          OnRequestAddSectionDefinition();
         }
         _ = UpdateSuggestionsSafeAsync(value, SuggestedMaterials, _suggestionProvider.MaterialEmbeddings);
       }
@@ -59,7 +63,7 @@ namespace Tessera.App.ViewModel
 
         if (!_isUpdatingSuggestions)
         {
-          RequestAddSectionDefinition?.Invoke();
+          OnRequestAddSectionDefinition();
           _isUpdatingSuggestions = true;
         }
         _ = UpdateSuggestionsSafeAsync(value, SuggestedSortament, _suggestionProvider.SortamentEmbeddings);
@@ -79,14 +83,14 @@ namespace Tessera.App.ViewModel
 
         if (!_isUpdatingSuggestions)
         {
-          RequestAddSectionDefinition?.Invoke();
+          OnRequestAddSectionDefinition();
           _isUpdatingSuggestions = true;
         }
         _ = UpdateSuggestionsSafeAsync(value, SuggestedSortamentEx, _suggestionProvider.SortamentExEmbeddings);
       }
     }
-    /// <summary>Типоразмер</summary>
-    public string TypeSize { get => _sectionDefinition.TypeSize; set => Set((v) => _sectionDefinition.TypeSize = v, _sectionDefinition.TypeSize, value); }
+    /// <summary>ViewModel Типоразмера</summary>
+    public TypeSizeViewModel TypeSizeViewModel => _typeSizeViewModel;
 
     /// <summary>Список похожих материалов</summary>
     public ObservableCollection<string> SuggestedMaterials { get; set; }
@@ -95,20 +99,12 @@ namespace Tessera.App.ViewModel
     /// <summary>Список похожих экземпляров сортаментов</summary>
     public ObservableCollection<string> SuggestedSortamentEx { get; set; }
 
-    public SectionDefinition Model => _sectionDefinition;
+    public void OnRequestAddSectionDefinition() => RequestAddSectionDefinition?.Invoke(this, EventArgs.Empty);
 
-    private bool _isTypeSizeEditing;
-    public bool IsTypeSizeEditing
+    public void FinishEditSortament()
     {
-      get => _isTypeSizeEditing;
-      set
-      {
-        if (_isTypeSizeEditing != value)
-        {
-          _isTypeSizeEditing = value;
-          OnPropertyChanged();
-        }
-      }
+      if (!string.IsNullOrEmpty(Sortament))
+        SortamentEditFinished?.Invoke(this, EventArgs.Empty);
     }
 
     private async Task UpdateSuggestionsSafeAsync(string value, ObservableCollection<string> suggestionsTarget, List<(float[] Id, string Name)> embeddingDatabase)

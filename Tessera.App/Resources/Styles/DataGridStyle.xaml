@@ -1,6 +1,6 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                     xmlns:converters="clr-namespace:Tessera.App.Converters">
+                    xmlns:converters="clr-namespace:Tessera.App.Converters">
 
   <converters:MaterialHasStandardConverter x:Key="MaterialHasStandardConverter"/>
   <converters:SortamentHasStandardConverter x:Key="SortamentHasStandardConverter"/>
@@ -10,6 +10,8 @@
     <Setter Property="Background" Value="{StaticResource Brush.Transparent}"/>
     <Setter Property="GridLinesVisibility" Value="None"/>
     <Setter Property="HeadersVisibility" Value="Column"/>
+    <Setter Property="CanUserSortColumns" Value="False"/>
+    <Setter Property="CanUserReorderColumns" Value="False"/>
   </Style>
   <Style TargetType="DataGridRow">
     <Style.Triggers>
