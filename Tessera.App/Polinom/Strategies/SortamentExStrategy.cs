@@ -48,14 +48,15 @@ namespace Tessera.App.Polinom.Strategies
 
     private void AddConceptPropAccordingToStandart(IElement element, string standard)
     {
-      _apiHelper.SetClientType(ClientType.Editor); //для создания понятия нужно сменить тип клиента на Editor
-      var description = $"Свойства по {standard}";
-      var concept = _apiHelper.GetConceptByName(description) ??
-                    _apiHelper.GetConceptByAbsoluteCode(ConceptConstants.CONCEPT_SORTAMENT_EX).CreateSubConcept(description);
-      var prop = concept.ConceptPropertySources.FirstOrDefault(x => x.AbsoluteCode == concept.AbsoluteCode + PropConstants.PROP_SPECIFICATION_OBJECT_SETTINGS_TEMPLATE);
-      prop.IsDynamic = true;
-      element.RealizeContract(concept);
-      _apiHelper.SetClientType(ClientType.Client);
+      _apiHelper.ExecuteWithEditorClient(() =>
+      {
+        var description = $"Свойства по {standard}";
+        var concept = _apiHelper.GetConceptByName(description) ??
+                      _apiHelper.GetConceptByAbsoluteCode(ConceptConstants.CONCEPT_SORTAMENT_EX).CreateSubConcept(description);
+        var prop = concept.ConceptPropertySources.FirstOrDefault(x => x.AbsoluteCode == concept.AbsoluteCode + PropConstants.PROP_SPECIFICATION_OBJECT_SETTINGS_TEMPLATE);
+        prop.IsDynamic = true;
+        element.RealizeContract(concept);
+      });
     }
 
     public void FillProperties()

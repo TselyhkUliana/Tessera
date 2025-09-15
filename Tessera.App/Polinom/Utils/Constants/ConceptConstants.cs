@@ -7,5 +7,6 @@
     public const string CONCEPT_MATERIAL = "c:@Materials::c:Materials";
     public const string CONCEPT_SHAPE = "c:ShapesMiS";
     public const string CONCEPT_CLASSIFICATION_ITEM = "c:@NameAndDescription::c:@ClassificationItem";
+    public const string REQUIREMENT_CONCEPT = "c:RequirementConcept::c:TyposizeConcept";
   }
 }

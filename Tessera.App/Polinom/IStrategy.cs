@@ -20,6 +20,6 @@ namespace Tessera.App.Polinom
 
   public interface ITypeSizeStrategy
   {
-    IElement GetOrCreate(SectionDefinitionViewModel sectionDefinition, string groupName);
+    IElement GetOrCreate(TypeSizeViewModel typeSizeViewModel, IElement sortament);
   }
 }

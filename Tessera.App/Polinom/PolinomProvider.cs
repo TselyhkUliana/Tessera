@@ -47,11 +47,11 @@ namespace Tessera.App.Polinom
         //var sectionDefinition = sectionDefinitionViewModels.First();
         //var material = _materialStrategy.GetOrCreate(sectionDefinition);
         var sortament = _sortamentStrategy.GetOrCreate(sectionDefinition);
-        //var typeSize = _typeSizeStrategy.GetOrCreate(sectionDefinition, sortament.Name);
+        var typeSize = _typeSizeStrategy.GetOrCreate(sectionDefinition.TypeSizeViewModel, sortament);
         //var sortamentEx = _sortamentExStrategy.GetOrCreate(sortament);
 
         //_polinomApiHelper.CreateLink(sortament, material, LinkConstants.LINK_SORTAMENT_MATERIAL);
-        //_polinomApiHelper.CreateLink(typeSize, sortament, LinkConstants.LINK_TYPESIZE_SORTAMENT);
+        _polinomApiHelper.CreateLink(typeSize, sortament, LinkConstants.LINK_TYPESIZE_SORTAMENT);
         //_polinomApiHelper.CreateLink(sortamentEx, sortament, LinkConstants.LINK_SORTAMENTEX_SORTAMENT);
         //_polinomApiHelper.CreateLink(sortamentEx, material, LinkConstants.LINK_SORTAMENTEX_MATERIAL);
         //_polinomApiHelper.CreateLink(sortamentEx, typeSize, LinkConstants.LINK_SORTAMENTEX_TYPE_SIZE);

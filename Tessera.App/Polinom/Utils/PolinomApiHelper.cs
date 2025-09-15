@@ -1,4 +1,5 @@
 ﻿using Ascon.Polynom.Api;
+using System;
 using System.Diagnostics;
 using Tessera.App.Polinom.Utils.Constants;
 
@@ -9,13 +10,16 @@ namespace Tessera.App.Polinom.Utils
     private readonly ISession _session;
     private readonly TransactionManager _transactionManager;
     private readonly IReference? _referenceMaterialAndSortament;
-
+    private readonly IApiReadOnlyCollection<IPropertyDefinition> _propDefinitions;
     public PolinomApiHelper(ISession session, TransactionManager transactionManager)
     {
       _session = session;
       _transactionManager = transactionManager;
       _referenceMaterialAndSortament = _session.Objects.AllReferences.FirstOrDefault(x => x.Name == CatalogConstants.REFERENCE_NAME);
+      _propDefinitions = FindGroupByName(_session.Objects.PropDefCatalog.PropDefGroups, prop => prop.PropDefGroups, CatalogConstants.GROUP_PROP_DEFINABLE_DIMENSION).PropertyDefinitions;
     }
+
+    public IApiReadOnlyCollection<IPropertyDefinition> PropertyDefinitions => _propDefinitions;
 
     public void SetClientType(ClientType clientType) => _session.ClientType = clientType;
 
@@ -31,10 +35,16 @@ namespace Tessera.App.Polinom.Utils
 
     public Dictionary<string, PropertyType> GetProperties()
     {
-      var propGroup = FindGroupByName(_session.Objects.PropDefCatalog.PropDefGroups, prop => prop.PropDefGroups, CatalogConstants.GROUP_PROP_DEFINABLE_DIMENSION);
-      return propGroup.PropertyDefinitions.OrderBy(x => x.Name).ToDictionary
-                                          (p => p.Name,
-                                           p => Enum.Parse<PropertyType>(p.Type.ToString()));
+      return _propDefinitions.OrderBy(x => x.Name).ToDictionary
+                              (p => p.Name,
+                               p => Enum.Parse<PropertyType>(p.Type.ToString()));
+    }
+
+    public void ExecuteWithEditorClient(Action action)
+    {
+      SetClientType(ClientType.Editor);
+      action?.Invoke();
+      SetClientType(ClientType.Client);
     }
 
     public List<string> GetPropertiesForTypeSizeInternal(string similarSortament)
