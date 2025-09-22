@@ -6,5 +6,6 @@ namespace Tessera.App
   {
     void EnsureEntitiesExist(SectionDefinitionViewModel sectionDefinition);
     void AttachFileToDocument(string fileName, byte[] fileBody, string elementName, string catalog);
+    //List<string> Test();
   }
 }

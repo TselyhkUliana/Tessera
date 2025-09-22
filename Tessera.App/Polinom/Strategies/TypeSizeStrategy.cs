@@ -74,20 +74,33 @@ namespace Tessera.App.Polinom.Strategies
         var common = _apiHelper.PropertyDefinitions.Where(x => inputPropertiesName.Contains(x.Name)).ToList();
         foreach (var property in common)
         {
-          var propertySource = concept.CreatePropertySource(property);
-          switch (propertySource.Definition.Type)
+          switch (property.Type)
           {
             case Ascon.Polynom.Api.PropertyType.Double:
-              var propDouble = propertySource.Definition as IDoublePropertyDefinition;
+              var propDouble = property as IDoublePropertyDefinition;
               propDouble.AssignDoublePropertyValue(typeSize, concept, double.Parse(inputProperties.First(x => x.Name == property.Name).Value));
               break;
             case Ascon.Polynom.Api.PropertyType.String:
-              var propString = propertySource.Definition as IStringPropertyDefinition;
+              var propString = property as IStringPropertyDefinition;
               propString.AssignStringPropertyValue(typeSize, concept, inputProperties.First(x => x.Name == property.Name).Value);
               break;
             default:
               break;
           }
+          //var propertySource = concept.CreatePropertySource(property);
+          //switch (propertySource.Definition.Type)
+          //{
+          //  case Ascon.Polynom.Api.PropertyType.Double:
+          //    var propDouble = propertySource.Definition as IDoublePropertyDefinition;
+          //    propDouble.AssignDoublePropertyValue(typeSize, concept, double.Parse(inputProperties.First(x => x.Name == property.Name).Value));
+          //    break;
+          //  case Ascon.Polynom.Api.PropertyType.String:
+          //    var propString = propertySource.Definition as IStringPropertyDefinition;
+          //    propString.AssignStringPropertyValue(typeSize, concept, inputProperties.First(x => x.Name == property.Name).Value);
+          //    break;
+          //  default:
+          //    break;
+          //}
         }
       });
     }

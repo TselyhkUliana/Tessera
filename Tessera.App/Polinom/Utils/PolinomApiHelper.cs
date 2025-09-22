@@ -47,6 +47,25 @@ namespace Tessera.App.Polinom.Utils
       SetClientType(ClientType.Client);
     }
 
+    //public List<string> Test()
+    //{
+    //  var list = new List<string>();
+    //  var group = FindGroupByName(_session.Objects.PropDefCatalog.PropDefGroups, prop => prop.PropDefGroups, "Для обозначений");
+    //  foreach (var item in group.PropDefGroups)
+    //  {
+    //    foreach (var item1 in item.PropertyDefinitions)
+    //    {
+    //      list.Add(item1.Name.ToString());
+    //    }
+    //  }
+
+    //  //foreach (var item in list.Distinct())
+    //  //{
+    //  //  Debug.WriteLine(item);
+    //  //}
+    //  return list.Distinct().ToList();
+    //}
+
     public List<string> GetPropertiesForTypeSizeInternal(string similarSortament)
     {
       var sortament = SearchElement(similarSortament, CatalogConstants.CATALOG_SORTAMENT);
@@ -69,6 +88,7 @@ namespace Tessera.App.Polinom.Utils
       element.LinkDocument(document);
       return document;
     }
+
     public void AddDocument(string fullStandard, IDocumentGroup documentGroup, IDocument document)
     {
       var standard = EntityNameHelper.GetStandard(fullStandard);

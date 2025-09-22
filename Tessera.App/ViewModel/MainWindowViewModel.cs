@@ -56,7 +56,12 @@ namespace Tessera.App.ViewModel
     private async Task InitiInitializeAsync()
     {
       Stopwatch stopwatch = Stopwatch.StartNew();
-
+      //var test = Serializer.Instance;
+      //var poi = test.Items.Where(x => x.Category == "0");
+      //foreach (var item in poi)
+      //{
+      //  Debug.WriteLine($"{item.Name}");
+      //}
       var embeddingService = Task.Run(() => _embeddingService = EmbeddingService.Instance);
       var class1 = await Class1.CreateAsync();
       MaterialEmbeddings = new List<(float[] Vectors, string Name)>();
@@ -75,11 +80,34 @@ namespace Tessera.App.ViewModel
       OnPropertyChanged(nameof(SectionDefinitions));
       await class1.DisposeAsync();
       await embeddingService;
-
+      //Test();
       stopwatch.Stop();
       Debug.WriteLine($"MaterialsBD {new string('*', 110)}");
       Debug.WriteLine($"InitiInitializeAsync took {stopwatch.ElapsedMilliseconds} - {stopwatch.Elapsed.Seconds} ms.");
     }
+
+    //public void Test()
+    //{
+    //  var serializer = new Serializer();
+    //  PropertyList propertyList = new PropertyList();
+    //  //List<(string Name, string Embedding)> list = new List<(string Name, string Embedding)>();
+    //  foreach (var item in _referenceProvider.Test())
+    //  {
+    //    _embeddingService.GetTextEmbedding(item, out var embedding);
+    //    propertyList.Items.Add(new PropertyItem
+    //    {
+    //      Name = item,
+    //      Embedding = string.Join(";", embedding),
+    //    });
+    //  }
+    //  serializer.MyProperty = propertyList;
+    //  serializer.Save();
+
+    //foreach (var item in list)
+    //{
+    //  Debug.WriteLine($"Name = {item.Name} Embedding = {item.Embedding}");
+    //}
+    //}
 
     private void AddSectionDefinitionIfNeeded(object sender, EventArgs e)
     {

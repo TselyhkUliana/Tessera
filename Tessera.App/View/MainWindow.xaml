@@ -23,7 +23,7 @@
     </Grid.ColumnDefinitions>
 
     <DockPanel Grid.Column="0">
-      <UniformGrid DockPanel.Dock="Top" Margin="5" HorizontalAlignment="Left" Rows="1">
+      <!--<UniformGrid DockPanel.Dock="Top" Margin="5" HorizontalAlignment="Left" Rows="1">
         <UniformGrid.Resources>
           <Style TargetType="Button">
             <Setter Property="Margin" Value="0 0 5 0"/>
@@ -42,7 +42,7 @@
             <TextBlock Text="{Binding AddFileForSortamentCommand.Caption}"/>
           </StackPanel>
         </Button>
-      </UniformGrid>
+      </UniformGrid>-->
       <StackPanel DockPanel.Dock="Bottom">
         <Button Content="Создать" Command="{Binding CreateCommand}" CommandParameter="{Binding SectionDefinitions}" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0 5 5 7" Padding="5 2"/>
       </StackPanel>
