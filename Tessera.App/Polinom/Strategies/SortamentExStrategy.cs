@@ -26,16 +26,17 @@ namespace Tessera.App.Polinom.Strategies
       var group = _apiHelper.FindGroupByName(_catalog.Groups, g => g.Groups, groupName) ?? CreateGroupSortamentEx(groupName, sortament.OwnerGroup.Name);
       var element = group.CreateElement(CatalogConstants.ELEMENT_DEFAULT_NAME);
       element.Applicability = Applicability.Allowed;
-      var propName = element.GetProperty(PropConstants.PROP_NAME_AND_DESCRIPTION);
-      var formula = _apiHelper.CreateOrReceiveFormula(sortament.OwnerGroup.Name, $"Обозначение {groupName}", CatalogConstants.GROUP_FORMULA_DESIGNATION_SORTAMENT_EX);
-      propName.EvaluationPropertyInfo.Formula = formula;
       var conceptClassification = _apiHelper.GetConceptByAbsoluteCode(ConceptConstants.CONCEPT_CLASSIFICATION_ITEM);
       var conceptPropertySourceClassificationName = conceptClassification.ConceptPropertySources.FirstOrDefault(s => s.AbsoluteCode == PropConstants.PROP_NAME_AND_DESCRIPTION_ABSOLUTE_CODE);
-      var appointedFormula = group.AllAppointedFormulas.FirstOrDefault(af => af.Formula == formula) ??
-                             group.AddAppointedFormula(conceptPropertySourceClassificationName, formula);
       var document = sortament.Documents.FirstOrDefault();
       group.LinkDocument(document);
-      AddConceptPropAccordingToStandart(element, EntityNameHelper.GetFullStandard(sortament.Name));
+      var conceptPropertiesByStandard = AddConceptPropAccordingToStandart(element, EntityNameHelper.GetFullStandard(sortament.Name));
+
+      var formula = _apiHelper.CreateOrReceiveFormula(sortament.OwnerGroup.Name, $"Обозначение {groupName}", CatalogConstants.GROUP_FORMULA_DESIGNATION_SORTAMENT_EX, conceptPropertiesByStandard);
+      var propName = element.GetProperty(PropConstants.PROP_NAME_AND_DESCRIPTION);
+      propName.EvaluationPropertyInfo.Formula = formula;
+      var appointedFormula = group.AllAppointedFormulas.FirstOrDefault(af => af.Formula == formula) ??
+                             group.AddAppointedFormula(conceptPropertySourceClassificationName, formula);
 
       return element;
     }
@@ -46,17 +47,21 @@ namespace Tessera.App.Polinom.Strategies
       return group.CreateGroup(derivedGroupName);
     }
 
-    private void AddConceptPropAccordingToStandart(IElement element, string standard)
+    private IConcept AddConceptPropAccordingToStandart(IElement element, string standard)
     {
+      IConcept result = null;
       _apiHelper.ExecuteWithEditorClient(() =>
       {
         var description = $"Свойства по {standard}";
-        var concept = _apiHelper.GetConceptByName(description) ??
+        //var concept = _apiHelper.GetConceptByName(description) ??
+        var concept = _apiHelper.GetConceptByName("Свойства по ГОСТ 1050-2013") ??
                       _apiHelper.GetConceptByAbsoluteCode(ConceptConstants.CONCEPT_SORTAMENT_EX).CreateSubConcept(description);
         var prop = concept.ConceptPropertySources.FirstOrDefault(x => x.AbsoluteCode == concept.AbsoluteCode + PropConstants.PROP_SPECIFICATION_OBJECT_SETTINGS_TEMPLATE);
         prop.IsDynamic = true;
         element.RealizeContract(concept);
+        result = concept;
       });
+      return result;
     }
 
     public void FillProperties()

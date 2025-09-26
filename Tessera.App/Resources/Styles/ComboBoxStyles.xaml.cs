@@ -26,7 +26,7 @@ namespace Tessera.App.Resources.Styles
 
     private void SortamentLostFocus(object sender, RoutedEventArgs e)
     {
-      if (sender is ComboBox comboBox && comboBox.DataContext is ViewModel.SectionDefinitionViewModel sectionDefinitionViewModel)
+      if (sender is ComboBox comboBox && comboBox.DataContext is ViewModel.SectionDefinitionViewModel sectionDefinitionViewModel) //написать проверку для редактирования
         sectionDefinitionViewModel.FinishEditSortament();
     }
   }

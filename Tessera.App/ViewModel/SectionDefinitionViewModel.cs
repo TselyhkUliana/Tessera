@@ -103,7 +103,7 @@ namespace Tessera.App.ViewModel
 
     public void FinishEditSortament()
     {
-      if (!string.IsNullOrEmpty(Sortament))
+      //if (!string.IsNullOrEmpty(Sortament))
         SortamentEditFinished?.Invoke(this, EventArgs.Empty);
     }
 

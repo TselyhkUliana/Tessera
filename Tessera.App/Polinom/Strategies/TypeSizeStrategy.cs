@@ -21,7 +21,6 @@ namespace Tessera.App.Polinom.Strategies
       var catalog = _apiHelper.GetCatalog(CatalogConstants.CATALOG_TYPE_SIZE);
       var groupName = sortament.Name;
       var group = _apiHelper.FindGroupByName(catalog.Groups, g => g.Groups, groupName) ?? catalog.CreateGroup(groupName);
-      var matchingElements = group.Elements.Where(e => e.Name.Equals(typeSizeViewModel.TypeSize, StringComparison.OrdinalIgnoreCase)).ToList();
       var element = FindMatchingElement(group.Elements, typeSizeViewModel) ?? CreateElementWithProperties(group, typeSizeViewModel, sortament);
       element.Applicability = Applicability.Allowed;
       return element;

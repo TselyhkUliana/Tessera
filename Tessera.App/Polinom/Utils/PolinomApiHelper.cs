@@ -1,6 +1,7 @@
 ﻿using Ascon.Polynom.Api;
 using System;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using Tessera.App.Polinom.Utils.Constants;
 
 namespace Tessera.App.Polinom.Utils
@@ -47,6 +48,28 @@ namespace Tessera.App.Polinom.Utils
       SetClientType(ClientType.Client);
     }
 
+    //public async Task<(List<IElement> Materials, List<IElement> Sortament)> GetDataAsync()
+    //{
+    //  var catalogSortament = GetCatalog(CatalogConstants.CATALOG_SORTAMENT);
+    //  var catalogMaterial = GetCatalog(CatalogConstants.CATALOG_MATERIAL);
+    //  var materialsTask = Task.Run(() => GetAllElements(catalogMaterial.Groups));
+    //  var sortamentTask = Task.Run(() => GetAllElements(catalogSortament.Groups));
+    //  await Task.WhenAll(materialsTask, sortamentTask);
+    //  return (materialsTask.Result, sortamentTask.Result);
+    //}
+
+    //public List<IElement> GetAllElements(IApiReadOnlyCollection<IGroup> groups)
+    //{
+    //  var result = new List<IElement>();
+    //  foreach (var group in groups)
+    //  {
+    //    result.AddRange(group.Elements);
+    //    result.AddRange(GetAllElements(group.Groups));
+    //  }
+    //  return result;
+    //}
+    //public List<IElement> GetAllElements(IApiReadOnlyCollection<IGroup> groups) => groups.SelectMany(g => g.Elements.Concat(GetAllElements(g.Groups))).ToList();
+
     //public List<string> Test()
     //{
     //  var list = new List<string>();
@@ -78,6 +101,9 @@ namespace Tessera.App.Polinom.Utils
     public IDocument AddOrCreateDocument(IElement element, string fullName, string documentGroupName)
     {
       var fullStandard = EntityNameHelper.GetFullStandard(fullName);
+      if (string.IsNullOrEmpty(fullStandard))
+        return null;
+
       var documentGroup = GetDocumentCatalog().DocumentGroups.FirstOrDefault(x => x.Name == documentGroupName);
       var document = SearchDocument(fullStandard) ?? CreateDocument(fullName, fullStandard, documentGroup);
 
@@ -155,12 +181,12 @@ namespace Tessera.App.Polinom.Utils
       return group.Name == findGroupName || (group.ParentGroup is not null && IsInGroupPath(group.ParentGroup, findGroupName));
     }
 
-    public IFormula CreateOrReceiveFormula(string sortamentGroup, string formulaName, string groupName)
+    public IFormula CreateOrReceiveFormula(string sortamentGroup, string formulaName, string groupName, IConcept conceptPropertiesByStandard)
     {
       var formulaGroups = GetFormulaGroups();
       var groupFormula = FindGroupByName(formulaGroups, g => g.FormulaGroups, sortamentGroup) ??
                          FindGroupByName(formulaGroups, g => g.FormulaGroups, groupName).CreateFormulaGroup(sortamentGroup);
-      var formula = groupFormula.Formulas.FirstOrDefault(x => x.Name == formulaName) ?? CreateFormula(groupFormula, formulaName);
+      var formula = groupFormula.Formulas.FirstOrDefault(x => x.Name == formulaName) ?? CreateFormula(groupFormula, formulaName, conceptPropertiesByStandard);
       return formula;
     }
 
@@ -172,12 +198,16 @@ namespace Tessera.App.Polinom.Utils
       return sourceProvider(condition).FirstOrDefault();
     }
 
-    private IFormula CreateFormula(IFormulaGroup groupFormula, string name)
+    private IFormula CreateFormula(IFormulaGroup groupFormula, string name, IConcept conceptPropertiesByStandard)
     {
       var formula = groupFormula.CreateFormula(name, FormulaDefaults.BuildFormulaBodyDesignation());
       foreach (var (Name, Expression) in FormulaDefaults.Parameters)
         formula.CreateParameter(Name, Expression);
-
+      foreach (var prop in conceptPropertiesByStandard.PropertySources)
+      {
+        var (Name, Expression) = FormulaDefaults.BuildParameterByDefinition(prop.GetPropertyDefinition(), prop.AbsoluteCode);
+        formula.CreateParameter(Name, Expression);
+      }
       return formula;
     }
 

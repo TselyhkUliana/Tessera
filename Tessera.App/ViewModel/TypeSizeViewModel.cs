@@ -58,15 +58,20 @@ namespace Tessera.App.ViewModel
     private void SectionDefinitionSortamentEditFinished(object sender, EventArgs e)
     {
       if (string.IsNullOrEmpty(_sectionDefinitionViewModel.Sortament))
+      {
+        _properties = new ObservableCollection<TypeSizePropertyViewModel>(_properties.OrderBy(x => x.Name)); //потом попробовать https://stackoverflow.com/questions/7284805/how-to-sort-observablecollection
+        OnPropertyChanged(nameof(TypeSizePropertiesViewModel));
         return;
+      }
 
-      var properties = PolinomProvider.Instance.GetPropertiesForTypeSize(_sectionDefinitionViewModel.Sortament);
+      var properties = PolinomProvider.Instance.GetPropertiesForTypeSize(_sectionDefinitionViewModel.SuggestedSortament.First());
       foreach (var item in properties)
       {
         var propertyViewModel = _properties.FirstOrDefault(x => x.Name == item);
         if (propertyViewModel is not null)
           _properties.Move(_properties.IndexOf(propertyViewModel), 0);
       }
+      OnPropertyChanged(nameof(TypeSizePropertiesViewModel));
     }
   }
 }

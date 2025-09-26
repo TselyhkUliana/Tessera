@@ -90,15 +90,9 @@ namespace Tessera.App.Polinom.Utils
         var index = GetStandardKeywordIndex(normalized);
         if (index > 0)
         {
-          var standard = GetStandard(fullStandard);
+          var standard = GetStandard(fullStandard).Trim();
           var prefix = normalized.Substring(0, index).Trim();
-          if (StandardConstants.StandardsTitleCase.FirstOrDefault(x => x.Equals(standard, StringComparison.OrdinalIgnoreCase)) is not null)
-            return $"{prefix} {standard.FirstCharToUpper()} {fullStandard.Substring(standard.Length)}";
-          if (standard.Equals(StandardConstants.SNiP, StringComparison.OrdinalIgnoreCase))
-            return $"{prefix} {StandardConstants.SNiP} {fullStandard.Substring(standard.Length)}";
-          if (standard.Equals(StandardConstants.SANPIN, StringComparison.OrdinalIgnoreCase))
-            return $"{prefix} {StandardConstants.SANPIN} {fullStandard.Substring(standard.Length)}";
-          return $"{prefix} {fullStandard.ToUpper()}";
+          return $"{prefix} {standard} {fullStandard.Substring(standard.Length + 1)}";
         }
       }
       return normalized;

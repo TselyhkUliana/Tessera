@@ -1,4 +1,6 @@
-﻿namespace Tessera.App.Polinom.Utils
+﻿using Ascon.Polynom.Api;
+
+namespace Tessera.App.Polinom.Utils
 {
   internal static class FormulaDefaults
   {
@@ -10,6 +12,11 @@
        ("Типоразмер.Наименование", "GetPropertyValue(First(GetLinkedObjects([this], 'ld:ExSortSizeLinkCode::lde:Destination')), 'c:@NameAndDescription::pd:@Name', '')"),
        ("ТУ.Документ", "GetPropertyValue(First(GetDocuments([this])), 'c:@NameAndDescription::c:@Document::pd:@Designation', '')")
     };
+
+    public static (string Name, string Expression) BuildParameterByDefinition(IPropertyDefinition definition, string absoluteCode)
+    {
+      return ($"{definition.Name}.{definition.OwnerGroup.Name}", $"GetPropertyValue([this], '{absoluteCode}', '')");
+    }
 
     /// <summary>Возвращает тело формулы для вычисления обозначения экземпляра сортамента</summary>
     public static string BuildFormulaBodyDesignation()

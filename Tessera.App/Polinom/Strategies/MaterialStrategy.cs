@@ -37,7 +37,6 @@ namespace Tessera.App.Polinom.Strategies
       return element;
     }
 
-
     public void FillProperties(IElement element, string inputElementFormat)
     {
       var markProperty = element.GetProperty(PropConstants.PROP_MATERIAL_MASK).Definition as IStringPropertyDefinition;

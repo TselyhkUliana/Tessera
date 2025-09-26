@@ -22,11 +22,20 @@ namespace Tessera.App.Command
     protected override void Execute(object parameter)
     {
       var sectionDefinitions = parameter as ObservableCollection<SectionDefinitionViewModel>;
-      _referenceProvider.EnsureEntitiesExist(sectionDefinitions.First());
+      foreach (var item in sectionDefinitions.SkipLast(1))
+        _referenceProvider.EnsureEntitiesExist(item);
     }
 
     protected override bool CanExecute(object parameter)
     {
+      //if (parameter is ObservableCollection<SectionDefinitionViewModel> sectionDefinition && sectionDefinition.Count > 0)
+      //{
+      //  var first = sectionDefinition[0];
+      //  return first.Material is not null &&
+      //         first.Sortament is not null &&
+      //         first.TypeSizeViewModel?.TypeSize is not null;
+      //}
+      //return false;
       return true;
     }
   }
