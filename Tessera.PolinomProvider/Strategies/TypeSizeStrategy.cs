@@ -1,11 +1,10 @@
 ﻿using Ascon.Polynom.Api;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
-using Tessera.App.Polinom.Utils;
-using Tessera.App.Polinom.Utils.Constants;
-using Tessera.App.ViewModel;
+using Tessera.PolinomProvider.Constants;
+using Tessera.PolinomProvider.Model;
+using Tessera.PolinomProvider.Utils;
 
-namespace Tessera.App.Polinom.Strategies
+namespace Tessera.PolinomProvider.Strategies
 {
   internal class TypeSizeStrategy : ITypeSizeStrategy
   {
@@ -16,32 +15,32 @@ namespace Tessera.App.Polinom.Strategies
       _apiHelper = polinomApiHelper;
     }
 
-    public IElement GetOrCreate(TypeSizeViewModel typeSizeViewModel, IElement sortament)
+    public IElement GetOrCreate(string typeSizeName, TypeSizeData typeSizeData, IElement sortament)
     {
       var catalog = _apiHelper.GetCatalog(CatalogConstants.CATALOG_TYPE_SIZE);
       var groupName = sortament.Name;
       var group = _apiHelper.FindGroupByName(catalog.Groups, g => g.Groups, groupName) ?? catalog.CreateGroup(groupName);
-      var element = FindMatchingElement(group.Elements, typeSizeViewModel) ?? CreateElementWithProperties(group, typeSizeViewModel, sortament);
+      var element = FindMatchingElement(group.Elements, typeSizeName, typeSizeData) ?? CreateElementWithProperties(group, typeSizeName, typeSizeData, sortament);
       element.Applicability = Applicability.Allowed;
       return element;
     }
 
-    public IElement FindMatchingElement(IApiReadOnlyCollection<IElement> elements, TypeSizeViewModel typeSizeViewModel)
+    public IElement FindMatchingElement(IApiReadOnlyCollection<IElement> elements, string typeSizeName, TypeSizeData typeSizeData)
     {
-      var matchingElements = elements.Where(e => e.Name.Equals(typeSizeViewModel.TypeSize, StringComparison.OrdinalIgnoreCase)).ToList();
+      var matchingElements = elements.Where(e => e.Name.Equals(typeSizeName, StringComparison.OrdinalIgnoreCase)).ToList();
       var elementsWithProperties = matchingElements.Select(element =>
       {
         var properties = element.Properties
         .Where(x => x.Contract.AbsoluteCode.Contains(ConceptConstants.REQUIREMENT_CONCEPT))
         .Select(p => new
         {
-          Name = p.Definition.Name,
+          p.Definition.Name,
           Value = GetValue(p)
         });
 
         return new { Element = element, Properties = properties };
       }).ToList();
-      var inputProperties = typeSizeViewModel.TypeSizePropertiesViewModel.Where(p => !string.IsNullOrEmpty(p.Value));
+      var inputProperties = typeSizeData.Properties.Where(p => !string.IsNullOrEmpty(p.Value));
       var filteredElement = elementsWithProperties.FirstOrDefault(e =>
       {
         var propertyDict = e.Properties.ToDictionary(p => p.Name, p => p.Value);
@@ -50,14 +49,14 @@ namespace Tessera.App.Polinom.Strategies
       return filteredElement?.Element;
     }
 
-    public IElement CreateElementWithProperties(IGroup group, TypeSizeViewModel typeSizeViewModel, IElement sortament)
+    public IElement CreateElementWithProperties(IGroup group, string typeSizeName, TypeSizeData typeSizeData, IElement sortament)
     {
-      var element = group.CreateElement(typeSizeViewModel.TypeSize);
-      FillProperties(typeSizeViewModel.TypeSizePropertiesViewModel, sortament, element, group);
+      var element = group.CreateElement(typeSizeName);
+      FillProperties(typeSizeData.Properties, sortament, element, group);
       return element;
     }
 
-    public void FillProperties(ObservableCollection<TypeSizePropertyViewModel> typeSizeProperties, IElement sortament, IElement typeSize, IGroup group)
+    public void FillProperties(List<TypeSizeProperty> typeSizeProperties, IElement sortament, IElement typeSize, IGroup group)
     {
       var inputProperties = typeSizeProperties.Where(p => !string.IsNullOrEmpty(p.Value)).ToList();
       var inputPropertiesName = inputProperties.Select(x => x.Name).ToList();

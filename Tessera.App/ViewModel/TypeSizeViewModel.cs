@@ -1,13 +1,5 @@
 ﻿using MappingManager.ViewModel.Base;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Tessera.App.Model;
-using Tessera.App.Polinom;
 
 namespace Tessera.App.ViewModel
 {
@@ -20,7 +12,7 @@ namespace Tessera.App.ViewModel
     public TypeSizeViewModel(SectionDefinitionViewModel sectionDefinitionViewModel)
     {
       _sectionDefinitionViewModel = sectionDefinitionViewModel;
-      _properties = new ObservableCollection<TypeSizePropertyViewModel>(PolinomProvider.Instance.AllDimensionProperties.Select(x => new TypeSizePropertyViewModel
+      _properties = new ObservableCollection<TypeSizePropertyViewModel>(PolinomProvider.PolinomProvider.Instance.AllDimensionProperties.Select(x => new TypeSizePropertyViewModel
       {
         Name = x.Key,
         Type = x.Value,
@@ -64,7 +56,7 @@ namespace Tessera.App.ViewModel
         return;
       }
 
-      var properties = PolinomProvider.Instance.GetPropertiesForTypeSize(_sectionDefinitionViewModel.SuggestedSortament.First());
+      var properties = PolinomProvider.PolinomProvider.Instance.GetPropertiesForTypeSize(_sectionDefinitionViewModel.SuggestedSortament.First());
       foreach (var item in properties)
       {
         var propertyViewModel = _properties.FirstOrDefault(x => x.Name == item);

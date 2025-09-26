@@ -1,7 +1,7 @@
 ﻿using Microsoft.Practices.Prism.Commands;
 using System.Collections.ObjectModel;
-using Tessera.App.Polinom;
 using Tessera.App.ViewModel;
+using Tessera.PolinomProvider;
 
 namespace Tessera.App.Command
 {
@@ -22,8 +22,8 @@ namespace Tessera.App.Command
     protected override void Execute(object parameter)
     {
       var sectionDefinitions = parameter as ObservableCollection<SectionDefinitionViewModel>;
-      foreach (var item in sectionDefinitions.SkipLast(1))
-        _referenceProvider.EnsureEntitiesExist(item);
+      foreach (var vm in sectionDefinitions.SkipLast(1))
+        _referenceProvider.EnsureEntitiesExist(SectionMapper.ToDomain(vm));
     }
 
     protected override bool CanExecute(object parameter)

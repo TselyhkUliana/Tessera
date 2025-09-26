@@ -1,6 +1,6 @@
-﻿namespace Tessera.App.Polinom.Utils.Constants
+﻿namespace Tessera.PolinomProvider.Constants
 {
-  internal class ConceptConstants
+  public class ConceptConstants
   {
     public const string CONCEPT_SORTAMENT_EX = "c:@SortamentEx";
     public const string CONCEPT_SORTAMENT = "c:Sortaments";

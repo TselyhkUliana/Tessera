@@ -1,6 +1,6 @@
-﻿namespace Tessera.App.Polinom.Utils.Constants
+﻿namespace Tessera.PolinomProvider.Constants
 {
-  internal class CatalogConstants
+  public class CatalogConstants
   {
     public const string POLYNOM_CLIENT_ID = "A6E64FA3-51DB-42D3-9AD7-B82E828EEC31";
     public const string REFERENCE_NAME = "Материалы и Сортаменты";

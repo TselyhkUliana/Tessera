@@ -1,9 +1,9 @@
 ﻿using Ascon.Polynom.Api;
-using Tessera.App.Polinom.Utils;
-using Tessera.App.Polinom.Utils.Constants;
-using Tessera.App.ViewModel;
+using Tessera.PolinomProvider.Constants;
+using Tessera.PolinomProvider.Model;
+using Tessera.PolinomProvider.Utils;
 
-namespace Tessera.App.Polinom.Strategies
+namespace Tessera.PolinomProvider.Strategies
 {
   internal class SortamentStrategy : ISortamentStrategy
   {
@@ -14,13 +14,13 @@ namespace Tessera.App.Polinom.Strategies
       _apiHelper = polinomApiHelper;
     }
 
-    public IElement GetOrCreate(SectionDefinitionViewModel sectionDefinition)
+    public IElement GetOrCreate(SectionDefinition sectionDefinition)
     {
       var inputSortament = sectionDefinition.Sortament.Trim();
       var inputFirstWord = inputSortament.Split(' ')[0];
       var similarSortament = sectionDefinition.SuggestedSortament
         .FirstOrDefault(x => x.Split(' ')[0].Equals(inputFirstWord, StringComparison.OrdinalIgnoreCase))?.Trim()
-        ?? sectionDefinition.SuggestedSortamentEx.First().Trim();
+        ?? sectionDefinition.SuggestedSortament.First().Trim();
 
       var catalog = _apiHelper.GetCatalog(CatalogConstants.CATALOG_SORTAMENT);
       var searchElement = _apiHelper.SearchElement(similarSortament, CatalogConstants.CATALOG_SORTAMENT);
@@ -37,7 +37,7 @@ namespace Tessera.App.Polinom.Strategies
       var group = inputElementWordFirst.Equals(similarFirstWord, StringComparison.OrdinalIgnoreCase)
         ? searchElement.OwnerGroup
         : CreateGroupSortament(catalog.Groups.First(), inputElementWordFirst);
-      
+
       var element = group.CreateElement(CatalogConstants.ELEMENT_DEFAULT_NAME);
       element.Applicability = Applicability.Allowed;
 
@@ -95,13 +95,13 @@ namespace Tessera.App.Polinom.Strategies
           }).ToList();
 
       //Различные варианты возвращаемого значения в зависимости от данных группы
-      if (normalizedElements.All(x => x.ShapeValue is null)) 
+      if (normalizedElements.All(x => x.ShapeValue is null))
         return null;
       if (normalizedElements.All(x => x.ShapeValue == normalizedElements[0].ShapeValue))
         return normalizedElements.First().ShapeValue;
       else if (normalizedElements.All(x => x.NormalizedName.Split(' ')[0] == x.ShapeValue))
         return inputElementWordFirst;
-      if (normalizedElements.All(x => x.NormalizedName == x.ShapeValue)) 
+      if (normalizedElements.All(x => x.NormalizedName == x.ShapeValue))
         return formattedInputName;
 
       return null;

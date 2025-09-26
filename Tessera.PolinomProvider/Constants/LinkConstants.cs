@@ -1,6 +1,6 @@
-﻿namespace Tessera.App.Polinom.Utils.Constants
+﻿namespace Tessera.PolinomProvider.Constants
 {
-  internal class LinkConstants
+  public class LinkConstants
   {
     public const string LINK_SORTAMENT_MATERIAL = "ld:ExMatLinkCode";
     public const string LINK_TYPESIZE_SORTAMENT = "ld:SizeSortLinkCode";

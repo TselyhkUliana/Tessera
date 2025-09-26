@@ -18,6 +18,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Harold\Harold.csproj" />
     <ProjectReference Include="..\Tessera.DataAccess\Tessera.DataAccess.csproj" />
+    <ProjectReference Include="..\Tessera.PolinomProvider\Tessera.PolinomProvider.csproj" />
   </ItemGroup>
 
   <ItemGroup>

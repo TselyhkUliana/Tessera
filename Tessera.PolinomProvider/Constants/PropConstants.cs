@@ -1,6 +1,6 @@
-﻿namespace Tessera.App.Polinom.Utils.Constants
+﻿namespace Tessera.PolinomProvider.Constants
 {
-  internal class PropConstants
+  public class PropConstants
   {
     public const string PROP_MATERIAL_MASK = "c:@Materials::c:Materials::pd:MaterialsMark";
     public const string PROP_SORTAMENT_MASK = "c:Sortaments::pd:MaterialsMark";

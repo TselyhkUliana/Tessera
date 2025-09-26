@@ -1,4 +1,4 @@
-﻿namespace Tessera.App.Extensions
+﻿namespace Tessera.PolinomProvider.Extensions
 {
   public static class StringExtension
   {

@@ -1,10 +1,9 @@
 ﻿using Ascon.Polynom.Api;
-using System;
 using System.Diagnostics;
-using System.Threading.Tasks;
-using Tessera.App.Polinom.Utils.Constants;
+using Tessera.PolinomProvider;
+using Tessera.PolinomProvider.Constants;
 
-namespace Tessera.App.Polinom.Utils
+namespace Tessera.PolinomProvider.Utils
 {
   internal class PolinomApiHelper
   {
@@ -178,7 +177,7 @@ namespace Tessera.App.Polinom.Utils
 
     public bool IsInGroupPath(IDocumentGroup group, string findGroupName)
     {
-      return group.Name == findGroupName || (group.ParentGroup is not null && IsInGroupPath(group.ParentGroup, findGroupName));
+      return group.Name == findGroupName || group.ParentGroup is not null && IsInGroupPath(group.ParentGroup, findGroupName);
     }
 
     public IFormula CreateOrReceiveFormula(string sortamentGroup, string formulaName, string groupName, IConcept conceptPropertiesByStandard)

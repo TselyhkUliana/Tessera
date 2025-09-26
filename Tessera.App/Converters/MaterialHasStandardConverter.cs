@@ -1,6 +1,6 @@
 ﻿using System.Globalization;
 using System.Windows.Data;
-using Tessera.App.Polinom.Utils.Constants;
+using Tessera.PolinomProvider.Constants;
 
 namespace Tessera.App.Converters
 {

@@ -1,6 +1,6 @@
-﻿namespace Tessera.App.Polinom.Utils.Constants
+﻿namespace Tessera.PolinomProvider.Constants
 {
-  internal class StandardConstants
+  public class StandardConstants
   {
     public const string GOST = "ГОСТ";
     public const string GOST_R_ISO = "ГОСТ Р ИСО";

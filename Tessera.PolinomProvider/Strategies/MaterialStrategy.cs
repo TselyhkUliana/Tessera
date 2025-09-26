@@ -1,10 +1,9 @@
 ﻿using Ascon.Polynom.Api;
-using Tessera.App.Polinom;
-using Tessera.App.Polinom.Utils;
-using Tessera.App.Polinom.Utils.Constants;
-using Tessera.App.ViewModel;
+using Tessera.PolinomProvider.Constants;
+using Tessera.PolinomProvider.Model;
+using Tessera.PolinomProvider.Utils;
 
-namespace Tessera.App.Polinom.Strategies
+namespace Tessera.PolinomProvider.Strategies
 {
   internal class MaterialStrategy : IMaterialStrategy
   {
@@ -15,7 +14,7 @@ namespace Tessera.App.Polinom.Strategies
       _apiHelper = polinomApiHelper;
     }
 
-    public IElement GetOrCreate(SectionDefinitionViewModel sectionDefinition)
+    public IElement GetOrCreate(SectionDefinition sectionDefinition)
     {
       var inputMaterial = sectionDefinition.Material;
       var similarMaterial = sectionDefinition.SuggestedMaterials.First();

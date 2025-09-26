@@ -1,15 +1,7 @@
-﻿using System.Text;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using Tessera.App.Polinom;
 using Tessera.App.ViewModel;
+using Tessera.PolinomProvider;
 
 namespace Tessera.App.View
 {
@@ -21,7 +13,7 @@ namespace Tessera.App.View
     public MainWindow()
     {
       InitializeComponent();
-      DataContext = new MainWindowViewModel(PolinomProvider.Instance);
+      DataContext = new MainWindowViewModel(PolinomProvider.PolinomProvider.Instance);
     }
 
     private void MyGrid_BeginningEdit(object sender, DataGridBeginningEditEventArgs e)

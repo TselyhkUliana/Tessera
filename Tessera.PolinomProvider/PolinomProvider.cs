@@ -1,14 +1,14 @@
 ﻿using Ascon.Polynom.Api;
 using Ascon.Polynom.Login;
-using Tessera.App.Polinom.Strategies;
-using Tessera.App.Polinom.Utils;
-using Tessera.App.Polinom.Utils.Constants;
-using Tessera.App.ViewModel;
-using TransactionManager = Tessera.App.Polinom.Utils.TransactionManager;
+using Tessera.PolinomProvider.Constants;
+using Tessera.PolinomProvider.Model;
+using Tessera.PolinomProvider.Strategies;
+using Tessera.PolinomProvider.Utils;
+using TransactionManager = Tessera.PolinomProvider.Utils.TransactionManager;
 
-namespace Tessera.App.Polinom
+namespace Tessera.PolinomProvider
 {
-  internal class PolinomProvider : IReferenceProvider
+  public class PolinomProvider : IReferenceProvider
   {
     private static readonly Lazy<PolinomProvider> _instance = new(() => new PolinomProvider());
     private readonly ISession _session;
@@ -41,13 +41,13 @@ namespace Tessera.App.Polinom
     public Dictionary<string, PropertyType> AllDimensionProperties => _cachedProperties;
     public List<string> GetPropertiesForTypeSize(string similarSortament) => _polinomApiHelper.GetPropertiesForTypeSizeInternal(similarSortament);
 
-    public void EnsureEntitiesExist(SectionDefinitionViewModel sectionDefinition)
+    public void EnsureEntitiesExist(SectionDefinition sectionDefinition)
     {
       _transactionManager.ApplyChanges(() =>
       {
         var material = _materialStrategy.GetOrCreate(sectionDefinition);
         var sortament = _sortamentStrategy.GetOrCreate(sectionDefinition);
-        var typeSize = _typeSizeStrategy.GetOrCreate(sectionDefinition.TypeSizeViewModel, sortament);
+        var typeSize = _typeSizeStrategy.GetOrCreate(sectionDefinition.TypeSize, sectionDefinition.TypeSizeData, sortament);
         var sortamentEx = _sortamentExStrategy.GetOrCreate(sortament);
         _polinomApiHelper.CreateLink(sortament, material, LinkConstants.LINK_SORTAMENT_MATERIAL);
         _polinomApiHelper.CreateLink(typeSize, sortament, LinkConstants.LINK_TYPESIZE_SORTAMENT);

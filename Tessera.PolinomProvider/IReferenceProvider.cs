@@ -1,10 +1,10 @@
-﻿using Tessera.App.ViewModel;
+﻿using Tessera.PolinomProvider.Model;
 
-namespace Tessera.App
+namespace Tessera.PolinomProvider
 {
   public interface IReferenceProvider
   {
-    void EnsureEntitiesExist(SectionDefinitionViewModel sectionDefinition);
+    void EnsureEntitiesExist(SectionDefinition sectionDefinition);
     void AttachFileToDocument(string fileName, byte[] fileBody, string elementName, string catalog);
     //List<string> Test();
   }

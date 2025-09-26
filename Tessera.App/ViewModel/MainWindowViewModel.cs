@@ -3,8 +3,9 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Windows.Input;
 using Tessera.App.Command;
-using Tessera.App.Model;
 using Tessera.DataAccess;
+using Tessera.PolinomProvider;
+using Tessera.PolinomProvider.Model;
 
 namespace Tessera.App.ViewModel
 {
