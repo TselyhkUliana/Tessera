@@ -13,7 +13,9 @@ namespace Tessera.App.View
     public MainWindow()
     {
       InitializeComponent();
-      DataContext = new MainWindowViewModel(PolinomProvider.PolinomProvider.Instance);
+      var mainWindowViewModel = new MainWindowViewModel(PolinomProvider.PolinomProvider.Instance);
+      DataContext = mainWindowViewModel;
+      Loaded += async (_, _) =>  await mainWindowViewModel.InitializeAsync();
     }
 
     private void MyGrid_BeginningEdit(object sender, DataGridBeginningEditEventArgs e)

@@ -82,42 +82,33 @@ namespace Tessera.PolinomProvider.Utils
 
     public async Task<Elements> LoadElementsWithEmbeddingAsync()
     {
-      Elements elements = null;
-      try
+      var elements = await Serializer.Instance;
+      if (elements is null)
       {
-        elements = Serializer.Instance;
-        if (elements is null)
+        var (materials, sortament) = await LoadElementsAsync();
+        IEnumerable<(Guid Id, string Name, string Embedding, string GroupName, string Type)> Project(IEnumerable<IElement> source, string type) =>
+         source.Select(e =>
+         {
+           var prop = e.GetPropertyValue(PropConstants.PROP_EMBEDDING_NAME_CODE) as IRtfPropertyValue;
+           var plain = prop?.ToPlainText() ?? string.Empty;
+           return (e.Id, e.Name, plain, e.OwnerGroup.Name, type);
+         });
+        var serializer = new Serializer();
+        serializer.Elements = new Elements
         {
-          var (materials, sortament) = await LoadElementsAsync();
-          IEnumerable<(Guid Id, string Name, string Embedding, string GroupName, string Type)> Project(IEnumerable<IElement> source, string type) =>
-           source.Select(e =>
-           {
-             var prop = e.GetPropertyValue(PropConstants.PROP_EMBEDDING_NAME_CODE) as IRtfPropertyValue;
-             var plain = prop?.ToPlainText() ?? string.Empty;
-             return (e.Id, e.Name, plain, e.OwnerGroup.Name, type);
-           });
-          var serializer = new Serializer();
-          serializer.Elements = new Elements
-          {
-            Items = Project(materials, "Material")
-                .Concat(Project(sortament, "Sortament"))
-                .Select(x => new Element
-                {
-                  Id = x.Id,
-                  Name = x.Name,
-                  GroupName = x.GroupName,
-                  Embedding = x.Embedding,
-                  Type = x.Type,
-                }).ToList()
-          };
-          serializer.Save();
-          elements = serializer.Elements;
-        }
-      }
-      catch (Exception)
-      {
-
-        throw;
+          Items = Project(materials, "Material")
+              .Concat(Project(sortament, "Sortament"))
+              .Select(x => new Element
+              {
+                Id = x.Id,
+                Name = x.Name,
+                GroupName = x.GroupName,
+                Embedding = x.Embedding,
+                Type = x.Type,
+              }).ToList()
+        };
+        serializer.Save();
+        elements = serializer.Elements;
       }
 
       return elements;

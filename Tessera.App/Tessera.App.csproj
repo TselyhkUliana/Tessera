@@ -13,6 +13,7 @@
     <None Remove="Resources\2.png" />
     <None Remove="Resources\Images\AttachMaterialFile.png" />
     <None Remove="Resources\Images\AttachSortamentFile.png" />
+    <None Remove="Resources\wait.gif" />
   </ItemGroup>
 
   <ItemGroup>
@@ -35,6 +36,9 @@
   <ItemGroup>
     <Resource Include="Resources\Images\AttachMaterialFile.png" />
     <Resource Include="Resources\Images\AttachSortamentFile.png" />
+    <Resource Include="Resources\wait.gif">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 
 </Project>

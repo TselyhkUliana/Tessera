@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Tessera.App"
         xmlns:vm ="clr-namespace:Tessera.App.ViewModel"
+        xmlns:controls="clr-namespace:Tessera.App.Controls"
         d:DataContext="{d:DesignData Type=vm:MainWindowViewModel}"
         xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
         mc:Ignorable="d"
@@ -55,6 +56,15 @@
         </DataGrid.Columns>
       </DataGrid>
     </DockPanel>
+
+    <Border Background="#80000000" Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibilityConverter}}" Grid.ColumnSpan="2" Panel.ZIndex="100">
+      <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+        <controls:GifImage GifSource="/Resources/wait.gif" AutoStart="True" Width="64" Height="64"/>
+        <TextBlock Text="Загрузка..." Foreground="White" FontSize="16" Margin="10" HorizontalAlignment="Center"/>
+      </StackPanel>
+    </Border>
+
+    <!--<controls:GifImage x:Name="gifImage" GifSource="/Resources/wait.gif" AutoStart="True" Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibilityConverter}}" Stretch="Fill" HorizontalAlignment="Center" VerticalAlignment="Center"/>-->
 
     <!--<GridSplitter Panel.ZIndex="2" Grid.Column="1" Width="3" ShowsPreview="True" VerticalAlignment="Stretch" HorizontalAlignment="Left"/>-->
     <Border x:Name="SideBar" Panel.ZIndex="1" MinWidth="270" Visibility="{Binding CurrentSection.TypeSizeViewModel.IsTypeSizeEditing, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Collapsed}" Grid.Column="2">

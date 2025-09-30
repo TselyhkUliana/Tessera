@@ -1,6 +1,7 @@
 ﻿using MappingManager.ViewModel.Base;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using Tessera.App.Command;
 using Tessera.PolinomProvider.Interface;
@@ -14,11 +15,11 @@ namespace Tessera.App.ViewModel
     private readonly CommandManager _commandManager;
     private SectionDefinitionViewModel _сurrentSection;
     private EmbeddingService _embeddingService;
+    private bool _isBusy;
 
     public MainWindowViewModel(IReferenceProvider referenceProvider)
     {
       _referenceProvider = referenceProvider;
-      _ = InitiInitializeAsync();
       _commandManager = new CommandManager(this, _referenceProvider);
     }
 
@@ -30,6 +31,8 @@ namespace Tessera.App.ViewModel
     public ICommand CreateCommand => _commandManager.Get<CheckAndCreateEntitiesCommand>();
     public ICommand AddFileForMaterialCommand => _commandManager.Get<AddFileForMaterialCommand>();
     public ICommand AddFileForSortamentCommand => _commandManager.Get<AddFileForSortamentCommand>();
+
+    public bool IsBusy { get => _isBusy; set => Set((v) => _isBusy = v, _isBusy, value); }
 
     public async Task UpdateSuggestionsAsync(string userInput, ObservableCollection<string> suggestionsTarget, List<(float[] Id, string Name)> embeddingDatabase)
     {
@@ -49,52 +52,37 @@ namespace Tessera.App.ViewModel
       Debug.WriteLine($"Search took {stopwatch.ElapsedMilliseconds} - {stopwatch.Elapsed.Seconds} ms");
     }
 
+    internal async Task InitializeAsync()
+    {
+      IsBusy = true;
+      try
+      {
+        await InitiInitializeAsync();
+      }
+      finally
+      {
+        IsBusy = false;
+      }
+    }
+
     private async Task InitiInitializeAsync()
     {
-      //var test = Serializer.Instance;
-      //var poi = test.Items.Where(x => x.Category == "0");
-      //foreach (var item in poi)
-      //{
-      //  Debug.WriteLine($"{item.Name}");
-      //}
-      var embeddingService = Task.Run(() => _embeddingService = EmbeddingService.Instance);
+      var embeddingService = await Task.Run(() => _embeddingService = EmbeddingService.Instance);
       MaterialEmbeddings = new List<(float[] Vectors, string Name)>();
       SortamentEmbeddings = new List<(float[] Vectors, string Name)>();
       var elements = await _referenceProvider.LoadElementsWithEmbeddingAsync();
-      foreach (var element in elements.Items)
+      var splitTask = Task.Run(() =>
       {
-        if (element.Type.Equals("Material"))
-          MaterialEmbeddings.Add((element.EmbeddingVector, element.Name));
-        else
-          SortamentEmbeddings.Add((element.EmbeddingVector, element.Name));
-      }
+        var materials = elements.Items.Where(e => e.Type == "Material").Select(e => (e.EmbeddingVector, e.Name)).ToList();
+        var sortaments = elements.Items.Where(e => e.Type == "Sortament").Select(e => (e.EmbeddingVector, e.Name)).ToList();
+        return (materials, sortaments);
+      });
+      var (materialsList, sortamentsList) = await splitTask;
+      MaterialEmbeddings = materialsList;
+      SortamentEmbeddings = sortamentsList;
       SectionDefinitions = new ObservableCollection<SectionDefinitionViewModel> { NewSectionDefinition() };
       OnPropertyChanged(nameof(SectionDefinitions));
-      await embeddingService;
     }
-
-    //public void Test()
-    //{
-    //  var serializer = new Serializer();
-    //  PropertyList propertyList = new PropertyList();
-    //  //List<(string Name, string Embedding)> list = new List<(string Name, string Embedding)>();
-    //  foreach (var item in _referenceProvider.Test())
-    //  {
-    //    _embeddingService.GetTextEmbedding(item, out var embedding);
-    //    propertyList.Items.Add(new PropertyItem
-    //    {
-    //      Name = item,
-    //      Embedding = string.Join(";", embedding),
-    //    });
-    //  }
-    //  serializer.MyProperty = propertyList;
-    //  serializer.Save();
-
-    //foreach (var item in list)
-    //{
-    //  Debug.WriteLine($"Name = {item.Name} Embedding = {item.Embedding}");
-    //}
-    //}
 
     private void AddSectionDefinitionIfNeeded(object sender, EventArgs e)
     {

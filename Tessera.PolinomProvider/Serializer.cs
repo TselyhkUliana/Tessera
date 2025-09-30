@@ -9,12 +9,12 @@ namespace Tessera.PolinomProvider
 {
   internal class Serializer
   {
-    private static Elements _instance;
+    private static Task<Elements> _instance;
     private static XmlSerializer _xmlSerializer = new XmlSerializer(typeof(Elements));
-    private static string _folderPath = @"D:\Development\Полином\Tessera";
+    private static string _folderPath = @"D:\Development\Полином";
     private static string _filePath = @$"{_folderPath}\ElementCatche.xml";
     public Elements Elements { get; set; }
-    public static Elements Instance => _instance ??= LoadPropperties();
+    public static Task<Elements> Instance => _instance ??= LoadElements();
 
     public void Save()
     {
@@ -22,13 +22,13 @@ namespace Tessera.PolinomProvider
       _xmlSerializer.Serialize(stream, Elements);
     }
 
-    private static Elements LoadPropperties()
+    private static async Task<Elements> LoadElements()
     {
       var settings = new Elements();
       try
       {
-        using var stream = new FileStream(_filePath, FileMode.Open);
-        return _xmlSerializer.Deserialize(stream) as Elements;
+        await using var stream = new FileStream(_filePath, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, true);
+        return await Task.Run(() => _xmlSerializer.Deserialize(stream) as Elements);
       }
       catch
       {
