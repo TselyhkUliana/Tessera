@@ -1,5 +1,8 @@
 ﻿using Ascon.Polynom.Api;
+using System;
 using System.Diagnostics;
+using System.Linq;
+using System.Threading.Tasks;
 using Tessera.PolinomProvider;
 using Tessera.PolinomProvider.Constants;
 
@@ -11,6 +14,8 @@ namespace Tessera.PolinomProvider.Utils
     private readonly TransactionManager _transactionManager;
     private readonly IReference? _referenceMaterialAndSortament;
     private readonly IApiReadOnlyCollection<IPropertyDefinition> _propDefinitions;
+    private IConcept _conceptSemanticRepresentation;
+
     public PolinomApiHelper(ISession session, TransactionManager transactionManager)
     {
       _session = session;
@@ -47,26 +52,108 @@ namespace Tessera.PolinomProvider.Utils
       SetClientType(ClientType.Client);
     }
 
-    //public async Task<(List<IElement> Materials, List<IElement> Sortament)> GetDataAsync()
-    //{
-    //  var catalogSortament = GetCatalog(CatalogConstants.CATALOG_SORTAMENT);
-    //  var catalogMaterial = GetCatalog(CatalogConstants.CATALOG_MATERIAL);
-    //  var materialsTask = Task.Run(() => GetAllElements(catalogMaterial.Groups));
-    //  var sortamentTask = Task.Run(() => GetAllElements(catalogSortament.Groups));
-    //  await Task.WhenAll(materialsTask, sortamentTask);
-    //  return (materialsTask.Result, sortamentTask.Result);
-    //}
+    public bool EnsureVectorConceptExists()
+    {
+      _conceptSemanticRepresentation = GetConceptByName(ConceptConstants.CONCEPT_SEMANTIC_REPRESENTATION_NAME);
+      if (_conceptSemanticRepresentation is null)
+      {
+        ExecuteWithEditorClient(() =>
+        {
+          _conceptSemanticRepresentation = _session.Objects.CreateConcept(ConceptConstants.CONCEPT_SEMANTIC_REPRESENTATION_NAME, ConceptConstants.CONCEPT_SEMANTIC_REPRESENTATION_Code);
+          var groupProp = _session.Objects.PropDefCatalog.CreatePropDefGroup(CatalogConstants.GROUP_PROP_SEMANTIC_REPRESENTATION);
+          var prop = groupProp.CreateRtfPropertyDefinition(PropConstants.PROP_EMBEDDING_NAME, PropConstants.PROP_EMBEDDING_NAME_CODE);
+          _conceptSemanticRepresentation.CreatePropertySource(prop);
+          var conceptPropSource = _conceptSemanticRepresentation.ConceptPropertySources.FirstOrDefault(x => x.AbsoluteCode == PropConstants.PROP_EMBEDDING_NAME_ABSOLUTE_CODE);
+          conceptPropSource.IsHidden = true;
+          conceptPropSource.IsReadOnly = true;
+        });
+        return true;
+      }
+      return false;
+    }
 
-    //public List<IElement> GetAllElements(IApiReadOnlyCollection<IGroup> groups)
-    //{
-    //  var result = new List<IElement>();
-    //  foreach (var group in groups)
-    //  {
-    //    result.AddRange(group.Elements);
-    //    result.AddRange(GetAllElements(group.Groups));
-    //  }
-    //  return result;
-    //}
+    public void CreateElementEmbedding(string location, string embedding)
+    {
+      var element = _session.Objects.Locate(location) as IElement;
+      element.RealizeContract(_conceptSemanticRepresentation);
+      var prop = element.GetProperty(PropConstants.PROP_EMBEDDING_NAME_CODE);
+      prop.AssignPropertyValue((prop.Definition as IRtfPropertyDefinition).CreateRtfPropertyValueData(embedding));
+    }
+
+    public async Task<Elements> LoadElementsWithEmbeddingAsync()
+    {
+      Elements elements = null;
+      try
+      {
+        elements = Serializer.Instance;
+        if (elements is null)
+        {
+          var (materials, sortament) = await LoadElementsAsync();
+          IEnumerable<(Guid Id, string Name, string Embedding, string GroupName, string Type)> Project(IEnumerable<IElement> source, string type) =>
+           source.Select(e =>
+           {
+             var prop = e.GetPropertyValue(PropConstants.PROP_EMBEDDING_NAME_CODE) as IRtfPropertyValue;
+             var plain = prop?.ToPlainText() ?? string.Empty;
+             return (e.Id, e.Name, plain, e.OwnerGroup.Name, type);
+           });
+          var serializer = new Serializer();
+          serializer.Elements = new Elements
+          {
+            Items = Project(materials, "Material")
+                .Concat(Project(sortament, "Sortament"))
+                .Select(x => new Element
+                {
+                  Id = x.Id,
+                  Name = x.Name,
+                  GroupName = x.GroupName,
+                  Embedding = x.Embedding,
+                  Type = x.Type,
+                }).ToList()
+          };
+          serializer.Save();
+          elements = serializer.Elements;
+        }
+      }
+      catch (Exception)
+      {
+
+        throw;
+      }
+
+      return elements;
+    }
+
+    public async Task<IEnumerable<(string Name, string Location)>> LoadElementsForEmbeddingAsync()
+    {
+      var elements = await LoadElementsAsync();
+
+      return elements.Materials
+          .Select(x => (x.Name, x.GetBOSimpleLocation()))
+          .Concat(elements.Sortament
+              .Select(x => (x.Name, x.GetBOSimpleLocation())))
+          .ToList();
+    }
+
+    public async Task<(List<IElement> Materials, List<IElement> Sortament)> LoadElementsAsync()
+    {
+      var catalogSortament = GetCatalog(CatalogConstants.CATALOG_SORTAMENT);
+      var catalogMaterial = GetCatalog(CatalogConstants.CATALOG_MATERIAL);
+      var materialsTask = Task.Run(() => GetAllForGroupElements(catalogMaterial.Groups));
+      var sortamentTask = Task.Run(() => GetAllForGroupElements(catalogSortament.Groups));
+      await Task.WhenAll(materialsTask, sortamentTask);
+      return (materialsTask.Result, sortamentTask.Result);
+    }
+
+    public List<IElement> GetAllForGroupElements(IApiReadOnlyCollection<IGroup> groups)
+    {
+      var result = new List<IElement>();
+      foreach (var group in groups)
+      {
+        result.AddRange(group.Elements);
+        result.AddRange(GetAllForGroupElements(group.Groups));
+      }
+      return result;
+    }
     //public List<IElement> GetAllElements(IApiReadOnlyCollection<IGroup> groups) => groups.SelectMany(g => g.Elements.Concat(GetAllElements(g.Groups))).ToList();
 
     //public List<string> Test()

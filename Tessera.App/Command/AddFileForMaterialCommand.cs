@@ -1,6 +1,6 @@
 ﻿using Tessera.App.ViewModel;
-using Tessera.PolinomProvider;
 using Tessera.PolinomProvider.Constants;
+using Tessera.PolinomProvider.Interface;
 
 namespace Tessera.App.Command
 {

@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Tessera.PolinomProvider.Interface;
 
 namespace Tessera.SemanticIndexBuilder
 {
   internal interface IElementEmbeddingUpdater
   {
-    public void UpdateEmbeddings(string DatabaseName);
+    Task UpdateEmbeddings(IEmbeddingProvider embeddingProvider);
   }
 }

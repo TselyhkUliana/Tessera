@@ -1,7 +1,7 @@
 ﻿using Microsoft.Practices.Prism.Commands;
 using System.Collections.ObjectModel;
 using Tessera.App.ViewModel;
-using Tessera.PolinomProvider;
+using Tessera.PolinomProvider.Interface;
 
 namespace Tessera.App.Command
 {

@@ -1,6 +1,6 @@
 ﻿using System.Windows.Input;
 using Tessera.App.Command;
-using Tessera.PolinomProvider;
+using Tessera.PolinomProvider.Interface;
 
 namespace Tessera.App
 {

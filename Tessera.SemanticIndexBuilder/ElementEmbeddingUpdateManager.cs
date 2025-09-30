@@ -1,26 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using Tessera.PolinomProvider.Interface;
 
 namespace Tessera.SemanticIndexBuilder
 {
   internal class ElementEmbeddingUpdateManager
   {
-    private readonly string _databaseName;
+    private readonly IEmbeddingProvider _embeddingProvider;
 
-    public ElementEmbeddingUpdateManager(string databaseName, IElementEmbeddingUpdater updateElement)
+    public ElementEmbeddingUpdateManager(IEmbeddingProvider embeddingProvider, IElementEmbeddingUpdater elementEmbeddingUpdater)
     {
-      _databaseName = databaseName;
-      Updater = updateElement;
+      _embeddingProvider = embeddingProvider;
+      Updater = elementEmbeddingUpdater;
     }
 
     public IElementEmbeddingUpdater Updater { get; private set; }
 
-    public void Update()
+    public async Task Update()
     {
-      Updater.UpdateEmbeddings(_databaseName);
+     await Updater.UpdateEmbeddings(_embeddingProvider);
     }
   }
 }

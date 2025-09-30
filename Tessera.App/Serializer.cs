@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
+using Tessera.PolinomProvider.Extensions;
 
 namespace Tessera.App
 {
@@ -49,10 +50,7 @@ namespace Tessera.App
     public string Embedding { get; set; }
 
     [XmlIgnore]
-    public float[] EmbeddingVector => Embedding?
-                  .Split(';', StringSplitOptions.RemoveEmptyEntries)
-                  .Select(x => float.Parse(x, System.Globalization.CultureInfo.InvariantCulture))
-                  .ToArray()!;
+    public float[] EmbeddingVector => Embedding.ParseEmbeddingVector();
   }
 
   [Serializable]

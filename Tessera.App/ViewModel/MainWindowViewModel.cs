@@ -3,17 +3,13 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Windows.Input;
 using Tessera.App.Command;
-using Tessera.DataAccess;
-using Tessera.PolinomProvider;
+using Tessera.PolinomProvider.Interface;
 using Tessera.PolinomProvider.Model;
 
 namespace Tessera.App.ViewModel
 {
   class MainWindowViewModel : ViewModelBase, ISuggestionProvider
   {
-    private const string MATERIAL_TAG = "Material";
-    private const string SORTAMENT_TAG = "Sortament";
-    private const string SORTAMENT_EX_TAG = "SortamentEx";
     private readonly IReferenceProvider _referenceProvider;
     private readonly CommandManager _commandManager;
     private SectionDefinitionViewModel _сurrentSection;
@@ -21,8 +17,8 @@ namespace Tessera.App.ViewModel
 
     public MainWindowViewModel(IReferenceProvider referenceProvider)
     {
-      _ = InitiInitializeAsync();
       _referenceProvider = referenceProvider;
+      _ = InitiInitializeAsync();
       _commandManager = new CommandManager(this, _referenceProvider);
     }
 
@@ -30,7 +26,6 @@ namespace Tessera.App.ViewModel
     public SectionDefinitionViewModel CurrentSection { get => _сurrentSection; set => Set(ref _сurrentSection, value); }
     public List<(float[] Id, string Name)> MaterialEmbeddings { get; private set; }
     public List<(float[] Id, string Name)> SortamentEmbeddings { get; private set; }
-    public List<(float[] Id, string Name)> SortamentExEmbeddings { get; private set; }
 
     public ICommand CreateCommand => _commandManager.Get<CheckAndCreateEntitiesCommand>();
     public ICommand AddFileForMaterialCommand => _commandManager.Get<AddFileForMaterialCommand>();
@@ -56,7 +51,6 @@ namespace Tessera.App.ViewModel
 
     private async Task InitiInitializeAsync()
     {
-      Stopwatch stopwatch = Stopwatch.StartNew();
       //var test = Serializer.Instance;
       //var poi = test.Items.Where(x => x.Category == "0");
       //foreach (var item in poi)
@@ -64,27 +58,19 @@ namespace Tessera.App.ViewModel
       //  Debug.WriteLine($"{item.Name}");
       //}
       var embeddingService = Task.Run(() => _embeddingService = EmbeddingService.Instance);
-      var class1 = await Class1.CreateAsync();
       MaterialEmbeddings = new List<(float[] Vectors, string Name)>();
       SortamentEmbeddings = new List<(float[] Vectors, string Name)>();
-      SortamentExEmbeddings = new List<(float[] Vectors, string Name)>();
-      await foreach (var (Vectors, Name, UniqueId) in class1.GetElementsWithVectorsAndNamesAsync())
+      var elements = await _referenceProvider.LoadElementsWithEmbeddingAsync();
+      foreach (var element in elements.Items)
       {
-        if (UniqueId.StartsWith(MATERIAL_TAG))
-          MaterialEmbeddings.Add((Vectors, Name));
-        else if (UniqueId.StartsWith(SORTAMENT_EX_TAG))
-          SortamentExEmbeddings.Add((Vectors, Name));
-        else if (UniqueId.StartsWith(SORTAMENT_TAG))
-          SortamentEmbeddings.Add((Vectors, Name));
+        if (element.Type.Equals("Material"))
+          MaterialEmbeddings.Add((element.EmbeddingVector, element.Name));
+        else
+          SortamentEmbeddings.Add((element.EmbeddingVector, element.Name));
       }
       SectionDefinitions = new ObservableCollection<SectionDefinitionViewModel> { NewSectionDefinition() };
       OnPropertyChanged(nameof(SectionDefinitions));
-      await class1.DisposeAsync();
       await embeddingService;
-      //Test();
-      stopwatch.Stop();
-      Debug.WriteLine($"MaterialsBD {new string('*', 110)}");
-      Debug.WriteLine($"InitiInitializeAsync took {stopwatch.ElapsedMilliseconds} - {stopwatch.Elapsed.Seconds} ms.");
     }
 
     //public void Test()
@@ -130,7 +116,6 @@ namespace Tessera.App.ViewModel
       var sectionDefinitionViewModel = new SectionDefinitionViewModel(new SectionDefinition(), this);
       sectionDefinitionViewModel.SuggestedMaterials = new(MaterialEmbeddings.Select(x => x.Name).Take(10).ToArray());
       sectionDefinitionViewModel.SuggestedSortament = new(SortamentEmbeddings.Select(x => x.Name).Take(10).ToArray());
-      sectionDefinitionViewModel.SuggestedSortamentEx = new(SortamentExEmbeddings.Select(x => x.Name).Take(10).ToArray());
       sectionDefinitionViewModel.RequestAddSectionDefinition += AddSectionDefinitionIfNeeded;
       return sectionDefinitionViewModel;
     }

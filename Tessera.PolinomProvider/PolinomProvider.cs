@@ -1,6 +1,9 @@
 ﻿using Ascon.Polynom.Api;
 using Ascon.Polynom.Login;
+using System.Diagnostics;
+using System.Threading.Tasks;
 using Tessera.PolinomProvider.Constants;
+using Tessera.PolinomProvider.Interface;
 using Tessera.PolinomProvider.Model;
 using Tessera.PolinomProvider.Strategies;
 using Tessera.PolinomProvider.Utils;
@@ -8,7 +11,7 @@ using TransactionManager = Tessera.PolinomProvider.Utils.TransactionManager;
 
 namespace Tessera.PolinomProvider
 {
-  public class PolinomProvider : IReferenceProvider
+  public class PolinomProvider : IReferenceProvider, IEmbeddingProvider
   {
     private static readonly Lazy<PolinomProvider> _instance = new(() => new PolinomProvider());
     private readonly ISession _session;
@@ -66,6 +69,30 @@ namespace Tessera.PolinomProvider
       });
     }
 
+    public async Task<Elements> LoadElementsWithEmbeddingAsync()
+    {
+      var elements = await _polinomApiHelper.LoadElementsWithEmbeddingAsync();
+      return elements;
+    }
+
+    public bool EnsureVectorConceptExists()
+    {
+      bool created = false;
+      _transactionManager.ApplyChanges(() => created = _polinomApiHelper.EnsureVectorConceptExists());
+      return created;
+    }
+
+    public async Task<List<(string Name, string Location)>> LoadElementsForEmbeddingAsync()
+    {
+      var elements = await _polinomApiHelper.LoadElementsForEmbeddingAsync();
+      return elements.ToList();
+    }
+
+    public void CreateElementEmbedding(string location, string embedding)
+    {
+      _transactionManager.ApplyChanges(() => _polinomApiHelper.CreateElementEmbedding(location, embedding));
+    }
+
     public void AttachFileToDocument(string fileName, byte[] fileBody, string elementName, string catalog)
     {
       if (catalog is CatalogConstants.CATALOG_MATERIAL)
@@ -81,10 +108,5 @@ namespace Tessera.PolinomProvider
     }
 
     private void AttachFileToDocument(object sender, FileAttachmentEventArgs eventArgs) => _polinomApiHelper.AttachFile(eventArgs.Element, eventArgs.FileName, eventArgs.FileBody, eventArgs.DocumentGroupName);
-
-    //public List<string> Test()
-    //{
-    //  return _polinomApiHelper.Test();
-    //}
   }
 }

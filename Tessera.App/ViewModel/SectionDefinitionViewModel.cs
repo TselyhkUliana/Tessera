@@ -70,25 +70,7 @@ namespace Tessera.App.ViewModel
       }
     }
     /// <summary>Экземпляр сортамента</summary>
-    public string SortamentEx
-    {
-      get => _sectionDefinition.SortamentEx;
-      set
-      {
-        if (_isInternalChange)
-          return;
-
-        if (!Set((v) => _sectionDefinition.SortamentEx = v, _sectionDefinition.SortamentEx, value))
-          return;
-
-        if (!_isUpdatingSuggestions)
-        {
-          OnRequestAddSectionDefinition();
-          _isUpdatingSuggestions = true;
-        }
-        _ = UpdateSuggestionsSafeAsync(value, SuggestedSortamentEx, _suggestionProvider.SortamentExEmbeddings);
-      }
-    }
+    public string SortamentEx { get => _sectionDefinition.SortamentEx; set => Set((v) => _sectionDefinition.SortamentEx = v, _sectionDefinition.SortamentEx, value); }
     /// <summary>ViewModel Типоразмера</summary>
     public TypeSizeViewModel TypeSizeViewModel => _typeSizeViewModel;
 
@@ -97,14 +79,14 @@ namespace Tessera.App.ViewModel
     /// <summary>Список похожих сортаментов</summary>
     public ObservableCollection<string> SuggestedSortament { get; set; }
     /// <summary>Список похожих экземпляров сортаментов</summary>
-    public ObservableCollection<string> SuggestedSortamentEx { get; set; }
+    //public ObservableCollection<string> SuggestedSortamentEx { get; set; }
 
     public void OnRequestAddSectionDefinition() => RequestAddSectionDefinition?.Invoke(this, EventArgs.Empty);
 
     public void FinishEditSortament()
     {
       //if (!string.IsNullOrEmpty(Sortament))
-        SortamentEditFinished?.Invoke(this, EventArgs.Empty);
+      SortamentEditFinished?.Invoke(this, EventArgs.Empty);
     }
 
     private async Task UpdateSuggestionsSafeAsync(string value, ObservableCollection<string> suggestionsTarget, List<(float[] Id, string Name)> embeddingDatabase)

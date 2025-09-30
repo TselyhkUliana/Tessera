@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Tessera.PolinomProvider;
+using Tessera.PolinomProvider.Interface;
 
 namespace Tessera.App.Command
 {

@@ -1,40 +1,21 @@
-﻿using Ascon.Polynom.Api;
-using Ascon.Polynom.Login;
+﻿using System.Threading.Tasks;
+using Tessera.PolinomProvider;
+using Tessera.PolinomProvider.Interface;
 using Tessera.SemanticIndexBuilder;
-using Tessera.SemanticIndexBuilder.SqlEmbeddings;
+using Tessera.SemanticIndexBuilder.Embeddings;
 
 internal class Program
 {
   [STAThread]
   private static void Main(string[] args)
   {
-    if (!LoginManager.TryOpenSession(Guid.Empty, SessionOptions.None, ClientType.Client, out var session))
-      return;
-
-    var storage = session.Storage;
-    Enum.TryParse<DbType>(storage.DbmsType, out var db);
-    switch (db)
-    {
-      case DbType.SqlServer:
-        //UpdateElementEmbeddings(storage.Database, new MSServerEmbeddingUpdater());
-        break;
-      case DbType.PostgreSql:
-        UpdateElementEmbeddings(storage.Database, new PostgreEmbeddingUpdater());
-        break;
-      default:
-        break;
-    }
+    var embeddingUpdater = PolinomProvider.Instance;
+    UpdateElementEmbeddings(embeddingUpdater, new PolinomEmbeddingUpdater()).GetAwaiter().GetResult();
   }
 
-  private static void UpdateElementEmbeddings(string database, IElementEmbeddingUpdater updater)
+  private static async Task UpdateElementEmbeddings(IEmbeddingProvider embeddingProvider, IElementEmbeddingUpdater elementEmbeddingUpdater)
   {
-    var manager = new ElementEmbeddingUpdateManager(database, updater);
-    manager.Update();
-  }
-
-  enum DbType
-  {
-    SqlServer,
-    PostgreSql
+    var manager = new ElementEmbeddingUpdateManager(embeddingProvider, elementEmbeddingUpdater);
+    await manager.Update();
   }
 }
