@@ -22,4 +22,10 @@ namespace Tessera.PolinomProvider
     [XmlElement("Element")]
     public List<Element> Items { get; set; } = new();
   }
+
+  public enum ElementType
+  {
+    Material,
+    Sortament
+  }
 }

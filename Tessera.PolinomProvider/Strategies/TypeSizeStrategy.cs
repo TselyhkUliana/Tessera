@@ -1,5 +1,4 @@
 ﻿using Ascon.Polynom.Api;
-using System.Collections.ObjectModel;
 using Tessera.PolinomProvider.Constants;
 using Tessera.PolinomProvider.Model;
 using Tessera.PolinomProvider.Utils;
@@ -72,33 +71,18 @@ namespace Tessera.PolinomProvider.Strategies
         var common = _apiHelper.PropertyDefinitions.Where(x => inputPropertiesName.Contains(x.Name)).ToList();
         foreach (var property in common)
         {
-          switch (property.Type)
+          var propertySource = concept.AllPropertySources.FirstOrDefault(x => x.Definition.Name == property.Name) ?? concept.CreatePropertySource(property);
+          switch (propertySource.Definition.Type)
           {
             case Ascon.Polynom.Api.PropertyType.Double:
-              var propDouble = property as IDoublePropertyDefinition;
+              var propDouble = propertySource as IDoublePropertyDefinition;
               propDouble.AssignDoublePropertyValue(typeSize, concept, double.Parse(inputProperties.First(x => x.Name == property.Name).Value));
               break;
             case Ascon.Polynom.Api.PropertyType.String:
-              var propString = property as IStringPropertyDefinition;
+              var propString = propertySource as IStringPropertyDefinition;
               propString.AssignStringPropertyValue(typeSize, concept, inputProperties.First(x => x.Name == property.Name).Value);
               break;
-            default:
-              break;
           }
-          //var propertySource = concept.CreatePropertySource(property);
-          //switch (propertySource.Definition.Type)
-          //{
-          //  case Ascon.Polynom.Api.PropertyType.Double:
-          //    var propDouble = propertySource.Definition as IDoublePropertyDefinition;
-          //    propDouble.AssignDoublePropertyValue(typeSize, concept, double.Parse(inputProperties.First(x => x.Name == property.Name).Value));
-          //    break;
-          //  case Ascon.Polynom.Api.PropertyType.String:
-          //    var propString = propertySource.Definition as IStringPropertyDefinition;
-          //    propString.AssignStringPropertyValue(typeSize, concept, inputProperties.First(x => x.Name == property.Name).Value);
-          //    break;
-          //  default:
-          //    break;
-          //}
         }
       });
     }

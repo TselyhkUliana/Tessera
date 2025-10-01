@@ -11,9 +11,10 @@ namespace Tessera.PolinomProvider.Utils
   internal class PolinomApiHelper
   {
     private readonly ISession _session;
-    private readonly TransactionManager _transactionManager;
     private readonly IReference? _referenceMaterialAndSortament;
     private readonly IApiReadOnlyCollection<IPropertyDefinition> _propDefinitions;
+    private readonly TransactionManager _transactionManager;
+    private readonly PropertyList _property;
     private IConcept _conceptSemanticRepresentation;
 
     public PolinomApiHelper(ISession session, TransactionManager transactionManager)
@@ -22,6 +23,7 @@ namespace Tessera.PolinomProvider.Utils
       _transactionManager = transactionManager;
       _referenceMaterialAndSortament = _session.Objects.AllReferences.FirstOrDefault(x => x.Name == CatalogConstants.REFERENCE_NAME);
       _propDefinitions = FindGroupByName(_session.Objects.PropDefCatalog.PropDefGroups, prop => prop.PropDefGroups, CatalogConstants.GROUP_PROP_DEFINABLE_DIMENSION).PropertyDefinitions;
+      _property = SerializerProp.Instance;
     }
 
     public IApiReadOnlyCollection<IPropertyDefinition> PropertyDefinitions => _propDefinitions;
@@ -96,8 +98,8 @@ namespace Tessera.PolinomProvider.Utils
         var serializer = new Serializer();
         serializer.Elements = new Elements
         {
-          Items = Project(materials, "Material")
-              .Concat(Project(sortament, "Sortament"))
+          Items = Project(materials, ElementType.Material.ToString())
+              .Concat(Project(sortament, ElementType.Sortament.ToString()))
               .Select(x => new Element
               {
                 Id = x.Id,
@@ -145,6 +147,7 @@ namespace Tessera.PolinomProvider.Utils
       }
       return result;
     }
+
     //public List<IElement> GetAllElements(IApiReadOnlyCollection<IGroup> groups) => groups.SelectMany(g => g.Elements.Concat(GetAllElements(g.Groups))).ToList();
 
     //public List<string> Test()
@@ -166,13 +169,16 @@ namespace Tessera.PolinomProvider.Utils
     //  return list.Distinct().ToList();
     //}
 
-    public List<string> GetPropertiesForTypeSizeInternal(string similarSortament)
+    public Task<List<string>> GetPropertiesForTypeSizeInternal(string similarSortament)
     {
-      var sortament = SearchElement(similarSortament, CatalogConstants.CATALOG_SORTAMENT);
-      var typeSizeLink = sortament.Links.FirstOrDefault(l => l.Name == LinkConstants.LINK_TYPE_SIZE_SORTAMENT_NAME);
-      var typeSizeElement = (IElement)typeSizeLink.LinkedItems.First();
-      var dimensionContract = typeSizeElement.AllContracts.FirstOrDefault(c => c.Name.Contains("Размерность"));
-      return dimensionContract.AllPropertySources.Select(x => x.Definition.Name).ToList();
+      return Task.Run(() =>
+      {
+        var sortament = SearchElement(similarSortament, CatalogConstants.CATALOG_SORTAMENT);
+        var typeSizeLink = sortament.Links.FirstOrDefault(l => l.Name == LinkConstants.LINK_TYPE_SIZE_SORTAMENT_NAME);
+        var typeSizeElement = (IElement)typeSizeLink.LinkedItems.First();
+        var dimensionContract = typeSizeElement.AllContracts.FirstOrDefault(c => c.Name.Contains("Размерность"));
+        return dimensionContract.AllPropertySources.Select(x => x.Definition.Name).ToList();
+      });
     }
 
     public IDocument AddOrCreateDocument(IElement element, string fullName, string documentGroupName)

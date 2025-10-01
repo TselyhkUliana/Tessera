@@ -78,8 +78,6 @@ namespace Tessera.App.ViewModel
     public ObservableCollection<string> SuggestedMaterials { get; set; }
     /// <summary>Список похожих сортаментов</summary>
     public ObservableCollection<string> SuggestedSortament { get; set; }
-    /// <summary>Список похожих экземпляров сортаментов</summary>
-    //public ObservableCollection<string> SuggestedSortamentEx { get; set; }
 
     public void OnRequestAddSectionDefinition() => RequestAddSectionDefinition?.Invoke(this, EventArgs.Empty);
 

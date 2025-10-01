@@ -4,6 +4,6 @@
   {
     bool EnsureVectorConceptExists();
     void CreateElementEmbedding(string location, string embedding);
-    Task<List<(string Name, string Location)>> LoadElementsForEmbeddingAsync();
+    Task<IEnumerable<(string Name, string Location)>> LoadElementsForEmbeddingAsync();
   }
 }

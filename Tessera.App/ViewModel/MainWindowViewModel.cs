@@ -1,9 +1,9 @@
 ﻿using MappingManager.ViewModel.Base;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using Tessera.App.Command;
+using Tessera.PolinomProvider;
 using Tessera.PolinomProvider.Interface;
 using Tessera.PolinomProvider.Model;
 
@@ -15,7 +15,7 @@ namespace Tessera.App.ViewModel
     private readonly CommandManager _commandManager;
     private SectionDefinitionViewModel _сurrentSection;
     private EmbeddingService _embeddingService;
-    private bool _isBusy;
+    private bool _isBusy = true;
 
     public MainWindowViewModel(IReferenceProvider referenceProvider)
     {
@@ -29,15 +29,11 @@ namespace Tessera.App.ViewModel
     public List<(float[] Id, string Name)> SortamentEmbeddings { get; private set; }
 
     public ICommand CreateCommand => _commandManager.Get<CheckAndCreateEntitiesCommand>();
-    public ICommand AddFileForMaterialCommand => _commandManager.Get<AddFileForMaterialCommand>();
-    public ICommand AddFileForSortamentCommand => _commandManager.Get<AddFileForSortamentCommand>();
 
     public bool IsBusy { get => _isBusy; set => Set((v) => _isBusy = v, _isBusy, value); }
 
     public async Task UpdateSuggestionsAsync(string userInput, ObservableCollection<string> suggestionsTarget, List<(float[] Id, string Name)> embeddingDatabase)
     {
-      Stopwatch stopwatch = Stopwatch.StartNew();
-
       var searchResults = await Task.Run(() =>
       {
         _embeddingService.GetTextEmbedding(userInput, out var embedding);
@@ -47,14 +43,10 @@ namespace Tessera.App.ViewModel
       suggestionsTarget.Clear();
       foreach (var (Name, Similarity) in searchResults)
         suggestionsTarget.Add(Name);
-
-      stopwatch.Stop();
-      Debug.WriteLine($"Search took {stopwatch.ElapsedMilliseconds} - {stopwatch.Elapsed.Seconds} ms");
     }
 
     internal async Task InitializeAsync()
     {
-      IsBusy = true;
       try
       {
         await InitiInitializeAsync();
@@ -67,21 +59,18 @@ namespace Tessera.App.ViewModel
 
     private async Task InitiInitializeAsync()
     {
-      var embeddingService = await Task.Run(() => _embeddingService = EmbeddingService.Instance);
+      var embeddingServiceTask = Task.Run(() => EmbeddingService.Instance);
       MaterialEmbeddings = new List<(float[] Vectors, string Name)>();
       SortamentEmbeddings = new List<(float[] Vectors, string Name)>();
       var elements = await _referenceProvider.LoadElementsWithEmbeddingAsync();
-      var splitTask = Task.Run(() =>
-      {
-        var materials = elements.Items.Where(e => e.Type == "Material").Select(e => (e.EmbeddingVector, e.Name)).ToList();
-        var sortaments = elements.Items.Where(e => e.Type == "Sortament").Select(e => (e.EmbeddingVector, e.Name)).ToList();
-        return (materials, sortaments);
-      });
-      var (materialsList, sortamentsList) = await splitTask;
-      MaterialEmbeddings = materialsList;
-      SortamentEmbeddings = sortamentsList;
+      var materialsTask = Task.Run(() => elements.Items.Where(e => e.Type == ElementType.Material.ToString()).Select(e => (e.EmbeddingVector, e.Name)).ToList());
+      var sortamentsTask = Task.Run(() => elements.Items.Where(e => e.Type == ElementType.Sortament.ToString()).Select(e => (e.EmbeddingVector, e.Name)).ToList());
+      await Task.WhenAll(materialsTask, sortamentsTask, embeddingServiceTask);
+      MaterialEmbeddings = materialsTask.Result;
+      SortamentEmbeddings = sortamentsTask.Result;
       SectionDefinitions = new ObservableCollection<SectionDefinitionViewModel> { NewSectionDefinition() };
       OnPropertyChanged(nameof(SectionDefinitions));
+      _embeddingService = embeddingServiceTask.Result;
     }
 
     private void AddSectionDefinitionIfNeeded(object sender, EventArgs e)
@@ -91,12 +80,23 @@ namespace Tessera.App.ViewModel
         SectionDefinitions.Add(NewSectionDefinition());
         return;
       }
+      var penultimate = SectionDefinitions[^2];
+      if (IsSectionDefinitionEmpty(penultimate))
+      {
+        SectionDefinitions.Remove(penultimate);
+        SectionDefinitions.Add(NewSectionDefinition());
+        return;
+      }
 
-      var lastElement = SectionDefinitions.LastOrDefault();
-      if (lastElement.Material is null && lastElement.Sortament is null && lastElement.TypeSizeViewModel.TypeSize is null && lastElement.SortamentEx is null)
+      if (IsSectionDefinitionEmpty(SectionDefinitions.LastOrDefault()))
         return;
 
       SectionDefinitions.Add(NewSectionDefinition());
+    }
+
+    private static bool IsSectionDefinitionEmpty(SectionDefinitionViewModel sectionDefinition)
+    {
+      return string.IsNullOrEmpty(sectionDefinition.Material) && string.IsNullOrEmpty(sectionDefinition.Sortament) && string.IsNullOrEmpty(sectionDefinition.TypeSizeViewModel.TypeSize);
     }
 
     private SectionDefinitionViewModel NewSectionDefinition()

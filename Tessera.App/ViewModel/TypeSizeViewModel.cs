@@ -47,7 +47,7 @@ namespace Tessera.App.ViewModel
     }
     public ObservableCollection<TypeSizePropertyViewModel> TypeSizePropertiesViewModel { get => _properties; set => Set(ref _properties, value); }
 
-    private void SectionDefinitionSortamentEditFinished(object sender, EventArgs e)
+    private async void SectionDefinitionSortamentEditFinished(object sender, EventArgs e)
     {
       if (string.IsNullOrEmpty(_sectionDefinitionViewModel.Sortament))
       {
@@ -56,7 +56,7 @@ namespace Tessera.App.ViewModel
         return;
       }
 
-      var properties = PolinomProvider.PolinomProvider.Instance.GetPropertiesForTypeSize(_sectionDefinitionViewModel.SuggestedSortament.First());
+      var properties = await PolinomProvider.PolinomProvider.Instance.GetPropertiesForTypeSize(_sectionDefinitionViewModel.SuggestedSortament.First());
       foreach (var item in properties)
       {
         var propertyViewModel = _properties.FirstOrDefault(x => x.Name == item);

@@ -42,7 +42,8 @@ namespace Tessera.PolinomProvider
     public event EventHandler<FileAttachmentEventArgs> MaterialFilePending;
     public event EventHandler<FileAttachmentEventArgs> SortamentFilePending;
     public Dictionary<string, PropertyType> AllDimensionProperties => _cachedProperties;
-    public List<string> GetPropertiesForTypeSize(string similarSortament) => _polinomApiHelper.GetPropertiesForTypeSizeInternal(similarSortament);
+
+    public async Task<List<string>> GetPropertiesForTypeSize(string similarSortament) => await _polinomApiHelper.GetPropertiesForTypeSizeInternal(similarSortament);
 
     public void EnsureEntitiesExist(SectionDefinition sectionDefinition)
     {
@@ -71,8 +72,7 @@ namespace Tessera.PolinomProvider
 
     public async Task<Elements> LoadElementsWithEmbeddingAsync()
     {
-      var elements = await _polinomApiHelper.LoadElementsWithEmbeddingAsync();
-      return elements;
+      return await _polinomApiHelper.LoadElementsWithEmbeddingAsync();
     }
 
     public bool EnsureVectorConceptExists()
@@ -82,10 +82,9 @@ namespace Tessera.PolinomProvider
       return created;
     }
 
-    public async Task<List<(string Name, string Location)>> LoadElementsForEmbeddingAsync()
+    public Task<IEnumerable<(string Name, string Location)>> LoadElementsForEmbeddingAsync()
     {
-      var elements = await _polinomApiHelper.LoadElementsForEmbeddingAsync();
-      return elements.ToList();
+      return _polinomApiHelper.LoadElementsForEmbeddingAsync();
     }
 
     public void CreateElementEmbedding(string location, string embedding)
@@ -93,20 +92,20 @@ namespace Tessera.PolinomProvider
       _transactionManager.ApplyChanges(() => _polinomApiHelper.CreateElementEmbedding(location, embedding));
     }
 
-    public void AttachFileToDocument(string fileName, byte[] fileBody, string elementName, string catalog)
-    {
-      if (catalog is CatalogConstants.CATALOG_MATERIAL)
-      {
-        _pendingMaterialFile = (fileName, fileBody);
-        MaterialFilePending += AttachFileToDocument;
-      }
-      else if (catalog is CatalogConstants.CATALOG_SORTAMENT)
-      {
-        _pendingSortamentFile = (fileName, fileBody);
-        SortamentFilePending += AttachFileToDocument;
-      }
-    }
+    //public void AttachFileToDocument(string fileName, byte[] fileBody, string elementName, string catalog)
+    //{
+    //  if (catalog is CatalogConstants.CATALOG_MATERIAL)
+    //  {
+    //    _pendingMaterialFile = (fileName, fileBody);
+    //    MaterialFilePending += AttachFileToDocument;
+    //  }
+    //  else if (catalog is CatalogConstants.CATALOG_SORTAMENT)
+    //  {
+    //    _pendingSortamentFile = (fileName, fileBody);
+    //    SortamentFilePending += AttachFileToDocument;
+    //  }
+    //}
 
-    private void AttachFileToDocument(object sender, FileAttachmentEventArgs eventArgs) => _polinomApiHelper.AttachFile(eventArgs.Element, eventArgs.FileName, eventArgs.FileBody, eventArgs.DocumentGroupName);
+    //private void AttachFileToDocument(object sender, FileAttachmentEventArgs eventArgs) => _polinomApiHelper.AttachFile(eventArgs.Element, eventArgs.FileName, eventArgs.FileBody, eventArgs.DocumentGroupName);
   }
 }

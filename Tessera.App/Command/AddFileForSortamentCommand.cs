@@ -19,12 +19,12 @@ namespace Tessera.App.Command
 
     protected override void Execute(object parameter)
     {
-      var sectionDefinitions = parameter as SectionDefinitionViewModel;
+      //var sectionDefinitions = parameter as SectionDefinitionViewModel;
 
-      var (name, body) = GetSelectedFile();
-      if (name == null || body == null)
-        return;
-      _referenceProvider.AttachFileToDocument(name, body, sectionDefinitions.Material, CatalogConstants.CATALOG_SORTAMENT);
+      //var (name, body) = GetSelectedFile();
+      //if (name == null || body == null)
+      //  return;
+      //_referenceProvider.AttachFileToDocument(name, body, sectionDefinitions.Material, CatalogConstants.CATALOG_SORTAMENT);
     }
 
     protected override bool CanExecute(object parameter)

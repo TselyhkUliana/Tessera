@@ -15,8 +15,8 @@ namespace Tessera.SemanticIndexBuilder.Embeddings
       Console.WriteLine("Создание векторных предствлений. Процесс может занять длительное время");
       Console.ForegroundColor = ConsoleColor.Green;
       var embeddingService = EmbeddingService.Instance;
-      var elements = await embeddingProvider.LoadElementsForEmbeddingAsync();
-      var count = elements.Count;
+      var elements = (await embeddingProvider.LoadElementsForEmbeddingAsync()).ToArray();
+      var count = elements.Length;
       for (int i = 0; i < count; i++)
       {
         var element = elements[i];

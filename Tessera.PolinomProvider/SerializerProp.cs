@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 using System.Xml.Serialization;
 using Tessera.PolinomProvider.Extensions;
 
-namespace Tessera.App
+namespace Tessera.PolinomProvider
 {
-  internal class Serializer
+  internal class SerializerProp
   {
     private static PropertyList _instance;
     private static XmlSerializer _xmlSerializer = new XmlSerializer(typeof(PropertyList));
