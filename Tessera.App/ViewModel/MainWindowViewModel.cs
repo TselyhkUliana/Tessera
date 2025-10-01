@@ -37,7 +37,7 @@ namespace Tessera.App.ViewModel
       var searchResults = await Task.Run(() =>
       {
         _embeddingService.GetTextEmbedding(userInput, out var embedding);
-        return _embeddingService.Search(embeddingDatabase, embedding, 10);
+        return _embeddingService.Search(embeddingDatabase, embedding, userInput);
       });
 
       suggestionsTarget.Clear();

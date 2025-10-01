@@ -51,26 +51,58 @@ public class EmbeddingService : IDisposable
         NamedOnnxValue.CreateFromTensor("input_ids", inputIdsTensor),
         NamedOnnxValue.CreateFromTensor("attention_mask", attentionMaskTensor)
     };
-    IDisposableReadOnlyCollection<DisposableNamedOnnxValue> results = _session.Run(inputs);
-    var outputTensor = results.First().AsTensor<float>();
+    using var results = _session.Run(inputs);
+    var outputTensor = results.First().AsTensor<float>(); // [1, 1024]
 
-    embedding = outputTensor.ToArray();
+    int hiddenSize = outputTensor.Dimensions[1];
+    embedding = new float[hiddenSize];
+
+    for (int i = 0; i < hiddenSize; i++)
+      embedding[i] = outputTensor[0, i];
+
+    //L2-нормализация
+    float norm = MathF.Sqrt(embedding.Sum(x => x * x));
+    if (norm > 0)
+    {
+      for (int i = 0; i < embedding.Length; i++)
+        embedding[i] /= norm;
+    }
   }
 
   /// <summary>
   /// Возвращает topN объектов, наиболее похожих на запрос по косинусному сходству эмбеддингов.
   /// </summary>
-  public List<(string Name, float Similarity)> Search(List<(float[] Id, string Name)> data, float[] queryEmbedding, int topN = 1)
+  //public List<(string Name, float Similarity)> Search(List<(float[] Id, string Name)> data, float[] queryEmbedding, int topN = 10)
+  //{
+  //  var results = new List<(string, float)>();
+
+  //  foreach (var (Id, Name) in data)
+  //  {
+  //    var sim = CosineSimilarity(Id, queryEmbedding);
+  //    results.Add((Name, sim));
+  //  }
+
+  //  return results.OrderByDescending(x => x.Item2).Take(topN).ToList();
+  //}
+
+  public List<(string Name, float Score)> Search(List<(float[] Id, string Name)> data, float[] queryEmbedding, string query, int topN = 10, float threshold = 0.7f, float keywordBoost = 0.1f, float semanticWeight = 0.8f, float keywordWeight = 0.2f)
   {
     var results = new List<(string, float)>();
+    var words = query.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
     foreach (var (Id, Name) in data)
     {
-      var sim = CosineSimilarity(Id, queryEmbedding);
-      results.Add((Name, sim));
+      var semanticScore = CosineSimilarity(Id, queryEmbedding);
+
+      var keywordMatches = words.Count(w => Name.Contains(w, StringComparison.OrdinalIgnoreCase));
+      var keywordScore = keywordMatches * keywordBoost;
+      var finalScore = semanticWeight * semanticScore + keywordWeight * keywordScore;
+
+      if (finalScore >= threshold)
+        results.Add((Name, finalScore));
     }
 
-    return results.OrderByDescending(x => x.Item2).Take(topN).ToList();
+    return results.OrderByDescending(r => r.Item2).Take(topN).ToList();
   }
 
   public void Dispose()
@@ -98,20 +130,10 @@ public class EmbeddingService : IDisposable
     if (vectorA.Length != vectorB.Length)
       throw new ArgumentException("Векторы должны быть одинаковой длины");
 
-    var dot = 0f;
-    var normA = 0f;
-    var normB = 0f;
-
+    float dot = 0f;
     for (int i = 0; i < vectorA.Length; i++)
-    {
       dot += vectorA[i] * vectorB[i];
-      normA += vectorA[i] * vectorA[i];
-      normB += vectorB[i] * vectorB[i];
-    }
 
-    if (normA == 0 || normB == 0)
-      return 0;
-
-    return dot / (float)(Math.Sqrt(normA) * Math.Sqrt(normB));
+    return dot; //т.к. векторы уже L2-нормализованы
   }
 }
