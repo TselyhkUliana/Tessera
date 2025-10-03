@@ -10,7 +10,7 @@ namespace Tessera.PolinomProvider
 
   public interface ISortamentExStrategy
   {
-    IElement GetOrCreate(IElement sortament);
+    IElement GetOrCreate(IElement sortament, IElement material);
   }
 
   public interface ISortamentStrategy

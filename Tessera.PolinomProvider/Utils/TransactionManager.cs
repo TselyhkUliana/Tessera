@@ -2,7 +2,7 @@
 
 namespace Tessera.PolinomProvider.Utils
 {
-  internal class TransactionManager
+  public class TransactionManager
   {
     private ISession _session;
 

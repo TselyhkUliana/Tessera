@@ -37,6 +37,7 @@ namespace Tessera.PolinomProvider
       _cachedProperties = _polinomApiHelper.GetProperties();
     }
 
+    public TransactionManager TransactionManager => _transactionManager;
     public static PolinomProvider Instance => _instance.Value;
     public event EventHandler<FileAttachmentEventArgs> MaterialFilePending;
     public event EventHandler<FileAttachmentEventArgs> SortamentFilePending;
@@ -46,27 +47,22 @@ namespace Tessera.PolinomProvider
 
     public void EnsureEntitiesExist(SectionDefinition sectionDefinition)
     {
-      _transactionManager.ApplyChanges(() =>
-      {
-        var material = _materialStrategy.GetOrCreate(sectionDefinition);
-        var sortament = _sortamentStrategy.GetOrCreate(sectionDefinition);
-        var typeSize = _typeSizeStrategy.GetOrCreate(sectionDefinition.TypeSize, sectionDefinition.TypeSizeData, sortament);
-        var sortamentEx = _sortamentExStrategy.GetOrCreate(sortament);
-        _polinomApiHelper.CreateLink(sortament, material, LinkConstants.LINK_SORTAMENT_MATERIAL);
-        _polinomApiHelper.CreateLink(typeSize, sortament, LinkConstants.LINK_TYPESIZE_SORTAMENT);
-        _polinomApiHelper.CreateLink(sortamentEx, sortament, LinkConstants.LINK_SORTAMENTEX_SORTAMENT);
-        _polinomApiHelper.CreateLink(sortamentEx, material, LinkConstants.LINK_SORTAMENTEX_MATERIAL);
-        _polinomApiHelper.CreateLink(sortamentEx, typeSize, LinkConstants.LINK_SORTAMENTEX_TYPE_SIZE);
+      var material = _materialStrategy.GetOrCreate(sectionDefinition);
+      var sortament = _sortamentStrategy.GetOrCreate(sectionDefinition);
+      var typeSize = _typeSizeStrategy.GetOrCreate(sectionDefinition.TypeSize, sectionDefinition.TypeSizeData, sortament);
+      var sortamentEx = _sortamentExStrategy.GetOrCreate(sortament, material);
+      _polinomApiHelper.CreateLink(sortament, material, LinkConstants.LINK_SORTAMENT_MATERIAL);
+      _polinomApiHelper.CreateLink(typeSize, sortament, LinkConstants.LINK_TYPESIZE_SORTAMENT);
+      _polinomApiHelper.CreateLink(sortamentEx, sortament, LinkConstants.LINK_SORTAMENTEX_SORTAMENT);
+      _polinomApiHelper.CreateLink(sortamentEx, material, LinkConstants.LINK_SORTAMENTEX_MATERIAL);
+      _polinomApiHelper.CreateLink(sortamentEx, typeSize, LinkConstants.LINK_SORTAMENTEX_TYPE_SIZE);
 
-        sortamentEx.Evaluate();
-        sectionDefinition.SortamentEx = sortamentEx.Name;
-        //_polinomApiHelper.LinksTest(sortament);
-        //MaterialFilePending?.Invoke(this, new FileAttachmentEventArgs(material, _pendingMaterialFile.FileBody, _pendingMaterialFile.FileName, CatalogConstants.CATALOG_MATERIAL));
-        //SortamentFilePending?.Invoke(this, new FileAttachmentEventArgs(sortament, _pendingSortamentFile.FileBody, _pendingSortamentFile.FileName, CatalogConstants.CATALOG_SORTAMENT));
-        //_polinomApiHelper.GetProperties();
-        //_polinomApiHelper.Test();
-        //_polinomApiHelper.Test(sortament);
-      });
+      sortamentEx.Evaluate();
+      sectionDefinition.SortamentEx = sortamentEx.Name;
+      //_polinomApiHelper.LinksTest(sortament);
+      //MaterialFilePending?.Invoke(this, new FileAttachmentEventArgs(material, _pendingMaterialFile.FileBody, _pendingMaterialFile.FileName, CatalogConstants.CATALOG_MATERIAL));
+      //SortamentFilePending?.Invoke(this, new FileAttachmentEventArgs(sortament, _pendingSortamentFile.FileBody, _pendingSortamentFile.FileName, CatalogConstants.CATALOG_SORTAMENT));
+      //_polinomApiHelper.GetProperties();
     }
 
     public async Task<Elements> LoadElementsWithEmbeddingAsync()

@@ -21,9 +21,18 @@ namespace Tessera.App.Command
 
     protected override void Execute(object parameter)
     {
-      var sectionDefinitions = parameter as ObservableCollection<SectionDefinitionViewModel>;
-      foreach (var vm in sectionDefinitions.SkipLast(1))
-        _referenceProvider.EnsureEntitiesExist(SectionMapper.ToDomain(vm));
+      var sectionDefinitions = (parameter as ObservableCollection<SectionDefinitionViewModel>)
+                               .Where(x => !string.IsNullOrEmpty(x.Material)
+                               && !string.IsNullOrEmpty(x.Sortament)
+                               && !string.IsNullOrEmpty(x.TypeSizeViewModel.TypeSize));
+
+      foreach (var vm in sectionDefinitions)
+      {
+        _referenceProvider.TransactionManager.ApplyChanges(() =>
+        { 
+          _referenceProvider.EnsureEntitiesExist(SectionMapper.ToDomain(vm));
+        });
+      }
     }
 
     protected override bool CanExecute(object parameter)

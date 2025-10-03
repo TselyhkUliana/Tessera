@@ -15,12 +15,15 @@ namespace Tessera.PolinomProvider.Strategies
       _catalog = _apiHelper.GetCatalog(CatalogConstants.CATALOG_SORTAMENT_EX);
     }
 
-    public IElement GetOrCreate(IElement sortament)
+    public IElement GetOrCreate(IElement sortament, IElement material)
     {
       var baseName = EntityNameHelper.GetNameBeforeStandard(sortament.Name);
-      var index = EntityNameHelper.GetStandardKeywordIndex(sortament.Name);
-      var standardPart = sortament.Name.Substring(index);
-      var groupName = $"{baseName} {standardPart} {standardPart}"; //такой формат названия групп (например: Анод (золотой) ГОСТ 25475-2015 ГОСТ 25475-2015))
+      var indexSortament = EntityNameHelper.GetStandardKeywordIndex(sortament.Name);
+      var indexMaterial = EntityNameHelper.GetStandardKeywordIndex(material.Name);
+      var sortamentStandardPart = sortament.Name.Substring(indexSortament);
+      var materialStandardPart = material.Name.Substring(indexMaterial);
+      var groupName = $"{baseName} {sortamentStandardPart} {materialStandardPart}"; //такой формат названия групп (например: Анод (золотой) ГОСТ 25475-2015 ГОСТ 25475-2015))
+      
       var group = _apiHelper.FindGroupByName(_catalog.Groups, g => g.Groups, groupName) ?? CreateGroupSortamentEx(groupName, sortament.OwnerGroup.Name);
       var element = group.CreateElement(CatalogConstants.ELEMENT_DEFAULT_NAME);
       element.Applicability = Applicability.Allowed;
