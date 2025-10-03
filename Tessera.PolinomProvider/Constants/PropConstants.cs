@@ -10,7 +10,7 @@
     public const string PROP_NAME_AND_DESCRIPTION_ABSOLUTE_CODE = "c:@NameAndDescription::c:@ClassificationItem::pd:@Name";
     public const string PROP_SPECIFICATION_OBJECT_SETTINGS_TEMPLATE = "::ld:@SpecificationObjectSettingsTemplate::lde:@SpecificationObjectSettingsTemplate::c:@NameAndDescription::c:@ClassificationItem::pd:@Name";
     public const string PROP_EMBEDDING_NAME = "Эмбеддинг";
-    public const string PROP_EMBEDDING_NAME_CODE = "@Embedding";
-    public const string PROP_EMBEDDING_NAME_ABSOLUTE_CODE = "c:SemanticRepresentation::pd:@Embedding";
+    public const string PROP_EMBEDDING_CODE = "@Embedding";
+    public const string PROP_EMBEDDING_ABSOLUTE_CODE = "c:SemanticRepresentation::pd:@Embedding";
   }
 }

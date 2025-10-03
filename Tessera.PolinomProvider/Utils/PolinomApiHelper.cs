@@ -63,9 +63,9 @@ namespace Tessera.PolinomProvider.Utils
         {
           _conceptSemanticRepresentation = _session.Objects.CreateConcept(ConceptConstants.CONCEPT_SEMANTIC_REPRESENTATION_NAME, ConceptConstants.CONCEPT_SEMANTIC_REPRESENTATION_Code);
           var groupProp = _session.Objects.PropDefCatalog.CreatePropDefGroup(CatalogConstants.GROUP_PROP_SEMANTIC_REPRESENTATION);
-          var prop = groupProp.CreateRtfPropertyDefinition(PropConstants.PROP_EMBEDDING_NAME, PropConstants.PROP_EMBEDDING_NAME_CODE);
+          var prop = groupProp.CreateRtfPropertyDefinition(PropConstants.PROP_EMBEDDING_NAME, PropConstants.PROP_EMBEDDING_CODE);
           _conceptSemanticRepresentation.CreatePropertySource(prop);
-          var conceptPropSource = _conceptSemanticRepresentation.ConceptPropertySources.FirstOrDefault(x => x.AbsoluteCode == PropConstants.PROP_EMBEDDING_NAME_ABSOLUTE_CODE);
+          var conceptPropSource = _conceptSemanticRepresentation.ConceptPropertySources.FirstOrDefault(x => x.AbsoluteCode == PropConstants.PROP_EMBEDDING_ABSOLUTE_CODE);
           conceptPropSource.IsHidden = true;
           conceptPropSource.IsReadOnly = true;
         });
@@ -78,7 +78,7 @@ namespace Tessera.PolinomProvider.Utils
     {
       var element = _session.Objects.Locate(location) as IElement;
       element.RealizeContract(_conceptSemanticRepresentation);
-      var prop = element.GetProperty(PropConstants.PROP_EMBEDDING_NAME_CODE);
+      var prop = element.GetProperty(PropConstants.PROP_EMBEDDING_CODE);
       prop.AssignPropertyValue((prop.Definition as IRtfPropertyDefinition).CreateRtfPropertyValueData(embedding));
     }
 
@@ -88,32 +88,53 @@ namespace Tessera.PolinomProvider.Utils
       if (elements is null)
       {
         var (materials, sortament) = await LoadElementsAsync();
-        IEnumerable<(Guid Id, string Name, string Embedding, string GroupName, string Type)> Project(IEnumerable<IElement> source, string type) =>
-         source.Select(e =>
-         {
-           var prop = e.GetPropertyValue(PropConstants.PROP_EMBEDDING_NAME_CODE) as IRtfPropertyValue;
-           var plain = prop?.ToPlainText() ?? string.Empty;
-           return (e.Id, e.Name, plain, e.OwnerGroup.Name, type);
-         });
-        var serializer = new Serializer();
-        serializer.Elements = new Elements
-        {
-          Items = Project(materials, ElementType.Material.ToString())
-              .Concat(Project(sortament, ElementType.Sortament.ToString()))
-              .Select(x => new Element
-              {
-                Id = x.Id,
-                Name = x.Name,
-                GroupName = x.GroupName,
-                Embedding = x.Embedding,
-                Type = x.Type,
-              }).ToList()
-        };
-        serializer.Save();
-        elements = serializer.Elements;
+        elements = await BuildAndSaveElementsAsync(materials, sortament);
       }
 
       return elements;
+    }
+
+    private static async Task<Elements> BuildAndSaveElementsAsync(List<IElement> materials, List<IElement> sortament)
+    {
+      return await Task.Run(() =>
+      {
+        var elements = BuildElements(materials, sortament);
+        SaveElements(elements);
+        return elements;
+      });
+    }
+
+    private static IEnumerable<Element> MapToElements(IEnumerable<IElement> source, string type)
+    {
+      return source.Select(e =>
+      {
+        var prop = e.GetPropertyValue(PropConstants.PROP_EMBEDDING_CODE) as IRtfPropertyValue;
+        var plain = prop?.ToPlainText() ?? string.Empty;
+        return new Element
+        {
+          Id = e.Id,
+          Name = e.Name,
+          GroupName = e.OwnerGroup.Name,
+          Embedding = plain,
+          Type = type
+        };
+      });
+    }
+
+    private static Elements BuildElements(List<IElement> materials, List<IElement> sortament)
+    {
+      return new Elements
+      {
+        Items = MapToElements(materials, ElementType.Material.ToString())
+              .Concat(MapToElements(sortament, ElementType.Sortament.ToString()))
+              .ToList()
+      };
+    }
+
+    private static void SaveElements(Elements elements)
+    {
+      var serializer = new Serializer { Elements = elements };
+      serializer.Save();
     }
 
     public async Task<IEnumerable<(string Name, string Location)>> LoadElementsForEmbeddingAsync()

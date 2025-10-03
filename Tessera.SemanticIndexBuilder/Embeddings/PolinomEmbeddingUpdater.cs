@@ -1,4 +1,5 @@
-﻿using Tessera.PolinomProvider.Interface;
+﻿using System.Globalization;
+using Tessera.PolinomProvider.Interface;
 
 namespace Tessera.SemanticIndexBuilder.Embeddings
 {
@@ -21,7 +22,7 @@ namespace Tessera.SemanticIndexBuilder.Embeddings
       {
         var element = elements[i];
         embeddingService.GetTextEmbedding(element.Name, out var embedding);
-        embeddingProvider.CreateElementEmbedding(element.Location, string.Join(';', embedding));
+        embeddingProvider.CreateElementEmbedding(element.Location, string.Join(';', embedding.Select(x => x.ToString("R", CultureInfo.InvariantCulture))));
         Console.ForegroundColor = ConsoleColor.Green;
         Console.Write($"\rСоздано: {i + 1} из {count}");
       }

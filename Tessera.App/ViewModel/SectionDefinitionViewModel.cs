@@ -87,7 +87,7 @@ namespace Tessera.App.ViewModel
       SortamentEditFinished?.Invoke(this, EventArgs.Empty);
     }
 
-    private async Task UpdateSuggestionsSafeAsync(string value, ObservableCollection<string> suggestionsTarget, List<(float[] Id, string Name)> embeddingDatabase)
+    private async Task UpdateSuggestionsSafeAsync(string value, ObservableCollection<string> suggestionsTarget, List<(float[] Embedding, string Name)> embeddingDatabase)
     {
       _isInternalChange = true;
       await _suggestionProvider.UpdateSuggestionsAsync(value, suggestionsTarget, embeddingDatabase);

@@ -22,8 +22,8 @@ namespace Tessera.PolinomProvider
     private readonly TransactionManager _transactionManager;
     private readonly PolinomApiHelper _polinomApiHelper;
     private readonly Dictionary<string, PropertyType> _cachedProperties;
-    private (string FileName, byte[] FileBody) _pendingMaterialFile;
-    private (string FileName, byte[] FileBody) _pendingSortamentFile;
+    //private (string FileName, byte[] FileBody) _pendingMaterialFile;
+    //private (string FileName, byte[] FileBody) _pendingSortamentFile;
 
     private PolinomProvider()
     {
@@ -35,7 +35,6 @@ namespace Tessera.PolinomProvider
       _typeSizeStrategy = new TypeSizeStrategy(_polinomApiHelper);
       _sortamentExStrategy = new SortamentExStrategy(_polinomApiHelper);
       _cachedProperties = _polinomApiHelper.GetProperties();
-      //_ = _polinomApiHelper.GetDataAsync();
     }
 
     public static PolinomProvider Instance => _instance.Value;

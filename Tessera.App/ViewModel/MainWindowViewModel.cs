@@ -1,6 +1,5 @@
 ﻿using MappingManager.ViewModel.Base;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Windows.Input;
 using Tessera.App.Command;
 using Tessera.PolinomProvider;
@@ -25,14 +24,14 @@ namespace Tessera.App.ViewModel
 
     public ObservableCollection<SectionDefinitionViewModel> SectionDefinitions { get; set; }
     public SectionDefinitionViewModel CurrentSection { get => _сurrentSection; set => Set(ref _сurrentSection, value); }
-    public List<(float[] Id, string Name)> MaterialEmbeddings { get; private set; }
-    public List<(float[] Id, string Name)> SortamentEmbeddings { get; private set; }
+    public List<(float[] Embedding, string Name)> MaterialEmbeddings { get; private set; }
+    public List<(float[] Embedding, string Name)> SortamentEmbeddings { get; private set; }
 
     public ICommand CreateCommand => _commandManager.Get<CheckAndCreateEntitiesCommand>();
 
     public bool IsBusy { get => _isBusy; set => Set((v) => _isBusy = v, _isBusy, value); }
 
-    public async Task UpdateSuggestionsAsync(string userInput, ObservableCollection<string> suggestionsTarget, List<(float[] Id, string Name)> embeddingDatabase)
+    public async Task UpdateSuggestionsAsync(string userInput, ObservableCollection<string> suggestionsTarget, List<(float[] Embedding, string Name)> embeddingDatabase)
     {
       var searchResults = await Task.Run(() =>
       {
@@ -60,8 +59,8 @@ namespace Tessera.App.ViewModel
     private async Task InitiInitializeAsync()
     {
       var embeddingServiceTask = Task.Run(() => EmbeddingService.Instance);
-      MaterialEmbeddings = new List<(float[] Vectors, string Name)>();
-      SortamentEmbeddings = new List<(float[] Vectors, string Name)>();
+      MaterialEmbeddings = new List<(float[] Embedding, string Name)>();
+      SortamentEmbeddings = new List<(float[] Embedding, string Name)>();
       var elements = await _referenceProvider.LoadElementsWithEmbeddingAsync();
       var materialsTask = Task.Run(() => elements.Items.Where(e => e.Type == ElementType.Material.ToString()).Select(e => (e.EmbeddingVector, e.Name)).ToList());
       var sortamentsTask = Task.Run(() => elements.Items.Where(e => e.Type == ElementType.Sortament.ToString()).Select(e => (e.EmbeddingVector, e.Name)).ToList());
