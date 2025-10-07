@@ -52,7 +52,7 @@
           <DataGridTemplateColumn Header="Материалы" CellTemplate="{StaticResource MaterialCell}" CellStyle="{StaticResource MaterialCellStyle}" CellEditingTemplate="{StaticResource MaterialCellEditing}" Width="300"/>
           <DataGridTemplateColumn Header="Сортаменты" CellTemplate="{StaticResource SortamentCell}" CellStyle="{StaticResource SortamentCellStyle}" CellEditingTemplate="{StaticResource SortamentCellEditing}" Width="400"/>
           <DataGridTextColumn Header="Типоразмеры" Binding="{Binding TypeSizeViewModel.TypeSize, UpdateSourceTrigger=PropertyChanged}" CellStyle="{StaticResource DataGridCellStyle}" Width="150"/>
-          <DataGridTextColumn Header="Экземпляры сортаментов" Binding="{Binding SortamentEx}" CellStyle="{StaticResource DataGridCellStyle}" Width="*"/>
+          <DataGridTextColumn Header="Экземпляры сортаментов" Binding="{Binding SortamentEx}" IsReadOnly="True" CellStyle="{StaticResource DataGridCellStyle}" Width="*"/>
         </DataGrid.Columns>
       </DataGrid>
     </DockPanel>

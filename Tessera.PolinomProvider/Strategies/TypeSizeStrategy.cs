@@ -75,11 +75,11 @@ namespace Tessera.PolinomProvider.Strategies
           switch (propertySource.Definition.Type)
           {
             case Ascon.Polynom.Api.PropertyType.Double:
-              var propDouble = propertySource as IDoublePropertyDefinition;
+              var propDouble = propertySource.Definition as IDoublePropertyDefinition;
               propDouble.AssignDoublePropertyValue(typeSize, concept, double.Parse(inputProperties.First(x => x.Name == property.Name).Value));
               break;
             case Ascon.Polynom.Api.PropertyType.String:
-              var propString = propertySource as IStringPropertyDefinition;
+              var propString = propertySource.Definition as IStringPropertyDefinition;
               propString.AssignStringPropertyValue(typeSize, concept, inputProperties.First(x => x.Name == property.Name).Value);
               break;
           }

@@ -1,7 +1,5 @@
 ﻿using Ascon.Polynom.Api;
 using Ascon.Polynom.Login;
-using System.Diagnostics;
-using System.Threading.Tasks;
 using Tessera.PolinomProvider.Constants;
 using Tessera.PolinomProvider.Interface;
 using Tessera.PolinomProvider.Model;
@@ -21,6 +19,7 @@ namespace Tessera.PolinomProvider
     private readonly ISortamentExStrategy _sortamentExStrategy;
     private readonly TransactionManager _transactionManager;
     private readonly PolinomApiHelper _polinomApiHelper;
+    private readonly ElementRepository _elementRepository;
     private readonly Dictionary<string, PropertyType> _cachedProperties;
     //private (string FileName, byte[] FileBody) _pendingMaterialFile;
     //private (string FileName, byte[] FileBody) _pendingSortamentFile;
@@ -29,7 +28,8 @@ namespace Tessera.PolinomProvider
     {
       LoginManager.TryOpenSession(Guid.Parse(CatalogConstants.POLYNOM_CLIENT_ID), out _session);
       _transactionManager = new TransactionManager(_session);
-      _polinomApiHelper = new PolinomApiHelper(_session, _transactionManager);
+      _polinomApiHelper = new PolinomApiHelper(_session);
+      _elementRepository = new ElementRepository(_session, _polinomApiHelper);
       _materialStrategy = new MaterialStrategy(_polinomApiHelper);
       _sortamentStrategy = new SortamentStrategy(_polinomApiHelper);
       _typeSizeStrategy = new TypeSizeStrategy(_polinomApiHelper);
@@ -67,24 +67,24 @@ namespace Tessera.PolinomProvider
 
     public async Task<Elements> LoadElementsWithEmbeddingAsync()
     {
-      return await _polinomApiHelper.LoadElementsWithEmbeddingAsync();
+      return await _elementRepository.LoadElementsWithEmbeddingAsync();
     }
 
     public bool EnsureVectorConceptExists()
     {
       bool created = false;
-      _transactionManager.ApplyChanges(() => created = _polinomApiHelper.EnsureVectorConceptExists());
+      _transactionManager.ApplyChanges(() => created = _elementRepository.EnsureVectorConceptExists());
       return created;
     }
 
     public Task<IEnumerable<(string Name, string Location)>> LoadElementsForEmbeddingAsync()
     {
-      return _polinomApiHelper.LoadElementsForEmbeddingAsync();
+      return _elementRepository.LoadElementsForEmbeddingAsync();
     }
 
     public void CreateElementEmbedding(string location, string embedding)
     {
-      _transactionManager.ApplyChanges(() => _polinomApiHelper.CreateElementEmbedding(location, embedding));
+      _transactionManager.ApplyChanges(() => _elementRepository.CreateElementEmbedding(location, embedding));
     }
 
     //public void AttachFileToDocument(string fileName, byte[] fileBody, string elementName, string catalog)

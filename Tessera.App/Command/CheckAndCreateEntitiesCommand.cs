@@ -30,7 +30,9 @@ namespace Tessera.App.Command
       {
         _referenceProvider.TransactionManager.ApplyChanges(() =>
         { 
-          _referenceProvider.EnsureEntitiesExist(SectionMapper.ToDomain(vm));
+          var sectionDefinition = SectionMapper.ToDomain(vm);
+          _referenceProvider.EnsureEntitiesExist(sectionDefinition);
+          vm.SortamentEx = sectionDefinition.SortamentEx;
         });
       }
     }
