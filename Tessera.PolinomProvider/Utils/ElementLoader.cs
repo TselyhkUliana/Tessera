@@ -3,13 +3,13 @@ using Tessera.PolinomProvider.Constants;
 
 namespace Tessera.PolinomProvider.Utils
 {
-  internal class ElementRepository
+  internal class ElementLoader
   {
     private readonly ISession _session;
     private PolinomApiHelper _polinomApiHelper;
     private IConcept _conceptSemanticRepresentation;
 
-    public ElementRepository(ISession session, PolinomApiHelper polinomApiHelper)
+    public ElementLoader(ISession session, PolinomApiHelper polinomApiHelper)
     {
       _session = session;
       _polinomApiHelper = polinomApiHelper;

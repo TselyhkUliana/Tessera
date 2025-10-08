@@ -19,7 +19,7 @@ namespace Tessera.PolinomProvider
     private readonly ISortamentExStrategy _sortamentExStrategy;
     private readonly TransactionManager _transactionManager;
     private readonly PolinomApiHelper _polinomApiHelper;
-    private readonly ElementRepository _elementRepository;
+    private readonly ElementLoader _elementLoader;
     private readonly Dictionary<string, PropertyType> _cachedProperties;
     //private (string FileName, byte[] FileBody) _pendingMaterialFile;
     //private (string FileName, byte[] FileBody) _pendingSortamentFile;
@@ -29,7 +29,7 @@ namespace Tessera.PolinomProvider
       LoginManager.TryOpenSession(Guid.Parse(CatalogConstants.POLYNOM_CLIENT_ID), out _session);
       _transactionManager = new TransactionManager(_session);
       _polinomApiHelper = new PolinomApiHelper(_session);
-      _elementRepository = new ElementRepository(_session, _polinomApiHelper);
+      _elementLoader = new ElementLoader(_session, _polinomApiHelper);
       _materialStrategy = new MaterialStrategy(_polinomApiHelper);
       _sortamentStrategy = new SortamentStrategy(_polinomApiHelper);
       _typeSizeStrategy = new TypeSizeStrategy(_polinomApiHelper);
@@ -67,24 +67,24 @@ namespace Tessera.PolinomProvider
 
     public async Task<Elements> LoadElementsWithEmbeddingAsync()
     {
-      return await _elementRepository.LoadElementsWithEmbeddingAsync();
+      return await _elementLoader.LoadElementsWithEmbeddingAsync();
     }
 
     public bool EnsureVectorConceptExists()
     {
       bool created = false;
-      _transactionManager.ApplyChanges(() => created = _elementRepository.EnsureVectorConceptExists());
+      _transactionManager.ApplyChanges(() => created = _elementLoader.EnsureVectorConceptExists());
       return created;
     }
 
     public Task<IEnumerable<(string Name, string Location)>> LoadElementsForEmbeddingAsync()
     {
-      return _elementRepository.LoadElementsForEmbeddingAsync();
+      return _elementLoader.LoadElementsForEmbeddingAsync();
     }
 
     public void CreateElementEmbedding(string location, string embedding)
     {
-      _transactionManager.ApplyChanges(() => _elementRepository.CreateElementEmbedding(location, embedding));
+      _transactionManager.ApplyChanges(() => _elementLoader.CreateElementEmbedding(location, embedding));
     }
 
     //public void AttachFileToDocument(string fileName, byte[] fileBody, string elementName, string catalog)

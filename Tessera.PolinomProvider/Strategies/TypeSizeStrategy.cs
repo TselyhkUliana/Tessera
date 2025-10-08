@@ -1,5 +1,6 @@
 ﻿using Ascon.Polynom.Api;
 using Tessera.PolinomProvider.Constants;
+using Tessera.PolinomProvider.Interface;
 using Tessera.PolinomProvider.Model;
 using Tessera.PolinomProvider.Utils;
 
@@ -34,7 +35,7 @@ namespace Tessera.PolinomProvider.Strategies
         .Select(p => new
         {
           p.Definition.Name,
-          Value = GetValue(p)
+          Value = GetPropertyValue(p)
         });
 
         return new { Element = element, Properties = properties };
@@ -87,7 +88,7 @@ namespace Tessera.PolinomProvider.Strategies
       });
     }
 
-    public string GetValue(IProperty property)
+    public string GetPropertyValue(IProperty property)
     {
       return property.Definition.Type switch
       {

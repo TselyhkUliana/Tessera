@@ -1,5 +1,6 @@
 ﻿using Ascon.Polynom.Api;
 using Tessera.PolinomProvider.Constants;
+using Tessera.PolinomProvider.Interface;
 using Tessera.PolinomProvider.Utils;
 
 namespace Tessera.PolinomProvider.Strategies
