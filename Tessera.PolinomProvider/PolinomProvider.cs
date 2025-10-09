@@ -77,7 +77,7 @@ namespace Tessera.PolinomProvider
       return created;
     }
 
-    public Task<IEnumerable<(string Name, string Location)>> LoadElementsForEmbeddingAsync()
+    public Task<IEnumerable<(string name, string location)>> LoadElementsForEmbeddingAsync()
     {
       return _elementLoader.LoadElementsForEmbeddingAsync();
     }

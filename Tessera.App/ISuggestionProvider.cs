@@ -4,9 +4,9 @@ namespace Tessera.App
 {
   public interface ISuggestionProvider
   {
-    List<(float[] Embedding, string Name)> MaterialEmbeddings { get; }
-    List<(float[] Embedding, string Name)> SortamentEmbeddings { get; }
+    List<(float[] embedding, string name)> MaterialEmbeddings { get; }
+    List<(float[] embedding, string name)> SortamentEmbeddings { get; }
 
-    Task UpdateSuggestionsAsync(string userInput, ObservableCollection<string> suggestionsTarget, List<(float[] Embedding, string Name)> embeddingDatabase);
+    Task UpdateSuggestionsAsync(string userInput, ObservableCollection<string> suggestionsTarget, List<(float[] embedding, string name)> embeddingDatabase);
   }
 }

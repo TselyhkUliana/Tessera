@@ -13,16 +13,16 @@ namespace Tessera.SemanticIndexBuilder.Embeddings
         Console.WriteLine("Создано понятие 'Семантическое представление'");
       }
       Console.ForegroundColor = ConsoleColor.Blue;
-      Console.WriteLine("Создание векторных предствлений. Процесс может занять длительное время");
+      Console.WriteLine("Создание векторных представлений. Процесс может занять длительное время. Пожалуйста, подождите...");
       Console.ForegroundColor = ConsoleColor.Green;
       var embeddingService = EmbeddingService.Instance;
       var elements = (await embeddingProvider.LoadElementsForEmbeddingAsync()).ToArray();
       var count = elements.Length;
       for (int i = 0; i < count; i++)
       {
-        var element = elements[i];
-        embeddingService.GetTextEmbedding(element.Name, out var embedding);
-        embeddingProvider.CreateElementEmbedding(element.Location, string.Join(';', embedding.Select(x => x.ToString("R", CultureInfo.InvariantCulture))));
+        var (name, location) = elements[i];
+        embeddingService.GetTextEmbedding(name, out var embedding);
+        embeddingProvider.CreateElementEmbedding(location, string.Join(';', embedding.Select(x => x.ToString("R", CultureInfo.InvariantCulture))));
         Console.ForegroundColor = ConsoleColor.Green;
         Console.Write($"\rСоздано: {i + 1} из {count}");
       }

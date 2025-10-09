@@ -9,8 +9,13 @@ public class EmbeddingService : IDisposable
   private readonly InferenceSession _session;
   private bool _disposed;
   private const string HAROLD = "Powered by Harold F, the search engine that never complains";
+#if DEBUG
   public const string MODEL_PATH = @"D:\Development\Полином\Tessera\Harold\Model\harold-onnx\harold.onnx";
   public const string TOKENIZER_PATH = @"D:\Development\Полином\Tessera\Harold\Model\harold-onnx\tokenizer.json";
+#else
+  public const string MODEL_PATH = @$"{AppContext.BaseDirectory}Harold\Model\harold-onnx\harold.onnx";
+  public const string TOKENIZER_PATH = @$"{AppContext.BaseDirectory}Harold\Model\harold-onnx\tokenizer.json";
+#endif
 
   private EmbeddingService()
   {
@@ -72,19 +77,19 @@ public class EmbeddingService : IDisposable
   /// <summary>
   /// Возвращает topN объектов, наиболее похожих на запрос по косинусному сходству эмбеддингов.
   /// </summary>
-  public List<(string Name, float Score)> Search(List<(float[] Embedding, string Name)> data, float[] queryEmbeddingL2, string query, int topN = 10, float threshold = 0.3f)
+  public List<(string name, float score)> Search(List<(float[] embedding, string name)> data, float[] queryEmbeddingL2, string query, int topN = 10, float threshold = 0.3f)
   {
     var queryLower = string.Join(" ", query.Split(' ', StringSplitOptions.RemoveEmptyEntries)).ToLowerInvariant();
 
     var resultsL2 = data
         .Select(item =>
         {
-          var similarity = CosineSimilarityL2(item.Embedding, queryEmbeddingL2);
-          var nameLower = item.Name.ToLowerInvariant();
+          var similarity = CosineSimilarityL2(item.embedding, queryEmbeddingL2);
+          var nameLower = item.name.ToLowerInvariant();
           if (nameLower.Contains(queryLower))
             similarity += threshold;
 
-          return (item.Name, similarity);
+          return (item.name, similarity);
         })
         .OrderByDescending(x => x.similarity)
         .Take(topN)

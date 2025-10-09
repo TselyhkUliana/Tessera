@@ -101,8 +101,8 @@ namespace Tessera.PolinomProvider.Utils
       if (StandardConstants.DocumentTuStandards.FirstOrDefault(x => fullStandard.StartsWith(x.Key)) is var kvp && !string.IsNullOrEmpty(kvp.Value))
         return FindGroupByName(documentGroup.DocumentGroups, g => g.DocumentGroups, kvp.Value).CreateDocument(fullStandard, null, fullStandard);
 
-      var (Name, Description) = EntityNameHelper.GetNameAndDescriptionForDocument(fullStandard, baseName);
-      return groupDocument.CreateDocument(Name, Description, fullStandard);
+      var (name, description) = EntityNameHelper.GetNameAndDescriptionForDocument(fullStandard, baseName);
+      return groupDocument.CreateDocument(name, description, fullStandard);
     }
 
     internal void AttachFile(IElement element, string fileName, byte[] fileBody, string documentGroupName)
@@ -163,15 +163,15 @@ namespace Tessera.PolinomProvider.Utils
       return sourceProvider(condition).FirstOrDefault();
     }
 
-    private IFormula CreateFormula(IFormulaGroup groupFormula, string name, IConcept conceptPropertiesByStandard)
+    private IFormula CreateFormula(IFormulaGroup groupFormula, string formulaName, IConcept conceptPropertiesByStandard)
     {
-      var formula = groupFormula.CreateFormula(name, FormulaDefaults.BuildFormulaBodyDesignation());
-      foreach (var (Name, Expression) in FormulaDefaults.Parameters)
-        formula.CreateParameter(Name, Expression);
+      var formula = groupFormula.CreateFormula(formulaName, FormulaDefaults.BuildFormulaBodyDesignation());
+      foreach (var (name, expression) in FormulaDefaults.Parameters)
+        formula.CreateParameter(name, expression);
       foreach (var prop in conceptPropertiesByStandard.PropertySources)
       {
-        var (Name, Expression) = FormulaDefaults.BuildParameterByDefinition(prop.GetPropertyDefinition(), prop.AbsoluteCode);
-        formula.CreateParameter(Name, Expression);
+        var (name, expression) = FormulaDefaults.BuildParameterByDefinition(prop.GetPropertyDefinition(), prop.AbsoluteCode);
+        formula.CreateParameter(name, expression);
       }
       return formula;
     }

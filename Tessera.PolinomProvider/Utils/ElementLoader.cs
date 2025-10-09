@@ -102,11 +102,11 @@ namespace Tessera.PolinomProvider.Utils
     {
       var elements = await LoadElementsAsync();
 
-      return elements.Materials
-          .Select(x => (x.Name, x.GetBOSimpleLocation()))
-          .Concat(elements.Sortament
-              .Select(x => (x.Name, x.GetBOSimpleLocation())))
-          .ToList();
+      return elements.Materials.Where(x => x.GetContractRealization(_conceptSemanticRepresentation) == null)
+         .Select(x => (x.Name, x.GetBOSimpleLocation()))
+         .Concat(elements.Sortament
+             .Where(x => x.GetContractRealization(_conceptSemanticRepresentation) == null)
+             .Select(x => (x.Name, x.GetBOSimpleLocation())));
     }
 
     internal async Task<(List<IElement> Materials, List<IElement> Sortament)> LoadElementsAsync()

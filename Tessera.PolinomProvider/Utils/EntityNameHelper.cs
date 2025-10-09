@@ -99,7 +99,7 @@ namespace Tessera.PolinomProvider.Utils
     }
 
     /// <summary>Формирует имя и описание документа на основе стандарта и базового имени.</summary>
-    public static (string Name, string Description) GetNameAndDescriptionForDocument(string fullStandard, string baseName)
+    public static (string name, string description) GetNameAndDescriptionForDocument(string fullStandard, string baseName)
     {
       return (fullStandard + " " + baseName + ". " + CatalogConstants.SUFFIX_DOCUMENT,
               $"ОБОЗНАЧЕНИЕ \t\t{fullStandard} \nНАИМЕНОВАНИЕ \t\t {baseName}. {CatalogConstants.SUFFIX_DOCUMENT}");

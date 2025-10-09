@@ -13,8 +13,12 @@ namespace Tessera.PolinomProvider
   {
     private static PropertyList _instance;
     private static XmlSerializer _xmlSerializer = new XmlSerializer(typeof(PropertyList));
+#if DEBUG
     private static string _folderPath = @"D:\Development\Полином\Tessera\Harold";
     private static string _filePath = @$"{_folderPath}\Properties.xml";
+#else
+    private static string _filePath =  @$"{AppContext.BaseDirectory}Properties.xml";
+#endif
     public PropertyList MyProperty { get; set; }
     public static PropertyList Instance => _instance ??= LoadPropperties();
 

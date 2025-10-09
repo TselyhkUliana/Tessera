@@ -11,8 +11,12 @@ namespace Tessera.PolinomProvider
   {
     private static Task<Elements> _instance;
     private static XmlSerializer _xmlSerializer = new XmlSerializer(typeof(Elements));
+#if DEBUG
     private static string _folderPath = @"D:\Development\Полином";
     private static string _filePath = @$"{_folderPath}\ElementCatche.xml";
+#else
+    private static string _filePath =  @$"{AppContext.BaseDirectory}ElementCatche.xml";
+#endif
     public Elements Elements { get; set; }
     public static Task<Elements> Instance => _instance ??= LoadElements();
 

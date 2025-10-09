@@ -5,7 +5,7 @@ namespace Tessera.PolinomProvider.Utils
   internal static class FormulaDefaults
   {
     /// <summary>Набор параметров по умолчанию: имя параметра и выражение для вычисления значения</summary>
-    public static readonly (string Name, string Expression)[] Parameters =
+    public static readonly (string name, string expression)[] Parameters =
     {
        ("Сортамент.Форма", "GetPropertyValue(First(GetLinkedObjects([this], 'ld:ExSortSortLinkCode::lde:Destination')), 'c:ShapesMiS::pd:ShapeMiS', '')"),
        ("Материал.Марка", "GetPropertyValue(First(GetLinkedObjects([this], 'ld:ExSortMatLinkCode::lde:Destination')), 'c:@Materials::c:Materials::pd:MaterialsMark', '')"),
@@ -13,7 +13,7 @@ namespace Tessera.PolinomProvider.Utils
        ("ТУ.Документ", "GetPropertyValue(First(GetDocuments([this])), 'c:@NameAndDescription::c:@Document::pd:@Designation', '')")
     };
 
-    public static (string Name, string Expression) BuildParameterByDefinition(IPropertyDefinition definition, string absoluteCode)
+    public static (string name, string expression) BuildParameterByDefinition(IPropertyDefinition definition, string absoluteCode)
     {
       return ($"{definition.Name}.{definition.OwnerGroup.Name}", $"GetPropertyValue([this], '{absoluteCode}', '')");
     }
