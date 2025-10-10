@@ -34,7 +34,7 @@ namespace Tessera.PolinomProvider.Strategies
       group.LinkDocument(document);
       var conceptPropertiesByStandard = AddConceptPropAccordingToStandart(element, EntityNameHelper.GetFullStandard(sortament.Name));
 
-      var formula = _apiHelper.CreateOrReceiveFormula(sortament.OwnerGroup.Name, $"Обозначение {groupName}", CatalogConstants.GROUP_FORMULA_DESIGNATION_SORTAMENT_EX, conceptPropertiesByStandard);
+      var formula = _apiHelper.CreateOrReceiveFormula(sortament.OwnerGroup.Name, $"Обозначение {groupName}", conceptPropertiesByStandard);
       var propName = element.GetProperty(PropConstants.PROP_NAME_AND_DESCRIPTION);
       propName.EvaluationPropertyInfo.Formula = formula;
       var appointedFormula = group.AllAppointedFormulas.FirstOrDefault(af => af.Formula == formula) ??

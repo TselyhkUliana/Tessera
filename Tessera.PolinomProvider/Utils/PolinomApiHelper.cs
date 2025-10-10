@@ -13,14 +13,12 @@ namespace Tessera.PolinomProvider.Utils
     private readonly ISession _session;
     private readonly IReference? _referenceMaterialAndSortament;
     private readonly IApiReadOnlyCollection<IPropertyDefinition> _propDefinitions;
-    private readonly PropertyList _property;
 
     public PolinomApiHelper(ISession session)
     {
       _session = session;
       _referenceMaterialAndSortament = _session.Objects.AllReferences.FirstOrDefault(x => x.Name == CatalogConstants.REFERENCE_NAME);
       _propDefinitions = FindGroupByName(_session.Objects.PropDefCatalog.PropDefGroups, prop => prop.PropDefGroups, CatalogConstants.GROUP_PROP_DEFINABLE_DIMENSION).PropertyDefinitions;
-      _property = SerializerProp.Instance;
     }
 
     internal IApiReadOnlyCollection<IPropertyDefinition> PropertyDefinitions => _propDefinitions;
@@ -146,11 +144,11 @@ namespace Tessera.PolinomProvider.Utils
       return group.Name == findGroupName || group.ParentGroup is not null && IsInGroupPath(group.ParentGroup, findGroupName);
     }
 
-    internal IFormula CreateOrReceiveFormula(string sortamentGroup, string formulaName, string groupName, IConcept conceptPropertiesByStandard)
+    internal IFormula CreateOrReceiveFormula(string sortamentGroup, string formulaName, IConcept conceptPropertiesByStandard)
     {
       var formulaGroups = GetFormulaGroups();
       var groupFormula = FindGroupByName(formulaGroups, g => g.FormulaGroups, sortamentGroup) ??
-                         FindGroupByName(formulaGroups, g => g.FormulaGroups, groupName).CreateFormulaGroup(sortamentGroup);
+                         FindGroupByName(formulaGroups, g => g.FormulaGroups, CatalogConstants.GROUP_FORMULA_DESIGNATION_SORTAMENT_EX).CreateFormulaGroup(sortamentGroup);
       var formula = groupFormula.Formulas.FirstOrDefault(x => x.Name == formulaName) ?? CreateFormula(groupFormula, formulaName, conceptPropertiesByStandard);
       return formula;
     }
@@ -165,12 +163,12 @@ namespace Tessera.PolinomProvider.Utils
 
     private IFormula CreateFormula(IFormulaGroup groupFormula, string formulaName, IConcept conceptPropertiesByStandard)
     {
-      var formula = groupFormula.CreateFormula(formulaName, FormulaDefaults.BuildFormulaBodyDesignation());
-      foreach (var (name, expression) in FormulaDefaults.Parameters)
+      var formula = groupFormula.CreateFormula(formulaName, FormulaBuilder.BuildFormulaBodyDesignation(null));
+      foreach (var (name, expression) in FormulaBuilder.ParametersDefault)
         formula.CreateParameter(name, expression);
       foreach (var prop in conceptPropertiesByStandard.PropertySources)
       {
-        var (name, expression) = FormulaDefaults.BuildParameterByDefinition(prop.GetPropertyDefinition(), prop.AbsoluteCode);
+        var (baseName, name, expression) = FormulaBuilder.BuildParameterByDefinition(prop.GetPropertyDefinition(), prop.AbsoluteCode);
         formula.CreateParameter(name, expression);
       }
       return formula;
