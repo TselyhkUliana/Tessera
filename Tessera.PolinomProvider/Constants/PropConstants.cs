@@ -7,6 +7,7 @@
     public const string PROP_MATERIALS_MARK = "MaterialsMark";
     public const string PROP_SHAPE_MIS = "c:ShapesMiS::pd:ShapeMiS";
     public const string PROP_NAME_AND_DESCRIPTION = "c:@NameAndDescription::pd:@Name";
+    public const string PROP_INTEGRATION_KOMPAS3D_ABSOLUTE_CODE = "c:@Integration::pd:@Designation_k3d";
     public const string PROP_NAME_AND_DESCRIPTION_ABSOLUTE_CODE = "c:@NameAndDescription::c:@ClassificationItem::pd:@Name";
     public const string PROP_SPECIFICATION_OBJECT_SETTINGS_TEMPLATE = "::ld:@SpecificationObjectSettingsTemplate::lde:@SpecificationObjectSettingsTemplate::c:@NameAndDescription::c:@ClassificationItem::pd:@Name";
     public const string PROP_EMBEDDING_NAME = "Эмбеддинг";

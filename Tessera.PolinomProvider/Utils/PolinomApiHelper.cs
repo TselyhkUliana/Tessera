@@ -5,6 +5,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Tessera.PolinomProvider;
 using Tessera.PolinomProvider.Constants;
+using Tessera.PolinomProvider.Formula;
+using static Tessera.PolinomProvider.Formula.FormulaBuilder;
 
 namespace Tessera.PolinomProvider.Utils
 {
@@ -144,13 +146,34 @@ namespace Tessera.PolinomProvider.Utils
       return group.Name == findGroupName || group.ParentGroup is not null && IsInGroupPath(group.ParentGroup, findGroupName);
     }
 
-    internal IFormula CreateOrReceiveFormula(string sortamentGroup, string formulaName, IConcept conceptPropertiesByStandard)
+    internal (IFormula formulaDesignation, IFormula formulaDesignationKOMPAS) CreateOrReceiveFormula(string sortamentGroup, string formulaNameDesignation, string formulaNameDesignationKOMPAS, IConcept conceptPropertiesByStandard)
     {
       var formulaGroups = GetFormulaGroups();
       var groupFormula = FindGroupByName(formulaGroups, g => g.FormulaGroups, sortamentGroup) ??
                          FindGroupByName(formulaGroups, g => g.FormulaGroups, CatalogConstants.GROUP_FORMULA_DESIGNATION_SORTAMENT_EX).CreateFormulaGroup(sortamentGroup);
-      var formula = groupFormula.Formulas.FirstOrDefault(x => x.Name == formulaName) ?? CreateFormula(groupFormula, formulaName, conceptPropertiesByStandard);
-      return formula;
+
+      var formulaDesignation = groupFormula.Formulas.FirstOrDefault(x => x.Name == formulaNameDesignation);
+      var formulaDesignationKOMPAS = groupFormula.Formulas.FirstOrDefault(x => x.Name == formulaNameDesignationKOMPAS);
+      
+      FormulaResult? formulaBuilder  = null;
+
+      void EnsureFormula(ref IFormula? formula, string formulaName, Func<FormulaResult, Lazy<string>> getBody)
+      {
+        if (formula is not null)
+          return;
+
+        formulaBuilder ??= FormulaBuilder.BuildFormulaBodyDesignationAndKOMPAS(conceptPropertiesByStandard);
+        var body = getBody(formulaBuilder).Value;
+
+        formula = groupFormula.CreateFormula(formulaName, body);
+        foreach (var (name, expression) in formulaBuilder.UsedParameters)
+          formula.CreateParameter(name, expression);
+      }
+
+      EnsureFormula(ref formulaDesignation, formulaNameDesignation, f => f.FormulaBodyDesignation);
+      EnsureFormula(ref formulaDesignationKOMPAS, formulaNameDesignationKOMPAS, f => f.FormulaBodyKOMPAS);
+
+      return (formulaDesignation, formulaDesignationKOMPAS);
     }
 
     private T SearchEntity<T>(KnownConceptKind conceptKind, KnownPropertyDefinitionKind propertyDefinitionKind, string value, Func<ICondition, IEnumerable<T>> sourceProvider) where T : class
@@ -159,19 +182,6 @@ namespace Tessera.PolinomProvider.Utils
       var propDef = _session.Objects.GetKnownPropertyDefinition(propertyDefinitionKind);
       var condition = _session.Objects.CreateSimpleCondition(concept, propDef, (int)StringCompareOperation.Equal, ((IStringPropertyDefinition)propDef).CreateStringPropertyValueData(value));
       return sourceProvider(condition).FirstOrDefault();
-    }
-
-    private IFormula CreateFormula(IFormulaGroup groupFormula, string formulaName, IConcept conceptPropertiesByStandard)
-    {
-      var formula = groupFormula.CreateFormula(formulaName, FormulaBuilder.BuildFormulaBodyDesignation(null));
-      foreach (var (name, expression) in FormulaBuilder.ParametersDefault)
-        formula.CreateParameter(name, expression);
-      foreach (var prop in conceptPropertiesByStandard.PropertySources)
-      {
-        var (baseName, name, expression) = FormulaBuilder.BuildParameterByDefinition(prop.GetPropertyDefinition(), prop.AbsoluteCode);
-        formula.CreateParameter(name, expression);
-      }
-      return formula;
     }
 
     internal void LinksTest(IElement element)
